@@ -1,0 +1,29 @@
+{
+  "name": "wrathnet",
+  "title": "WrathNet",
+  "main": "./dist/wrathnet.js",
+  "description": "World of Warcraft client foundation written in JavaScript",
+  "version": "0.0.1",
+  "homepage": "http://wrathnet.org",
+  "author": {
+    "name": "Tim Kurvers"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timkurvers/wrathnet"
+  },
+  "bugs": {
+    "url": "https://github.com/timkurvers/wrathnet/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": ">=0.3.9"
+  },
+  "keywords": []
+}
