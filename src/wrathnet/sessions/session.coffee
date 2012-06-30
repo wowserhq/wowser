@@ -9,7 +9,23 @@
 # this library is licensed. See the LICENSE file for the full license.
 #
 
+# Denotes a session to be used as entry for the WrathNet foundation
 class WrathNet.sessions.Session
-
-  _userAgent: null
-  _expansion: null
+  
+  # Creates a new session for given expansion
+  constructor: (expansion, userAgent) ->
+  
+    # Ensure the expansion is an instance
+    unless expansion instanceof WrathNet.expansions.Expansion
+      expansion = new expansion()
+  
+    # Holds the expansion this session uses
+    @expansion = expansion
+    
+    # Holds user-agent information
+    @userAgent = userAgent
+    
+    # Holds the various handlers
+    @auth = new expansion.authHandler()
+    @realms = new expansion.realmHandler()
+    @world = new expansion.worldHandler()
