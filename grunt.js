@@ -33,14 +33,26 @@ module.exports = function(grunt) {
     
     // Lints compiled JavaScript files
     lint: {
-      files: ['grunt.js', 'build/**/*.js', 'build-spec/**/*.js']
+      files: [
+        'grunt.js',
+        'build/**/*.js',
+        'build-spec/**/*.js',
+        'vendor/**/*.js'
+      ]
     },
     
     // Concatenate compiled JavaScript files
     // Note: Order is significant due to namespacing
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', 'build/wrathnet.js', 'build/wrathnet/**/*.js'],
+        src: [
+          '<banner:meta.banner>',
+          'build/wrathnet.js',
+          'vendor/property-shorthands.js',
+          'build/wrathnet/net/**/*.js',
+          'build/wrathnet/**/*.js',
+          'vendor/**/*.js'
+        ],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -55,18 +67,22 @@ module.exports = function(grunt) {
     
     // Watch for changes to CoffeeScript files
     watch: {
-      files: ['src/**/*.coffee', 'spec/**/*.coffee'],
+      files: [
+        'src/**/*.coffee',
+        'spec/**/*.coffee',
+        'vendor/**/*.js'
+      ],
       tasks: 'coffee lint concat'
     },
     
     // JSHint options
     jshint: {
       options: {
-        curly: true,
+        curly: false,
         eqeqeq: true,
         immed: false,
-        latedef: true,
-        newcap: true,
+        latedef: false,
+        newcap: false,
         noarg: true,
         sub: true,
         undef: true,
@@ -76,6 +92,10 @@ module.exports = function(grunt) {
       },
       globals: {
         WrathNet: true,
+        Base64: true,
+        WebSocket: true,
+        WebSock: true,
+        signals: true,
         console: true
       }
     },
