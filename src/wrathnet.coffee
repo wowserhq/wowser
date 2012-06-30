@@ -22,7 +22,10 @@ class WrathNet
   @crypto = {}
   @entities = {}
   @expansions = {
-    wotlk: {}
+    wotlk: {
+      handlers: {}
+      net: {}
+    }
   }
   @net = {}
   @sessions = {}
@@ -30,4 +33,4 @@ class WrathNet
   
   # Convenience constructor for starting a new WrathNet session for given expansion
   constructor: (expansion, userAgent) ->
-    new WrathNet.sessions.Session expansion, userAgent
+    return new WrathNet.sessions.Session expansion, userAgent
