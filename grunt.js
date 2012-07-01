@@ -48,6 +48,7 @@ module.exports = function(grunt) {
         src: [
           '<banner:meta.banner>',
           'build/wrathnet.js',
+          'vendor/object-extension.js',
           'vendor/property-shorthands.js',
           'build/wrathnet/net/**/*.js',
           'build/wrathnet/**/*.js',
