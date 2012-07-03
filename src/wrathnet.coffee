@@ -20,9 +20,11 @@ class WrathNet
 
   # Package structure 
   @crypto = {}
+  @datastructures = {}
   @entities = {}
   @expansions = {
     wotlk: {
+      enums: {}
       handlers: {}
       net: {}
     }
