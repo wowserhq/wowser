@@ -15,11 +15,10 @@ class WrathNet.net.Socket
   # Creates a new socket
   constructor: ->
     
-    # Holds the host currently connected to (if any)
+    # Holds the host, port and uri currently connected to (if any)
     @host = null
-    
-    # Holds the port currently connected through (if any)
     @port = NaN
+    @uri = null
     
     # Holds the actual socket
     @socket = null
@@ -39,17 +38,32 @@ class WrathNet.net.Socket
 
   # Whether this socket is currently connected
   @getter 'connected', ->
-    # TODO: Determine connection state
-
+    @socket and @socket.readyState is WebSocket.OPEN
+  
   # Connects to given host through given port (if any; default port is implementation specific)
   connect: (host, port=NaN) ->
     unless @connected
       @host = host
       @port = port
-      # TODO: Connect socket
+      @uri = 'ws://' + @host + ':' + @port
+      
+      @socket = new WebSocket(@uri, 'binary')
+      
+      @socket.onopen = (e) =>
+        @on.connect.dispatch(@, e)
+      
+      @socket.onclose = (e) =>
+        @on.disconnect.dispatch(@, e)
+      
+      @socket.onmessage = (e) ->
+        @on.dataReceive.dispatch(@, e)
+      
+      @socket.onerror = (e) ->
+        console.error e
+    
     return @
 
-  # Attempts to reconnect given cached host and port
+  # Attempts to reconnect to cached host and port
   reconnect: ->
     if not @connected and @host and @port
       @connect(@host, @port)
@@ -57,16 +71,23 @@ class WrathNet.net.Socket
   
   # Disconnects this socket
   disconnect: ->
-    #if @connected
-    # TODO: Disconnect socket  
+    if @connected
+      @socket.close()
     return @
 
   # Finalizes and sends given packet
   send: (packet) ->
     if @connected
+      
+      console.log 'sending packet', packet
+      
       packet.finalize()
       
-      # TODO: Handle packet sending, logging and event dispatching
+      packet.dump()
+      
+      @socket.send(packet.buffer)
+      
+      @on.packetSend.dispatch(@, packet)
       
       return true
     
