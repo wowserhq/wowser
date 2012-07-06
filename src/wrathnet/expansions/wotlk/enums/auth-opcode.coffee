@@ -9,6 +9,7 @@
 # this library is licensed. See the LICENSE file for the full license.
 #
 
+# Authentication opcodes
 class WrathNet.expansions.wotlk.enums.AuthOpcode
 
   @LOGON_CHALLENGE     = 0x00
