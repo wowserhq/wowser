@@ -48,6 +48,7 @@ class WrathNet.net.Socket
       @uri = 'ws://' + @host + ':' + @port
       
       @socket = new WebSocket(@uri, 'binary')
+      @socket.binaryType = 'arraybuffer'
       
       @socket.onopen = (e) =>
         @on.connect.dispatch(@, e)
