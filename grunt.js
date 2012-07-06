@@ -50,8 +50,15 @@ module.exports = function(grunt) {
           'build/wrathnet.js',
           'vendor/object-extension.js',
           'vendor/property-shorthands.js',
+          'build/wrathnet/crypto/**/*.js',
+          'vendor/bufferview.js',
+          'build/wrathnet/datastructures/**/*.js',
           'build/wrathnet/net/**/*.js',
-          'build/wrathnet/**/*.js',
+          'build/wrathnet/expansions/expansion.js',
+          'build/wrathnet/expansions/wotlk/wotlk-expansion.js',
+          'build/wrathnet/expansions/wotlk/net/**/*.js',
+          'build/wrathnet/expansions/wotlk/**/*.js',
+          'build/wrathnet/sessions/**/*.js',
           'vendor/**/*.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
@@ -93,9 +100,10 @@ module.exports = function(grunt) {
       },
       globals: {
         WrathNet: true,
-        Base64: true,
         WebSocket: true,
-        WebSock: true,
+        BufferView: true,
+        ArrayBuffer: true,
+        Uint8Array: true,
         signals: true,
         console: true
       }
