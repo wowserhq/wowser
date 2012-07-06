@@ -10,13 +10,14 @@
 #
 
 # Denotes a network packet
-class WrathNet.net.Packet
+class WrathNet.net.Packet extends WrathNet.datastructures.ByteBuffer
 
   # Creates a new packet optionally with given opcode
-  constructor: (opcode, outgoing=true) ->
+  constructor: (opcode, length) ->
+    super length
     
     # Holds the opcode for this packet
     @opcode = opcode
-    
-    # Whether this packet is outgoing or incoming
-    @outgoing = outgoing
+
+  finalize: ->
+    return @
