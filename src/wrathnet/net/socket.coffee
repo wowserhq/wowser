@@ -55,7 +55,7 @@ class WrathNet.net.Socket
       @socket.onclose = (e) =>
         @on.disconnect.dispatch(@, e)
       
-      @socket.onmessage = (e) ->
+      @socket.onmessage = (e) =>
         @on.dataReceive.dispatch(@, e)
       
       @socket.onerror = (e) ->
