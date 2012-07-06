@@ -12,12 +12,19 @@
 # Denotes a network packet
 class WrathNet.net.Packet extends WrathNet.datastructures.ByteBuffer
 
-  # Creates a new packet optionally with given opcode
-  constructor: (opcode, length) ->
-    super length
+  # Creates a new packet with given opcode from given source or length
+  constructor: (opcode, source, outgoing=true) ->
+    super source
     
     # Holds the opcode for this packet
     @opcode = opcode
+    
+    # Whether this packet is outgoing or incoming
+    @outgoing = outgoing
+    
+    # Seek past opcode to reserve space for it when finalizing
+    @index = @headerSize
 
+  # Finalizes this packet
   finalize: ->
     return @
