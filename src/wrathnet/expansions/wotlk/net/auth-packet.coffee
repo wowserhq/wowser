@@ -13,8 +13,7 @@
 class WrathNet.expansions.wotlk.net.AuthPacket extends WrathNet.net.Packet
 
   # Header size in bytes for both incoming and outgoing packets
-  @getter 'headerSize', ->
-    1
+  @HEADER_SIZE = 1
   
   # Finalizes this packet
   finalize: ->
