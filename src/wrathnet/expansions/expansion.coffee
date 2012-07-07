@@ -9,5 +9,6 @@
 # this library is licensed. See the LICENSE file for the full license.
 #
 
+# Denotes an expansion
 class WrathNet.expansions.Expansion
   
