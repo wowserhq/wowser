@@ -12,14 +12,14 @@
 # Denotes a byte-buffer
 class WrathNet.datastructures.ByteBuffer extends BufferView
   
-  # Constructs a new buffer cloned from given source or of given length in bytes
-  constructor: (source) ->
+  # Constructs a buffer from given source or of given length in bytes
+  constructor: (source, endian=BufferView.LE) ->
     
-    # If source is given, use its length, otherwise assume it's the number of bytes
-    @buffer = new ArrayBuffer(source.length || source)
+    # Use source as-is if given, otherwise assume it's the number of bytes
+    buffer = if source.byteLength then source.buffer || source else new ArrayBuffer(source)
     
     # Default to little endian
-    super @buffer, BufferView.LE
+    super buffer, endian
   
   # Reads a string of given length from the buffer 
   readString: @::readUTF8Chars
@@ -53,3 +53,15 @@ class WrathNet.datastructures.ByteBuffer extends BufferView
     Array::map.call(bytes, (byte) ->
       if (byte < 0x20 || byte > 0x7E) then '  ' else ' ' + String.fromCharCode(byte)
     ).join(' ')
+
+  # Joins together two arrays resulting in a new byte-buffer
+  @join: (a, b) ->
+    tmp = new Uint8Array(a.byteLength + b.byteLength)
+    tmp.set(new Uint8Array(a.buffer || a), 0)
+    tmp.set(new Uint8Array(b.buffer || b), a.byteLength)
+    return new @(tmp.buffer)
+
+  # Slices given array resulting in a new byte-buffer
+  @slice: (array, begin, length) ->
+    tmp = array.buffer || array
+    return new @(tmp.slice(begin, length))
