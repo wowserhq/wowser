@@ -12,6 +12,9 @@
 # Base-class for any socket including signals and host/port management
 class WrathNet.net.Socket
   
+  # Imports
+  ByteBuffer = WrathNet.datastructures.ByteBuffer
+  
   # Creates a new socket
   constructor: ->
     
@@ -22,6 +25,9 @@ class WrathNet.net.Socket
     
     # Holds the actual socket
     @socket = null
+    
+    # Holds buffered data
+    @buffer = new ByteBuffer(0)
     
     # Holds (partial) packet (if any) and its remaining size in bytes
     @packet = null
@@ -57,7 +63,8 @@ class WrathNet.net.Socket
         @on.disconnect.dispatch(@, e)
       
       @socket.onmessage = (e) =>
-        @on.dataReceive.dispatch(@, e)
+        @buffer = ByteBuffer.join(@buffer, e.data)
+        @on.dataReceive.dispatch(@)
       
       @socket.onerror = (e) ->
         console.error e
