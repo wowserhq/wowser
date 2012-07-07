@@ -25,6 +25,10 @@ class WrathNet.net.Packet extends WrathNet.datastructures.ByteBuffer
     # Seek past opcode to reserve space for it when finalizing
     @index = @headerSize
 
+  # Header size in bytes for both incoming and outgoing packets
+  @getter 'headerSize', ->
+    return @constructor.HEADER_SIZE
+
   # Finalizes this packet
   finalize: ->
     return @
