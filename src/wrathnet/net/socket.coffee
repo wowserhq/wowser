@@ -24,7 +24,7 @@ class WrathNet.net.Socket
     @socket = null
     
     # Holds buffered data
-    @buffer = new ByteBuffer()
+    @buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN)
     
     # Holds (partial) packet (if any) and its remaining size in bytes
     @packet = null
@@ -86,10 +86,9 @@ class WrathNet.net.Socket
   send: (packet) ->
     if @connected
       
-      console.log '⟸', packet
-      
       packet.finalize()
       
+      console.log '⟸', packet
       console.log packet.toString()
       console.log packet.toHex()
       console.log packet.toASCII()
