@@ -10,11 +10,11 @@
 #
 
 # Denotes a network packet
-class WrathNet.net.Packet extends WrathNet.datastructures.ByteBuffer
+class WrathNet.net.Packet extends ByteBuffer
 
   # Creates a new packet with given opcode from given source or length
   constructor: (opcode, source, outgoing=true) ->
-    super source
+    super source, ByteBuffer.LITTLE_ENDIAN
     
     # Holds the opcode for this packet
     @opcode = opcode
