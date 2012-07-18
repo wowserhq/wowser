@@ -13,14 +13,14 @@
 var ByteBuffer;
 
 ByteBuffer = (function() {
-  'use strict';
-
-  var extractBuffer, getter, reader, setter, writer,
+  var extractBuffer, getter, reader, self, setter, writer,
     _this = this;
 
   ByteBuffer.LITTLE_ENDIAN = true;
 
   ByteBuffer.BIG_ENDIAN = false;
+
+  self = ByteBuffer;
 
   getter = function(name, getter) {
     return Object.defineProperty(ByteBuffer.prototype, name, {
@@ -44,7 +44,7 @@ ByteBuffer = (function() {
       source = 0;
     }
     if (order == null) {
-      order = this.constructor.BIG_ENDIAN;
+      order = self.BIG_ENDIAN;
     }
     this._buffer = null;
     this._raw = null;
@@ -55,14 +55,8 @@ ByteBuffer = (function() {
     if (!buffer) {
       buffer = new ArrayBuffer(source);
     }
-    this._setup(buffer);
+    this.buffer = buffer;
   }
-
-  ByteBuffer.prototype._setup = function(buffer) {
-    this._buffer = buffer;
-    this._raw = new Uint8Array(this._buffer);
-    return this._view = new DataView(this._buffer);
-  };
 
   ByteBuffer.prototype._sanitizeIndex = function() {
     if (this._index < 0) {
@@ -104,6 +98,13 @@ ByteBuffer = (function() {
 
   getter('buffer', function() {
     return this._buffer;
+  });
+
+  setter('buffer', function(buffer) {
+    this._buffer = buffer;
+    this._raw = new Uint8Array(this._buffer);
+    this._view = new DataView(this._buffer);
+    return this._sanitizeIndex();
   });
 
   getter('view', function() {
@@ -231,7 +232,7 @@ ByteBuffer = (function() {
     if (bytes <= 0) {
       throw new RangeError('Invalid number of bytes ' + bytes);
     }
-    value = new this.constructor(this._buffer.slice(this._index, this._index + bytes));
+    value = new self(this._buffer.slice(this._index, this._index + bytes));
     this._index += bytes;
     return value;
   };
@@ -405,8 +406,8 @@ ByteBuffer = (function() {
     }
     view = new Uint8Array(this.length + bytes);
     view.set(this._raw, bytes);
-    this._setup(view.buffer);
     this._index += bytes;
+    this.buffer = view.buffer;
     return this;
   };
 
@@ -417,7 +418,7 @@ ByteBuffer = (function() {
     }
     view = new Uint8Array(this.length + bytes);
     view.set(this._raw, 0);
-    this._setup(view.buffer);
+    this.buffer = view.buffer;
     return this;
   };
 
@@ -433,15 +434,14 @@ ByteBuffer = (function() {
       begin = this.length + begin;
     }
     buffer = this._buffer.slice(begin, end);
-    this._setup(buffer);
     this._index -= begin;
-    this._sanitizeIndex();
+    this.buffer = buffer;
     return this;
   };
 
   ByteBuffer.prototype.clone = function() {
     var clone;
-    clone = new this.constructor(this._buffer.slice(0));
+    clone = new self(this._buffer.slice(0));
     clone.index = this._index;
     return clone;
   };
@@ -458,7 +458,7 @@ ByteBuffer = (function() {
 
   ByteBuffer.prototype.toString = function() {
     var order;
-    order = this._order === this.constructor.BIG_ENDIAN ? 'big-endian' : 'little-endian';
+    order = this._order === self.BIG_ENDIAN ? 'big-endian' : 'little-endian';
     return '[ByteBuffer; Order: ' + order + '; Length: ' + this.length + '; Index: ' + this._index + '; Available: ' + this.available + ']';
   };
 
