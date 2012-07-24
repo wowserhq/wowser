@@ -59,6 +59,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
   connect: (host, port=NaN) ->
     unless @connected
       super(host, port || @constructor.PORT)
+      console.info 'connecting to auth-server @', @host, ':', @port
     return @
   
   # Sends authentication request to connected host
