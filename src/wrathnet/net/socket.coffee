@@ -50,6 +50,8 @@ class WrathNet.net.Socket
       @port = port
       @uri = 'ws://' + @host + ':' + @port
       
+      console.info 'connecting to auth-server @', @host, ':', @port
+      
       @socket = new WebSocket(@uri, 'binary')
       @socket.binaryType = 'arraybuffer'
       
@@ -88,10 +90,9 @@ class WrathNet.net.Socket
       
       packet.finalize()
       
-      console.log '⟸', packet
-      console.log packet.toString()
-      console.log packet.toHex()
-      console.log packet.toASCII()
+      console.log '⟸', packet, packet.toString()
+      console.debug packet.toHex()
+      console.debug packet.toASCII()
       
       @socket.send(packet.buffer)
       
