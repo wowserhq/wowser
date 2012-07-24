@@ -19,10 +19,13 @@ class WrathNet.entities.Realm
     @_host = null
     @_port = NaN
     @_address = null
+    
+    # Holds name
+    @name = null
   
   # Short string representation of this realm
   toString: ->
-    return '[Realm; Address: ' + @_address + ']'
+    return '[Realm; Name: ' + @name + '; Address: ' + @_address + ']'
   
   # Retrieves host for this realm
   @getter 'host', ->
