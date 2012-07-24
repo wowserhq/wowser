@@ -33,7 +33,7 @@ class WrathNet
   }
   @net = {}
   @sessions = {}
-  @signals = {}
+  @utils = {}
   
   # Convenience constructor for starting a new WrathNet session for given expansion
   constructor: (expansion, userAgent) ->
