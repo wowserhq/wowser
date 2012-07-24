@@ -50,8 +50,6 @@ class WrathNet.net.Socket
       @port = port
       @uri = 'ws://' + @host + ':' + @port
       
-      console.info 'connecting to auth-server @', @host, ':', @port
-      
       @socket = new WebSocket(@uri, 'binary')
       @socket.binaryType = 'arraybuffer'
       
