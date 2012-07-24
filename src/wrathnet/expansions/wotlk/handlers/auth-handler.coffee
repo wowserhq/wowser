@@ -39,7 +39,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
     
     super
     
-    # Holds signals this auth handler dispatches
+    # Holds signals this authentication handler dispatches
     ObjectUtil.merge @on, {
       authenticate: new signals.Signal()
       reject: new signals.Signal()
