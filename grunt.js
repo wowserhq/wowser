@@ -50,8 +50,9 @@ module.exports = function(grunt) {
           'build/wrathnet.js',
           'vendor/object-extension.js',
           'vendor/property-shorthands.js',
-          'build/wrathnet/crypto/**/*.js',
           'vendor/byte-buffer.js',
+          'vendor/jsbn.js',
+          'build/wrathnet/crypto/**/*.js',
           'build/wrathnet/net/**/*.js',
           'build/wrathnet/expansions/expansion.js',
           'build/wrathnet/expansions/wotlk/wotlk-expansion.js',
@@ -104,6 +105,7 @@ module.exports = function(grunt) {
         DataView: true,
         ArrayBuffer: true,
         Uint8Array: true,
+        JSBN: true,
         signals: true,
         console: true
       }
