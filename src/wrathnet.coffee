@@ -19,7 +19,9 @@ class WrathNet
   @IDENT = 'Wow '
 
   # Package structure 
-  @crypto = {}
+  @crypto = {
+    hash: {}
+  }
   @datastructures = {}
   @entities = {}
   @expansions = {
@@ -36,3 +38,4 @@ class WrathNet
   # Convenience constructor for starting a new WrathNet session for given expansion
   constructor: (expansion, userAgent) ->
     return new WrathNet.sessions.Session expansion, userAgent
+
