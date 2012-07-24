@@ -29,6 +29,15 @@ class WrathNet.net.Packet extends ByteBuffer
   @getter 'headerSize', ->
     return @constructor.HEADER_SIZE
 
+  # Retrieves the name of the opcode for this packet (if available)
+  @getter 'opcodeName', ->
+    return null
+  
+  # Short string representation of this packet
+  toString: ->
+    opcode = ('00' + @opcode.toString(16).toUpperCase()).slice(-2)
+    return '[' + @constructor.name + '; Opcode: ' + (@opcodeName || 'UNKNOWN') + ' (0x' + opcode + '); Length: ' + @length + '; Index: ' + @_index + ']'
+
   # Finalizes this packet
   finalize: ->
     return @
