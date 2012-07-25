@@ -46,16 +46,6 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     
     return @session.auth.send(ap)
   
-  # Attempts to join given realm
-  join: (realm) ->
-    if realm
-      console.info 'joining realm', realm.name
-      
-      @session.world.connect(realm.host, realm.port)
-      return true
-    
-    return false
-  
   # Realm list refresh handler (REALM_LIST)
   realmList: (ap) ->
     ap.readShort()         # packet-size
