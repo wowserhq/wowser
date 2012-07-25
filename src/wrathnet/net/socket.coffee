@@ -26,9 +26,8 @@ class WrathNet.net.Socket
     # Holds buffered data
     @buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN)
     
-    # Holds (partial) packet (if any) and its remaining size in bytes
-    @packet = null
-    @remaining = 0
+    # Holds incoming packet's remaining size in bytes (false if no packet is being handled)
+    @remaining = false
     
     # Holds signals this socket dispatches
     @on = {
