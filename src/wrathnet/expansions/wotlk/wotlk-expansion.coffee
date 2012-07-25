@@ -14,6 +14,7 @@ class WrathNet.expansions.wotlk.WotLKExpansion extends WrathNet.expansions.Expan
 
   @NAME    = 'Wrath of the Lich King'
   @VERSION = '3.3.5a'
+  @MMP     = [3, 3, 5]
   @BUILD   = 12340
 
   # Sets up handlers for this expansion
