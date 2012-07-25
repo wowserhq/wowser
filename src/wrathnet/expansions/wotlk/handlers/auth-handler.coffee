@@ -55,10 +55,14 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
         when AuthOpcode.LOGON_PROOF then @logonProof ap
     , @
   
+  # Retrieves the session key (if any)
+  @getter 'key', ->
+    return @srp?.K
+  
   # Connects to given host through given port
   connect: (host, port=NaN) ->
     unless @connected
-      super(host, port || @constructor.PORT)
+      super(host, port or @constructor.PORT)
       console.info 'connecting to auth-server @', @host, ':', @port
     return @
   
@@ -101,7 +105,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
   # Data received handler
   dataReceived: (socket) ->
     while true
-      if not @connected || @buffer.available < AuthPacket.HEADER_SIZE
+      if not @connected or @buffer.available < AuthPacket.HEADER_SIZE
         return
       
       ap = new AuthPacket(@buffer.readByte(), @buffer, false)
