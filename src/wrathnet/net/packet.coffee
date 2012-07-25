@@ -35,7 +35,7 @@ class WrathNet.net.Packet extends ByteBuffer
   
   # Short string representation of this packet
   toString: ->
-    opcode = ('00' + @opcode.toString(16).toUpperCase()).slice(-2)
+    opcode = ('0000' + @opcode.toString(16).toUpperCase()).slice(-4)
     return '[' + @constructor.name + '; Opcode: ' + (@opcodeName || 'UNKNOWN') + ' (0x' + opcode + '); Length: ' + @length + '; Index: ' + @_index + ']'
 
   # Finalizes this packet
