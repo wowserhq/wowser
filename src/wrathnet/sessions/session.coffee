@@ -26,7 +26,7 @@ class WrathNet.sessions.Session
     @expansion = expansion
     
     # Holds configuration
-    @config = config || new Config()
+    @config = config or new Config()
     
     # Holds the various handlers
     @auth = new expansion.authHandler(@)
