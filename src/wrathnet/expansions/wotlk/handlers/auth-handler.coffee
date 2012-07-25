@@ -72,21 +72,22 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
     
     console.info 'authenticating', @account
     
-    # Extract configuration data
+    # Extract configuration/expansion data
     platform = @session.config.raw.platform
     os = @session.config.raw.os
     locale = @session.config.raw.locale
     timezone = @session.config.timezone
+    exp = @session.expansion
     
     ap = new AuthPacket(AuthOpcode.LOGON_CHALLENGE, 4 + 29 + 1 + @account.length)
     ap.writeByte(0x00)
     ap.writeShort(30 + @account.length)
     
     ap.writeString(WrathNet.IDENT) # game string
-    ap.writeByte(0x03)             # v1
-    ap.writeByte(0x03)             # v2
-    ap.writeByte(0x05)             # v3
-    ap.writeShort(12340)           # build
+    ap.writeByte(exp.majorVersion) # v1 (major)
+    ap.writeByte(exp.minorVersion) # v2 (minor)
+    ap.writeByte(exp.patchVersion) # v3 (patch)
+    ap.writeShort(exp.build)       # build
     ap.writeString(platform)       # platform
     ap.writeString(os)             # os
     ap.writeString(locale)         # locale
