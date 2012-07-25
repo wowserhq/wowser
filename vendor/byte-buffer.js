@@ -112,6 +112,10 @@ ByteBuffer = (function() {
     return this._sanitizeIndex();
   });
 
+  getter('raw', function() {
+    return this._raw;
+  });
+
   getter('view', function() {
     return this._view;
   });
