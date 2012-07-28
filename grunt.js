@@ -51,6 +51,7 @@ module.exports = function(grunt) {
           'build/wrathnet/utils/**/*.js',
           'vendor/byte-buffer.js',
           'vendor/jsbn.js',
+          'build/wrathnet/crypto/hash/**/*.js',
           'build/wrathnet/crypto/**/*.js',
           'build/wrathnet/net/**/*.js',
           'build/wrathnet/entities/**/*.js',
