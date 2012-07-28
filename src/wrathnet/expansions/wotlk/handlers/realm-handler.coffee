@@ -55,8 +55,7 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     
     @list.length = 0
     
-    i = 0
-    while i < count
+    for i in [0...count]
       r = new Realm()
       
       # TODO: Will fail for multiple realms
@@ -69,8 +68,5 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
       r.address = ap.readCString()
       
       @list.push(r)
-      
-      ++i
-
+    
     @on.refresh.dispatch()
-

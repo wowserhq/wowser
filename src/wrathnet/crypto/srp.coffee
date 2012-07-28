@@ -122,11 +122,9 @@ class WrathNet.crypto.SRP
     S = @_S.toArray()
     S1 = []
     S2 = []
-    i = 0
-    while i < 16
+    for i in [0...16]
       S1[i] = S[i * 2]
       S2[i] = S[i * 2 + 1]
-      ++i
     
     # Hash these byte-arrays
     S1h = new SHA1()
@@ -136,11 +134,9 @@ class WrathNet.crypto.SRP
     
     # Shared session key generation by interleaving the previously generated hashes
     @_K = []
-    i = 0
-    while i < 20
+    for i in [0...20]
       @_K[i * 2] = S1h.digest[i]
       @_K[i * 2 + 1] = S2h.digest[i]
-      ++i
     
     # Generate username hash
     userh = new SHA1()
@@ -154,10 +150,8 @@ class WrathNet.crypto.SRP
     
     # XOR N-prime and generator
     Ngh = []
-    i = 0
-    while i < 20
+    for i in [0...20]
       Ngh[i] = Nh.digest[i] ^ gh.digest[i]
-      ++i
     
     # Calculate M1 (client proof)
     # M1 = H( (H(N) ^ H(G)) | H(I) | s | A | B | K )
