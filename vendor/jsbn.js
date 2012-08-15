@@ -1719,8 +1719,17 @@ function ARC4next() {
   return this.S[(t + this.S[this.i]) & 255];
 }
 
+function ARC4encrypt(data) {
+  var i;
+  for(i = 0; i < data.length; ++i) {
+    data[i] ^= this.next();
+  }
+}
+
 Arcfour.prototype.init = ARC4init;
 Arcfour.prototype.next = ARC4next;
+Arcfour.prototype.encrypt = ARC4encrypt;
+Arcfour.prototype.decrypt = ARC4encrypt;
 
 // Plug in your RNG constructor here
 function prng_newstate() {
@@ -2268,6 +2277,24 @@ function rstr_hmac_sha1(key, data)
   return binb2rstr(binb_sha1(opad.concat(hash), 512 + 160));
 }
 
+/**
+ * Calculates the HMAC-SHA1 of a given key and data (both byte-arrays)
+ */
+function ba_hmac_sha1(key, data) {
+  var bkey = ba2binb(key);
+  if(bkey.length > 16) bkey = binb_sha1(bkey, key.length * 8);
+
+  var ipad = new Array(16), opad = new Array(16);
+  for(var i = 0; i < 16; i++)
+  {
+    ipad[i] = bkey[i] ^ 0x36363636;
+    opad[i] = bkey[i] ^ 0x5C5C5C5C;
+  }
+
+  var hash = binb_sha1(ipad.concat(ba2binb(data)), 512 + data.length * 8);
+  return binb2ba(binb_sha1(opad.concat(hash), 512 + 160));
+}
+
 /*
  * Convert a raw string to a hex string
  */
@@ -2583,7 +2610,10 @@ function bit_rol(num, cnt)
             },
             hash: {
                 hmac: {
-                    sha1: hex_hmac_sha1
+                    sha1: {
+                        fromStrings: hex_hmac_sha1,
+                        fromArrays: ba_hmac_sha1
+                    }
                 },
                 sha1: {
                     fromString: hex_sha1,
@@ -2591,7 +2621,7 @@ function bit_rol(num, cnt)
                 }
             },
             prng: {
-                Arcfour: Arcfour,
+                ARC4: Arcfour,
                 SecureRandom: SecureRandom
             },
             rsa: {
