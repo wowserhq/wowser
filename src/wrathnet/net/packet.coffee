@@ -13,8 +13,7 @@
 class WrathNet.net.Packet extends ByteBuffer
 
   # Creates a new packet with given opcode from given source or length
-  constructor: (opcode, source=@constructor.HEADER_SIZE, outgoing=true) ->
-    super source, ByteBuffer.LITTLE_ENDIAN
+  constructor: (opcode, source, outgoing=true) ->
     
     # Holds the opcode for this packet
     @opcode = opcode
@@ -22,12 +21,22 @@ class WrathNet.net.Packet extends ByteBuffer
     # Whether this packet is outgoing or incoming
     @outgoing = outgoing
     
+    # Default source to header size if not given
+    unless source?
+      source = @headerSize
+    
+    super source, ByteBuffer.LITTLE_ENDIAN
+    
     # Seek past opcode to reserve space for it when finalizing
     @index = @headerSize
 
-  # Header size in bytes for both incoming and outgoing packets
+  # Header size in bytes
   @getter 'headerSize', ->
     return @constructor.HEADER_SIZE
+
+  # Body size in bytes
+  @getter 'bodySize', ->
+    return @length - @headerSize
 
   # Retrieves the name of the opcode for this packet (if available)
   @getter 'opcodeName', ->
@@ -36,7 +45,7 @@ class WrathNet.net.Packet extends ByteBuffer
   # Short string representation of this packet
   toString: ->
     opcode = ('0000' + @opcode.toString(16).toUpperCase()).slice(-4)
-    return '[' + @constructor.name + '; Opcode: ' + (@opcodeName or 'UNKNOWN') + ' (0x' + opcode + '); Length: ' + @length + '; Index: ' + @_index + ']'
+    return "[#{@constructor.name}; Opcode: #{@opcodeName or 'UNKNOWN'} (0x#{opcode}); Length: #{@length}; Body: #{@bodySize}; Index: #{@_index}]"
 
   # Finalizes this packet
   finalize: ->
