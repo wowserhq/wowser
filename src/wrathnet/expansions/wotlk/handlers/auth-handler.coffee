@@ -104,7 +104,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
 
   # Data received handler
   dataReceived: (socket) ->
-    while true
+    loop
       if not @connected or @buffer.available < AuthPacket.HEADER_SIZE
         return
       
