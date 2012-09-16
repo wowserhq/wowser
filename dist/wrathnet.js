@@ -1,11 +1,11 @@
 /**
- * WrathNet Foundation v0.0.1 
+ * WrathNet Foundation v0.0.1
  * Copyright (c) 2012 Tim Kurvers <http://wrathnet.org>
  *
  * World of Warcraft client foundation written in JavaScript, enabling
  * development of expansion-agnostic clients, bots and other useful tools.
  *
- * The contents of this file are subject to the MIT License, under which 
+ * The contents of this file are subject to the MIT License, under which
  * this library is licensed. See the LICENSE file for the full license.
  */
 
@@ -2917,7 +2917,7 @@ function getSECCurveByName(name) {
  * Configurable variables. You may need to tweak these to be compatible with
  * the server-side, but the defaults work in most cases.
  */
-var hexcase = 1;  /* hex output format. 0 - lowercase; 1 - uppercase        */
+var hexcase = 0;  /* hex output format. 0 - lowercase; 1 - uppercase        */
 
 /*
  * These are the functions you'll usually want to call
@@ -2932,14 +2932,6 @@ function b64_hmac_sha1(k, d)
   { return rstr2b64(rstr_hmac_sha1(str2rstr_utf8(k), str2rstr_utf8(d))); }
 function any_hmac_sha1(k, d, e)
   { return rstr2any(rstr_hmac_sha1(str2rstr_utf8(k), str2rstr_utf8(d)), e); }
-
-/*
- * Perform a simple self-test to see if the VM is working
- */
-function sha1_vm_test()
-{
-  return hex_sha1("abc").toLowerCase() === "a9993e364706816aba3e25717850c26c9cd0d89d";
-}
 
 /*
  * Calculate the SHA1 of a raw string
