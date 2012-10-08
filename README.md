@@ -40,7 +40,7 @@ Contributing Readme
 * We use [CoffeeScript] (http://coffeescript.org/)
 * We also use [GruntJS] (http://gruntjs.com/)
 * Recommend [Sublime Text] (http://www.sublimetext.com/) for writing code
-* for syntax corrections
+* for syntax corrections [AStyle] (http://astyle.sourceforge.net/)
 
 Let us know on IRC steps to get our tool chain to work on windows!
 
