@@ -23,6 +23,11 @@ class WrathNet.entities.Config
 
   # Creates a new configuration
   constructor: (locale=@constructor.LOCALE_ENGLISH_AMERICAN, os=@constructor.OS_WINDOWS, timezone=0, platform=@constructor.PLATFORM_X86) ->
+    @locale = locale
+    @os = os
+    @timezone = timezone
+    @platform = platform
+
     @raw = {
       locale:   locale.split('').reverse().join('')
       os:       os.split('').reverse().join('')
