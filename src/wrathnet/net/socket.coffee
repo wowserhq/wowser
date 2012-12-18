@@ -12,6 +12,8 @@
 # Base-class for any socket including signals and host/port management
 class WrathNet.net.Socket
 
+  @mixin Backbone.Events
+
   # Creates a new socket
   constructor: ->
 
@@ -29,15 +31,6 @@ class WrathNet.net.Socket
     # Holds incoming packet's remaining size in bytes (false if no packet is being handled)
     @remaining = false
 
-    # Holds signals this socket dispatches
-    @on = {
-      connect: new signals.Signal()
-      disconnect: new signals.Signal()
-      packetSend: new signals.Signal()
-      packetReceive: new signals.Signal()
-      dataReceive: new signals.Signal()
-    }
-
   # Whether this socket is currently connected
   @getter 'connected', ->
     @socket and @socket.readyState is WebSocket.OPEN
@@ -53,16 +46,16 @@ class WrathNet.net.Socket
       @socket.binaryType = 'arraybuffer'
 
       @socket.onopen = (e) =>
-        @on.connect.dispatch(@, e)
+        @trigger 'connect', e
 
       @socket.onclose = (e) =>
-        @on.disconnect.dispatch(@, e)
+        @trigger 'disconnect', e
 
       @socket.onmessage = (e) =>
         @buffer.clip()
         @buffer.append(e.data.byteLength).write(e.data)
         @buffer.front()
-        @on.dataReceive.dispatch(@)
+        @trigger 'data:receive', @
 
       @socket.onerror = (e) ->
         console.error e
@@ -93,7 +86,7 @@ class WrathNet.net.Socket
 
       @socket.send(packet.buffer)
 
-      @on.packetSend.dispatch(@, packet)
+      @trigger 'packet:send', packet
 
       return true
 

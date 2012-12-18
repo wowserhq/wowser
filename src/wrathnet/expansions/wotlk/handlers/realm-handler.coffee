@@ -12,6 +12,8 @@
 # Denotes a realm handler
 class WrathNet.expansions.wotlk.handlers.RealmHandler
 
+  @mixin Backbone.Events
+
   # Imports
   AuthOpcode = WrathNet.expansions.wotlk.enums.AuthOpcode
   AuthPacket = WrathNet.expansions.wotlk.net.AuthPacket
@@ -27,16 +29,8 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     # Initially empty list of realms
     @list = []
 
-    # Holds signals this realm handler dispatches
-    @on = {
-      refresh: new signals.Signal()
-    }
-
     # Listen for realm list
-    @session.auth.on.packetReceive.add (ap) =>
-      if ap.opcode is AuthOpcode.REALM_LIST
-        @realmList ap
-    , @
+    @session.auth.on 'packet:receive:REALM_LIST', @realmList, @
 
   # Requests a fresh list of realms
   refresh: ->
@@ -69,4 +63,4 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
 
       @list.push(r)
 
-    @on.refresh.dispatch()
+    @trigger 'refresh'

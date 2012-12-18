@@ -28,26 +28,12 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
 
     super
 
-    # Holds signals this world handler dispatches
-    ObjectUtil.merge @on, {
-      authenticate: new signals.Signal()
-      reject: new signals.Signal()
-      join: new signals.Signal()
-    }
-
     # Listen for incoming data
-    @on.dataReceive.add @dataReceived, @
+    @on 'data:receive', @dataReceived, @
 
     # Delegate packets
-    @on.packetReceive.add (wp) =>
-      switch wp.opcode
-        when WorldOpcode.SMSG_AUTH_CHALLENGE then @authChallenge wp
-        when false
-          return
-
-        #this._packetReceived.addFor(WorldOpcode.SMSG_AUTH_RESPONSE, _onAuthResponse);
-        #this._packetReceived.addFor(WorldOpcode.SMSG_LOGIN_VERIFY_WORLD, _onLogin);
-    , @
+    @on 'packet:receive:SMSG_AUTH_CHALLENGE', @authChallenge, @
+    @on 'packet:receive:SMSG_AUTH_RESPONSE', @authResponse, @
 
   # Connects to given host through given port
   connect: (host, port) ->
@@ -98,7 +84,9 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
           console.debug wp.toHex()
           console.debug wp.toASCII()
 
-          @on.packetReceive.dispatch(wp)
+          @trigger 'packet:receive', wp
+          if wp.opcodeName
+            @trigger "packet:receive:#{wp.opcodeName}", wp
 
         else if @remaining isnt 0
           return
@@ -142,3 +130,23 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
 
     @_crypt = new Crypt()
     @_crypt.key = @session.auth.key
+
+  # Auth response handlers (SMSG_AUTH_RESPONSE)
+  authResponse: (wp) ->
+    console.log 'handling auth response'
+
+    # Handle result byte
+    result = wp.readUnsignedByte()
+    if result is 0x0D
+      console.warn 'server-side auth/realm failure; try again'
+      @trigger 'reject'
+      return
+
+    if result is 0x15
+      console.warn 'account in use/invalid; aborting'
+      @trigger 'reject'
+      return
+
+    # TODO: Ensure the account is flagged as WotLK (expansion #2)
+
+    @trigger 'authenticate'

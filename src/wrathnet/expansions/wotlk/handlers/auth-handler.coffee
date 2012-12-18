@@ -39,21 +39,12 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
 
     super
 
-    # Holds signals this authentication handler dispatches
-    ObjectUtil.merge @on, {
-      authenticate: new signals.Signal()
-      reject: new signals.Signal()
-    }
-
     # Listen for incoming data
-    @on.dataReceive.add @dataReceived, @
+    @on 'data:receive', @dataReceived, @
 
     # Delegate packets
-    @on.packetReceive.add (ap) =>
-      switch ap.opcode
-        when AuthOpcode.LOGON_CHALLENGE then @logonChallenge ap
-        when AuthOpcode.LOGON_PROOF then @logonProof ap
-    , @
+    @on 'packet:receive:LOGON_CHALLENGE', @logonChallenge, @
+    @on 'packet:receive:LOGON_PROOF', @logonProof, @
 
   # Retrieves the session key (if any)
   @getter 'key', ->
@@ -116,7 +107,9 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
 
       @buffer.end().clip()
 
-      @on.packetReceive.dispatch(ap)
+      @trigger 'packet:receive', ap
+      if ap.opcodeName
+        @trigger "packet:receive:#{ap.opcodeName}", ap
 
   # Logon challenge handler (LOGON_CHALLENGE)
   logonChallenge: (ap) ->
@@ -154,11 +147,11 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
 
       when AuthChallengeOpcode.ACCOUNT_INVALID
         console.warn 'account invalid'
-        @on.reject.dispatch()
+        @trigger 'reject'
 
       when AuthChallengeOpcode.BUILD_INVALID
         console.warn 'build invalid'
-        @on.reject.dispatch()
+        @trigger 'reject'
 
   # Logon proof handler (LOGON_PROOF)
   logonProof: (ap) ->
@@ -169,6 +162,6 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
     M2 = ap.read(20)
 
     if @srp.validate(M2)
-      @on.authenticate.dispatch()
+      @trigger 'authenticate'
     else
-      @on.reject.dispatch()
+      @trigger 'reject'
