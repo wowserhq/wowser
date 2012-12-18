@@ -52,7 +52,7 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
 
     # Encrypt header if needed
     if @_crypt
-      @_crypt.encrypt(new Uint8Array(@buffer.buffer, 0, WorldPacket.HEADER_SIZE_OUTGOING))
+      @_crypt.encrypt(new Uint8Array(packet.buffer, 0, WorldPacket.HEADER_SIZE_OUTGOING))
 
     return super(packet)
 
