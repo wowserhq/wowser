@@ -12,14 +12,6 @@
 # Array utility
 class WrathNet.utils.ArrayUtil
 
-  # Whether given array is equal to given other
-  @equals: (array, other) ->
-    for value, index in array
-      if value isnt other[index]
-        return false
-
-    return true
-
   # Generates array from given hex string
   @fromHex: (hex) ->
     array = []

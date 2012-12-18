@@ -12,13 +12,6 @@
 # Object utility
 class WrathNet.utils.ObjectUtil
 
-  # Merges given object with another
-  @merge = (object, other) ->
-    for own key, value of other
-      object[key] = value
-
-    return object
-
   # Retrieves key for given value (if any) in object
   @keyByValue = (object, target) ->
     for own key, value of object
