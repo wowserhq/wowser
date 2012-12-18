@@ -22,3 +22,4 @@ class WrathNet.expansions.wotlk.WotLKExpansion extends WrathNet.expansions.Expan
     @authHandler = WrathNet.expansions.wotlk.handlers.AuthHandler
     @realmHandler = WrathNet.expansions.wotlk.handlers.RealmHandler
     @worldHandler = WrathNet.expansions.wotlk.handlers.WorldHandler
+    @characterHandler = WrathNet.expansions.wotlk.handlers.CharacterHandler

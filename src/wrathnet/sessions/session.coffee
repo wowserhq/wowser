@@ -32,3 +32,4 @@ class WrathNet.sessions.Session
     @auth = new expansion.authHandler(@)
     @realms = new expansion.realmHandler(@)
     @world = new expansion.worldHandler(@)
+    @characters = new expansion.characterHandler(@)
