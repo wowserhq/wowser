@@ -36,8 +36,7 @@ module.exports = function(grunt) {
       files: [
         'grunt.js',
         'build/**/*.js',
-        'build-spec/**/*.js',
-        'vendor/**/*.js'
+        'build-spec/**/*.js'
       ]
     },
 
@@ -51,6 +50,8 @@ module.exports = function(grunt) {
           'build/wrathnet/utils/**/*.js',
           'vendor/byte-buffer.js',
           'vendor/jsbn.js',
+          'vendor/underscore.js',
+          'vendor/backbone.js',
           'build/wrathnet/crypto/hash/**/*.js',
           'build/wrathnet/crypto/**/*.js',
           'build/wrathnet/net/**/*.js',
@@ -60,8 +61,7 @@ module.exports = function(grunt) {
           'build/wrathnet/expansions/wotlk/enums/**/*.js',
           'build/wrathnet/expansions/wotlk/net/**/*.js',
           'build/wrathnet/expansions/wotlk/**/*.js',
-          'build/wrathnet/sessions/**/*.js',
-          'vendor/**/*.js'
+          'build/wrathnet/sessions/**/*.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
       }
@@ -104,11 +104,10 @@ module.exports = function(grunt) {
         WrathNet: true,
         WebSocket: true,
         ByteBuffer: true,
-        DataView: true,
-        ArrayBuffer: true,
         Uint8Array: true,
         JSBN: true,
-        signals: true,
+        Backbone: true,
+        '_': true,
         console: true
       }
     },
