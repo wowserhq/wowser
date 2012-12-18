@@ -23,7 +23,8 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "grunt": ">=0.3.9"
+    "coffee-script": ">=1.4.0",
+    "grunt": ">=0.3.17"
   },
   "keywords": []
 }
