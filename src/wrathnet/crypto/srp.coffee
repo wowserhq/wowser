@@ -14,7 +14,6 @@
 class WrathNet.crypto.SRP
 
   # Imports
-  ArrayUtil = WrathNet.utils.ArrayUtil
   BigNum = WrathNet.crypto.BigNum
   SHA1 = WrathNet.crypto.hash.SHA1
 
@@ -176,4 +175,4 @@ class WrathNet.crypto.SRP
   validate: (M2) ->
     unless @_M2
       return false
-    return ArrayUtil.equals(M2.toArray(), @_M2.digest)
+    return _.isEqual(M2.toArray(), @_M2.digest)
