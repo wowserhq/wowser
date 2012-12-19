@@ -50,17 +50,18 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     @list.length = 0
 
     for i in [0...count]
-      r = new Realm()
+      realm = new Realm()
 
-      # TODO: Will fail for multiple realms
-      # TODO: Packet structure comments
+      realm.icon = ap.readUnsignedByte()
+      realm.lock = ap.readUnsignedByte()
+      realm.flags = ap.readUnsignedByte()
+      realm.name = ap.readCString()
+      realm.address = ap.readCString()
+      realm.population = ap.readFloat()
+      realm.characters = ap.readUnsignedByte()
+      realm.timezone = ap.readUnsignedByte()
+      realm.id = ap.readUnsignedByte()
 
-      ap.readUnsignedByte()
-      ap.readUnsignedByte()
-      ap.readUnsignedByte()
-      r.name = ap.readCString()
-      r.address = ap.readCString()
-
-      @list.push(r)
+      @list.push(realm)
 
     @trigger 'refresh'
