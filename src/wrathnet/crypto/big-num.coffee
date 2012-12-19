@@ -30,7 +30,7 @@ class WrathNet.crypto.BigNum
 
   # Short string description of this BigNum
   toString: ->
-    return '[BigNum; Hex: ' + @_bi.toString(16).toUpperCase() + ']'
+    return "[BigNum; Hex: #{@_bi.toString(16).toUpperCase()}]"
 
   # Retrieves BigInteger instance being decorated
   @getter 'bi', ->
