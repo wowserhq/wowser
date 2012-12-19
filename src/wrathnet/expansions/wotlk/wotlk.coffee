@@ -9,17 +9,15 @@
 # this library is licensed. See the LICENSE file for the full license.
 #
 
-# Wrath of the Lich King Expansion (3.x)
-class WrathNet.expansions.wotlk.WotLKExpansion extends WrathNet.expansions.Expansion
+# Wrath of the Lich King (3.x)
+class WrathNet.expansions.wotlk extends WrathNet.expansions.Expansion
 
   @NAME    = 'Wrath of the Lich King'
   @VERSION = '3.3.5a'
   @MMP     = [3, 3, 5]
   @BUILD   = 12340
 
-  # Sets up handlers for this expansion
-  constructor: ->
-    @authHandler = WrathNet.expansions.wotlk.handlers.AuthHandler
-    @realmHandler = WrathNet.expansions.wotlk.handlers.RealmHandler
-    @worldHandler = WrathNet.expansions.wotlk.handlers.WorldHandler
-    @characterHandler = WrathNet.expansions.wotlk.handlers.CharacterHandler
+  # Expansion package structure
+  @enums = {}
+  @handlers = {}
+  @net = {}

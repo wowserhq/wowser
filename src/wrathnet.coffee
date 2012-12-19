@@ -24,13 +24,7 @@ class WrathNet
   }
   @datastructures = {}
   @entities = {}
-  @expansions = {
-    wotlk: {
-      enums: {}
-      handlers: {}
-      net: {}
-    }
-  }
+  @expansions = {}
   @net = {}
   @sessions = {}
   @utils = {}

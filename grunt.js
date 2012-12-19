@@ -57,7 +57,7 @@ module.exports = function(grunt) {
           'build/wrathnet/net/**/*.js',
           'build/wrathnet/entities/**/*.js',
           'build/wrathnet/expansions/expansion.js',
-          'build/wrathnet/expansions/wotlk/wotlk-expansion.js',
+          'build/wrathnet/expansions/wotlk/wotlk.js',
           'build/wrathnet/expansions/wotlk/enums/**/*.js',
           'build/wrathnet/expansions/wotlk/net/**/*.js',
           'build/wrathnet/expansions/wotlk/**/*.js',

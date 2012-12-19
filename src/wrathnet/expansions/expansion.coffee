@@ -29,3 +29,15 @@ class WrathNet.expansions.Expansion
 
   @getter 'patchVersion', ->
     return @constructor.MMP[2]
+
+  @getter 'authHandler', ->
+    return @constructor.handlers.AuthHandler
+
+  @getter 'realmHandler', ->
+    return @constructor.handlers.RealmHandler
+
+  @getter 'worldHandler', ->
+    return @constructor.handlers.WorldHandler
+
+  @getter 'characterHandler', ->
+    return @constructor.handlers.CharacterHandler
