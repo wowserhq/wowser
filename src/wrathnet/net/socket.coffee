@@ -80,7 +80,7 @@ class WrathNet.net.Socket
 
       packet.finalize()
 
-      console.log '⟸', packet, packet.toString()
+      console.log '⟸', packet.toString()
       console.debug packet.toHex()
       console.debug packet.toASCII()
 

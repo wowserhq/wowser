@@ -80,7 +80,7 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
           @buffer.clip().front()
           @remaining = false
 
-          console.log '⟹', wp, wp.toString()
+          console.log '⟹', wp.toString()
           console.debug wp.toHex()
           console.debug wp.toASCII()
 

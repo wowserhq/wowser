@@ -101,7 +101,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
 
       ap = new AuthPacket(@buffer.readByte(), @buffer, false)
 
-      console.log '⟹', ap, ap.toString()
+      console.log '⟹', ap.toString()
       console.debug ap.toHex()
       console.debug ap.toASCII()
 
