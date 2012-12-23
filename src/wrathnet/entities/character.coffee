@@ -12,10 +12,6 @@
 # Denotes a character
 class WrathNet.entities.Character
 
-  # Creates a new character
-  constructor: ->
-    console.log 'new character'
-
   # Short string representation of this character
   toString: ->
-    return '[Character]'
+    return "[Character; GUID: #{@guid}]"
