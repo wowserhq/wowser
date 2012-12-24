@@ -15,6 +15,7 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
   # Imports
   BigNum = WrathNet.crypto.BigNum
   Crypt = WrathNet.crypto.Crypt
+  GUID = WrathNet.datastructures.GUID
   ObjectUtil = WrathNet.utils.ObjectUtil
   SHA1 = WrathNet.crypto.hash.SHA1
   WorldOpcode = WrathNet.expansions.wotlk.enums.WorldOpcode
@@ -55,6 +56,17 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
       @_crypt.encrypt(new Uint8Array(packet.buffer, 0, WorldPacket.HEADER_SIZE_OUTGOING))
 
     return super(packet)
+
+  # Attempts to join world with given character
+  join: (character) ->
+    if character
+      console.info 'joining world with', character.toString()
+
+      wp = new WorldPacket(WorldOpcode.CMSG_PLAYER_LOGIN, WorldPacket.HEADER_SIZE_OUTGOING + GUID.LENGTH)
+      wp.writeGUID(character.guid)
+      return @send wp
+
+    return false
 
   # Data received handler
   dataReceived: (socket) ->
