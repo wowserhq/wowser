@@ -14,6 +14,10 @@ class WrathNet.net.Socket
 
   @mixin Backbone.Events
 
+  # Maximum buffer capacity
+  # TODO: Arbitrarily chosen, determine this cap properly
+  BUFFER_CAP = 2048
+
   # Creates a new socket
   constructor: ->
 
@@ -55,10 +59,14 @@ class WrathNet.net.Socket
         @trigger 'disconnect', e
 
       @socket.onmessage = (e) =>
-        @buffer.clip()
-        @buffer.append(e.data.byteLength).write(e.data)
-        @buffer.front()
+        index = @buffer.index
+        @buffer.end().append(e.data.byteLength).write(e.data)
+        @buffer.index = index
+
         @trigger 'data:receive', @
+
+        if @buffer.available is 0 and @buffer.length > BUFFER_CAP
+          @buffer.clip()
 
       @socket.onerror = (e) ->
         console.error e
@@ -84,8 +92,8 @@ class WrathNet.net.Socket
       packet.finalize()
 
       console.log '⟸', packet.toString()
-      console.debug packet.toHex()
-      console.debug packet.toASCII()
+      #console.debug packet.toHex()
+      #console.debug packet.toASCII()
 
       @socket.send(packet.buffer)
 

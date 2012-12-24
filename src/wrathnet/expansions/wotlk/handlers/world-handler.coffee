@@ -81,20 +81,19 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
 
           # Decrypt header if needed
           if @_crypt
-            @_crypt.decrypt(new Uint8Array(@buffer.buffer, 0, WorldPacket.HEADER_SIZE_INCOMING))
+            @_crypt.decrypt(new Uint8Array(@buffer.buffer, @buffer.index, WorldPacket.HEADER_SIZE_INCOMING))
 
           @remaining = @buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN)
 
         if @remaining > 0 and @buffer.available >= @remaining
-          size = WorldPacket.HEADER_SIZE_INCOMING - WorldPacket.OPCODE_SIZE_INCOMING + @remaining
+          size = WorldPacket.OPCODE_SIZE_INCOMING + @remaining
+          wp = new WorldPacket(@buffer.readUnsignedShort(), @buffer.seek(-WorldPacket.HEADER_SIZE_INCOMING).read(size), false)
 
-          wp = new WorldPacket(@buffer.readUnsignedShort(), @buffer.front().read(size), false)
-          @buffer.clip().front()
           @remaining = false
 
           console.log '⟹', wp.toString()
-          console.debug wp.toHex()
-          console.debug wp.toASCII()
+          #console.debug wp.toHex()
+          #console.debug wp.toASCII()
 
           @trigger 'packet:receive', wp
           if wp.opcodeName

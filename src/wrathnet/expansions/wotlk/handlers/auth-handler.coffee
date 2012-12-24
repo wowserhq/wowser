@@ -99,13 +99,11 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
       if not @connected or @buffer.available < AuthPacket.HEADER_SIZE
         return
 
-      ap = new AuthPacket(@buffer.readByte(), @buffer, false)
+      ap = new AuthPacket(@buffer.readByte(), @buffer.seek(-AuthPacket.HEADER_SIZE).read(), false)
 
       console.log '⟹', ap.toString()
-      console.debug ap.toHex()
-      console.debug ap.toASCII()
-
-      @buffer.end().clip()
+      #console.debug ap.toHex()
+      #console.debug ap.toASCII()
 
       @trigger 'packet:receive', ap
       if ap.opcodeName
