@@ -58,6 +58,7 @@ class WrathNet.expansions.wotlk.enums.WorldOpcode
 
   @SMSG_SPELL_NON_MELEE_DAMAGE_LOG    = 0x0250
 
+  @SMSG_INIT_WORLD_STATES             = 0x02C2
   @SMSG_UPDATE_WORLD_STATE            = 0x02C3
 
   @SMSG_WEATHER                       = 0x02F4
