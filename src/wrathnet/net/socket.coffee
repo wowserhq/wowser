@@ -26,7 +26,7 @@ class WrathNet.net.Socket
     @socket = null
 
     # Holds buffered data
-    @buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN)
+    @buffer = null
 
     # Holds incoming packet's remaining size in bytes (false if no packet is being handled)
     @remaining = false
@@ -41,6 +41,9 @@ class WrathNet.net.Socket
       @host = host
       @port = port
       @uri = 'ws://' + @host + ':' + @port
+
+      @buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN)
+      @remaining = false
 
       @socket = new WebSocket(@uri, 'binary')
       @socket.binaryType = 'arraybuffer'
