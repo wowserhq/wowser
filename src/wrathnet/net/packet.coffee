@@ -12,6 +12,9 @@
 # Denotes a network packet
 class WrathNet.net.Packet extends ByteBuffer
 
+  # Imports
+  GUID = WrathNet.datastructures.GUID
+
   # Creates a new packet with given opcode from given source or length
   constructor: (opcode, source, outgoing=true) ->
 
@@ -49,4 +52,25 @@ class WrathNet.net.Packet extends ByteBuffer
 
   # Finalizes this packet
   finalize: ->
+    return @
+
+  # Reads GUID from this packet
+  readGUID: ->
+    if @available < GUID.LENGTH
+      return null
+
+    return new GUID(@read(GUID.LENGTH))
+
+  # Writes given GUID to this packet
+  writeGUID: (guid) ->
+    @write(guid.raw)
+
+  # Reads packed GUID from this packet
+  # TODO: Implementation
+  readPackedGUID: ->
+    return null
+
+  # Writes given GUID to this packet in packed form
+  # TODO: Implementation
+  writePackedGUID: (guid) ->
     return @
