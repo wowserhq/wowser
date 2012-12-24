@@ -54,6 +54,7 @@ module.exports = function(grunt) {
           'vendor/backbone.js',
           'build/wrathnet/crypto/hash/**/*.js',
           'build/wrathnet/crypto/**/*.js',
+          'build/wrathnet/datastructures/**/*.js',
           'build/wrathnet/net/**/*.js',
           'build/wrathnet/entities/**/*.js',
           'build/wrathnet/expansions/expansion.js',
