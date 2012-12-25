@@ -29,7 +29,7 @@ class WrathNet.expansions.wotlk.handlers.CharacterHandler
     @list = []
 
     # Listen for character list
-    @session.world.on 'packet:receive:SMSG_CHAR_ENUM', @characterList, @
+    @session.world.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, @
 
   # Requests a fresh list of characters
   refresh: ->
@@ -40,7 +40,7 @@ class WrathNet.expansions.wotlk.handlers.CharacterHandler
     return @session.world.send(wp)
 
   # Character list refresh handler (SMSG_CHAR_ENUM)
-  characterList: (wp) ->
+  handleCharacterList: (wp) ->
     count = wp.readByte() # number of characters
 
     @list.length = 0

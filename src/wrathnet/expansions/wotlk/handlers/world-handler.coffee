@@ -33,8 +33,8 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
     @on 'data:receive', @dataReceived, @
 
     # Delegate packets
-    @on 'packet:receive:SMSG_AUTH_CHALLENGE', @authChallenge, @
-    @on 'packet:receive:SMSG_AUTH_RESPONSE', @authResponse, @
+    @on 'packet:receive:SMSG_AUTH_CHALLENGE', @handleAuthChallenge, @
+    @on 'packet:receive:SMSG_AUTH_RESPONSE', @handleAuthResponse, @
 
   # Connects to given host through given port
   connect: (host, port) ->
@@ -103,7 +103,7 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
           return
 
   # Auth challenge handler (SMSG_AUTH_CHALLENGE)
-  authChallenge: (wp) ->
+  handleAuthChallenge: (wp) ->
     console.log 'handling auth challenge'
 
     wp.readUnsignedInt() # (0x01)
@@ -143,7 +143,7 @@ class WrathNet.expansions.wotlk.handlers.WorldHandler extends WrathNet.net.Socke
     @_crypt.key = @session.auth.key
 
   # Auth response handlers (SMSG_AUTH_RESPONSE)
-  authResponse: (wp) ->
+  handleAuthResponse: (wp) ->
     console.log 'handling auth response'
 
     # Handle result byte

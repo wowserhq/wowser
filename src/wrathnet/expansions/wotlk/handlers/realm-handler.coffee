@@ -30,7 +30,7 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     @list = []
 
     # Listen for realm list
-    @session.auth.on 'packet:receive:REALM_LIST', @realmList, @
+    @session.auth.on 'packet:receive:REALM_LIST', @handleRealmList, @
 
   # Requests a fresh list of realms
   refresh: ->
@@ -41,7 +41,7 @@ class WrathNet.expansions.wotlk.handlers.RealmHandler
     return @session.auth.send(ap)
 
   # Realm list refresh handler (REALM_LIST)
-  realmList: (ap) ->
+  handleRealmList: (ap) ->
     ap.readShort()         # packet-size
     ap.readUnsignedInt()   # (?)
 

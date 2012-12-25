@@ -43,8 +43,8 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
     @on 'data:receive', @dataReceived, @
 
     # Delegate packets
-    @on 'packet:receive:LOGON_CHALLENGE', @logonChallenge, @
-    @on 'packet:receive:LOGON_PROOF', @logonProof, @
+    @on 'packet:receive:LOGON_CHALLENGE', @handleLogonChallenge, @
+    @on 'packet:receive:LOGON_PROOF', @handleLogonProof, @
 
   # Retrieves the session key (if any)
   @getter 'key', ->
@@ -110,7 +110,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
         @trigger "packet:receive:#{ap.opcodeName}", ap
 
   # Logon challenge handler (LOGON_CHALLENGE)
-  logonChallenge: (ap) ->
+  handleLogonChallenge: (ap) ->
     ap.readUnsignedByte()
     status = ap.readUnsignedByte()
 
@@ -152,7 +152,7 @@ class WrathNet.expansions.wotlk.handlers.AuthHandler extends WrathNet.net.Socket
         @trigger 'reject'
 
   # Logon proof handler (LOGON_PROOF)
-  logonProof: (ap) ->
+  handleLogonProof: (ap) ->
     ap.readByte()
 
     console.info 'received proof response'
