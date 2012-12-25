@@ -7013,8 +7013,8 @@ WrathNet.expansions.wotlk.handlers.AuthHandler = (function(_super) {
     this.srp = null;
     AuthHandler.__super__.constructor.apply(this, arguments);
     this.on('data:receive', this.dataReceived, this);
-    this.on('packet:receive:LOGON_CHALLENGE', this.logonChallenge, this);
-    this.on('packet:receive:LOGON_PROOF', this.logonProof, this);
+    this.on('packet:receive:LOGON_CHALLENGE', this.handleLogonChallenge, this);
+    this.on('packet:receive:LOGON_PROOF', this.handleLogonProof, this);
   }
 
   AuthHandler.getter('key', function() {
@@ -7079,7 +7079,7 @@ WrathNet.expansions.wotlk.handlers.AuthHandler = (function(_super) {
     }
   };
 
-  AuthHandler.prototype.logonChallenge = function(ap) {
+  AuthHandler.prototype.handleLogonChallenge = function(ap) {
     var B, N, Nlen, g, glen, lpp, salt, status;
     ap.readUnsignedByte();
     status = ap.readUnsignedByte();
@@ -7112,7 +7112,7 @@ WrathNet.expansions.wotlk.handlers.AuthHandler = (function(_super) {
     }
   };
 
-  AuthHandler.prototype.logonProof = function(ap) {
+  AuthHandler.prototype.handleLogonProof = function(ap) {
     var M2;
     ap.readByte();
     console.info('received proof response');
@@ -7144,7 +7144,7 @@ WrathNet.expansions.wotlk.handlers.CharacterHandler = (function() {
   function CharacterHandler(session) {
     this.session = session;
     this.list = [];
-    this.session.world.on('packet:receive:SMSG_CHAR_ENUM', this.characterList, this);
+    this.session.world.on('packet:receive:SMSG_CHAR_ENUM', this.handleCharacterList, this);
   }
 
   CharacterHandler.prototype.refresh = function() {
@@ -7154,7 +7154,7 @@ WrathNet.expansions.wotlk.handlers.CharacterHandler = (function() {
     return this.session.world.send(wp);
   };
 
-  CharacterHandler.prototype.characterList = function(wp) {
+  CharacterHandler.prototype.handleCharacterList = function(wp) {
     var character, count, i, item, j, pet, _i, _j;
     count = wp.readByte();
     this.list.length = 0;
@@ -7221,7 +7221,7 @@ WrathNet.expansions.wotlk.handlers.RealmHandler = (function() {
   function RealmHandler(session) {
     this.session = session;
     this.list = [];
-    this.session.auth.on('packet:receive:REALM_LIST', this.realmList, this);
+    this.session.auth.on('packet:receive:REALM_LIST', this.handleRealmList, this);
   }
 
   RealmHandler.prototype.refresh = function() {
@@ -7231,7 +7231,7 @@ WrathNet.expansions.wotlk.handlers.RealmHandler = (function() {
     return this.session.auth.send(ap);
   };
 
-  RealmHandler.prototype.realmList = function(ap) {
+  RealmHandler.prototype.handleRealmList = function(ap) {
     var count, i, realm, _i;
     ap.readShort();
     ap.readUnsignedInt();
@@ -7284,8 +7284,8 @@ WrathNet.expansions.wotlk.handlers.WorldHandler = (function(_super) {
     this.session = session;
     WorldHandler.__super__.constructor.apply(this, arguments);
     this.on('data:receive', this.dataReceived, this);
-    this.on('packet:receive:SMSG_AUTH_CHALLENGE', this.authChallenge, this);
-    this.on('packet:receive:SMSG_AUTH_RESPONSE', this.authResponse, this);
+    this.on('packet:receive:SMSG_AUTH_CHALLENGE', this.handleAuthChallenge, this);
+    this.on('packet:receive:SMSG_AUTH_RESPONSE', this.handleAuthResponse, this);
   }
 
   WorldHandler.prototype.connect = function(host, port) {
@@ -7349,7 +7349,7 @@ WrathNet.expansions.wotlk.handlers.WorldHandler = (function(_super) {
     }
   };
 
-  WorldHandler.prototype.authChallenge = function(wp) {
+  WorldHandler.prototype.handleAuthChallenge = function(wp) {
     var app, exp, hash, salt, seed, size;
     console.log('handling auth challenge');
     wp.readUnsignedInt();
@@ -7381,7 +7381,7 @@ WrathNet.expansions.wotlk.handlers.WorldHandler = (function(_super) {
     return this._crypt.key = this.session.auth.key;
   };
 
-  WorldHandler.prototype.authResponse = function(wp) {
+  WorldHandler.prototype.handleAuthResponse = function(wp) {
     var result;
     console.log('handling auth response');
     result = wp.readUnsignedByte();
