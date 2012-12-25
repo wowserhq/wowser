@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WrathNet</title>
+    <script src="dist/wrathnet.js"></script>
+    <script>
+
+      var host = 'localhost';
+      var username = 'username';
+      var password = 'password';
+
+      var session = new WrathNet(WrathNet.expansions.wotlk);
+
+      var auth = session.auth;
+      var realms = session.realms;
+      var world = session.world;
+      var characters = session.characters;
+
+      auth.on('connect', function() {
+        session.auth.authenticate(username, password);
+      });
+
+      auth.on('authenticate', function() {
+        realms.refresh();
+      });
+
+      realms.on('refresh', function() {
+        realm = realms.list[0];
+
+        world.connect(host, realm.port);
+      });
+
+      world.on('authenticate', function() {
+        characters.refresh();
+      });
+
+      characters.on('refresh', function() {
+        character = characters.list[0];
+
+        world.join(character);
+      });
+
+      auth.connect(host);
+
+    </script>
+  </head>
+  <body>
+
+  </body>
+</html>
