@@ -1,13 +1,11 @@
-WrathNet
-========
+# WrathNet
 
 World of Warcraft client foundation for JavaScript, enabling development of expansion-agnostic clients, bots and other useful tools.
 
 Licensed under the **MIT** license, see LICENSE for more information.
 
 
-Usage & API
------------
+## Usage & API
 
 WrathNet is an API, allowing one to interact with a World of Warcraft server, behaving exactly as the official client would. Its structure facilitates for any expansion to be supported, however only Wrath of the Lich King actually is - for now.
 
@@ -16,7 +14,7 @@ The project is very much a work in progress, but is already capable of successfu
 In the future, please see the [wrathnet-client](https://github.com/timkurvers/wrathnet-client) project for an actual game-client/visual GUI.
 
 
-### Demo
+## Demo
 
 To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients. The steps below will outline on how to get a demo up and running.
 
@@ -48,8 +46,7 @@ To utilize raw TCP connections a WebSocket proxy is required for JavaScript clie
 6. Open `index.html` in your favourite modern browser (Chrome 20+, Firefox 15+, Safari 5+) and see the console for activity.
 
 
-Development & Contribution
---------------------------
+## Development & Contribution
 
 WrathNet is written in [CoffeeScript](http://coffeescript.org/) and developed with [Grunt](http://gruntjs.com/).
 
@@ -91,8 +88,7 @@ When contributing, please:
 * Do *not* include any distribution files (such as wrathnet.js or wrathnet.min.js)
 
 
-Dependencies
-------------
+## Dependencies
 
 All of WrathNet's dependencies are bundled in its distributed release and do not have to be downloaded/included separately.
 
@@ -102,7 +98,6 @@ All of WrathNet's dependencies are bundled in its distributed release and do not
 * [JSBN](https://github.com/timkurvers/jsbn)
 
 
-Browser Support
----------------
+## Browser Support
 
 WrathNet is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
