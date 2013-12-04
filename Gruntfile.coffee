@@ -93,7 +93,7 @@ module.exports = (grunt) ->
         'src/**/*.coffee',
         'vendor/**/*.js'
       ],
-      tasks: ['coffee', 'lint']
+      tasks: ['build']
     }
   }
 
