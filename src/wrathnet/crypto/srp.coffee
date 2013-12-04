@@ -1,14 +1,3 @@
-#
-# WrathNet Foundation
-# Copyright (c) 2012 Tim Kurvers <http://wrathnet.org>
-#
-# World of Warcraft client foundation written in JavaScript, enabling
-# development of expansion-agnostic clients, bots and other useful tools.
-#
-# The contents of this file are subject to the MIT License, under which
-# this library is licensed. See the LICENSE file for the full license.
-#
-
 # Secure Remote Password
 # http://tools.ietf.org/html/rfc2945
 class WrathNet.crypto.SRP
@@ -19,6 +8,8 @@ class WrathNet.crypto.SRP
 
   # Creates new SRP instance with given constant prime and generator
   constructor: (N, g) ->
+
+    console.log 'foo'
 
     # Constant prime (B)
     @_N = BigNum.fromArray(N)
