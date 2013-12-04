@@ -60,25 +60,21 @@ Getting this toolchain up and running, is easy and straight-forward:
 
 2. Download and install [NodeJS](http://nodejs.org/#download) (includes NPM) for your platform.
 
-3. Install the following modules:
+3. Install dependencies:
 
    ```shell
-   npm install -g coffee-script
-   npm install -g grunt
+   npm install
    ```
 
-   Note: If you'd rather install these modules locally, remove the -g flag from the above commands.
-
-4. Verify availability of the following binaries:
+4. Make sure you have installed `grunt-cli` globally:
 
    ```shell
-   which coffee
-   which grunt
+   npm install -g grunt-cli
    ```
 
-5. Run `grunt` which - when source files change - will automatically compile the CoffeeScript source files as well as lint these.
+5. Run `grunt watch` which will automatically build the project when source files change.
 
-6. For now, please use the demo setup above for development
+6. For now, please use the demo setup above for development.
 
 
 When contributing, please:
