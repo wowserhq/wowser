@@ -9,8 +9,6 @@ class WrathNet.crypto.SRP
   # Creates new SRP instance with given constant prime and generator
   constructor: (N, g) ->
 
-    console.log 'foo'
-
     # Constant prime (B)
     @_N = BigNum.fromArray(N)
 
