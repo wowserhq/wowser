@@ -89,6 +89,7 @@ module.exports = (grunt) ->
     # Watch for changes to source and vendor files
     watch: {
       files: [
+        'Gruntfile.coffee',
         'src/**/*.coffee',
         'vendor/**/*.js'
       ],
