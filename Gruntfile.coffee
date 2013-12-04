@@ -16,7 +16,7 @@ module.exports = (grunt) ->
               ' * The contents of this file are subject to the MIT License, under which\n' +
               ' * this library is licensed. See the LICENSE file for the full license.\n' +
               ' */\n\n'
-    }
+    },
 
     # Compiles CoffeeScript source
     coffee: {
