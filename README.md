@@ -21,7 +21,7 @@ To utilize raw TCP connections a WebSocket proxy is required for JavaScript clie
 2. Install [WebSockify](https://github.com/kanaka/websockify/) as follows:
 
   ```shell
-  pip install git+git://github.com/kanaka/websockify.git
+  sudo pip install websockify
   ```
 
 3. WebSockify can - among other things - act as a proxy for raw TCP sockets.
