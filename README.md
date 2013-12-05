@@ -5,9 +5,16 @@ World of Warcraft in the browser using JavaScript and WebGL.
 Licensed under the **MIT** license, see LICENSE for more information.
 
 
+## Features
+
+ * Lightweight in-browser client without reliance on external plugins.
+ * Aims to be expansion agnostic, currently supporting Wrath of the Lich King.
+ * A low-level interface for developing bots/tools and debugging servers.
+
+
 ## Usage & API
 
-Wowser is both a client as well as a low-level API, allowing one to interact with a World of Warcraft server, behaving exactly as the official client would. Its structure facilitates for any expansion to be supported, however only Wrath of the Lich King actually is - for now.
+Wowser is both a client as well as a low-level API, allowing one to interact with a World of Warcraft server, behaving exactly as an official client would.
 
 The project is very much a work in progress, but is already capable of successfully authenticating, logging into a realm and listing chat messages.
 
