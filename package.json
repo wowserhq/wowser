@@ -1,19 +1,19 @@
 {
-  "name": "wrathnet",
-  "title": "WrathNet",
-  "main": "./dist/wrathnet.js",
-  "description": "World of Warcraft client foundation written in JavaScript",
+  "name": "wowser",
+  "title": "Wowser",
+  "main": "./dist/wowser.js",
+  "description": "World of Warcraft in the browser using JavaScript and WebGL",
   "version": "0.0.1",
-  "homepage": "http://wrathnet.org",
+  "homepage": "http://moonsphere.net",
   "author": {
     "name": "Tim Kurvers"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/timkurvers/wrathnet"
+    "url": "https://github.com/timkurvers/wowser"
   },
   "bugs": {
-    "url": "https://github.com/timkurvers/wrathnet/issues"
+    "url": "https://github.com/timkurvers/wowser/issues"
   },
   "licenses": [
     {

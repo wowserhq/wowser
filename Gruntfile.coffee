@@ -1,17 +1,16 @@
 module.exports = (grunt) ->
 
-  # WrathNet configuration
+  # Wowser configuration
   grunt.initConfig {
     pkg: grunt.file.readJSON('package.json'),
 
     # Metadata
     meta: {
       banner: '/**\n' +
-              ' * WrathNet Foundation v<%= pkg.version %>\n' +
+              ' * Wowser v<%= pkg.version %>\n' +
               ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
               ' *\n' +
-              ' * World of Warcraft foundation for JavaScript, enabling development of\n' +
-              ' * expansion-agnostic clients, bots and other useful tools.\n' +
+              ' * World of Warcraft in the browser using JavaScript and WebGL.\n' +
               ' *\n' +
               ' * The contents of this file are subject to the MIT License, under which\n' +
               ' * this library is licensed. See the LICENSE file for the full license.\n' +
@@ -40,23 +39,23 @@ module.exports = (grunt) ->
           banner: '<%= meta.banner %>'
         }
         src: [
-          'build/wrathnet.js',
-          'build/wrathnet/utils/**/*.js',
+          'build/wowser.js',
+          'build/wowser/utils/**/*.js',
           'vendor/byte-buffer.js',
           'vendor/jsbn.js',
           'vendor/underscore.js',
           'vendor/backbone.js',
-          'build/wrathnet/crypto/hash/**/*.js',
-          'build/wrathnet/crypto/**/*.js',
-          'build/wrathnet/datastructures/**/*.js',
-          'build/wrathnet/net/**/*.js',
-          'build/wrathnet/entities/**/*.js',
-          'build/wrathnet/expansions/expansion.js',
-          'build/wrathnet/expansions/wotlk/wotlk.js',
-          'build/wrathnet/expansions/wotlk/enums/**/*.js',
-          'build/wrathnet/expansions/wotlk/net/**/*.js',
-          'build/wrathnet/expansions/wotlk/**/*.js',
-          'build/wrathnet/sessions/**/*.js'
+          'build/wowser/crypto/hash/**/*.js',
+          'build/wowser/crypto/**/*.js',
+          'build/wowser/datastructures/**/*.js',
+          'build/wowser/net/**/*.js',
+          'build/wowser/entities/**/*.js',
+          'build/wowser/expansions/expansion.js',
+          'build/wowser/expansions/wotlk/wotlk.js',
+          'build/wowser/expansions/wotlk/enums/**/*.js',
+          'build/wowser/expansions/wotlk/net/**/*.js',
+          'build/wowser/expansions/wotlk/**/*.js',
+          'build/wowser/sessions/**/*.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
       }

@@ -1,17 +1,15 @@
-# WrathNet
+# Wowser
 
-World of Warcraft client foundation for JavaScript, enabling development of expansion-agnostic clients, bots and other useful tools.
+World of Warcraft in the browser using JavaScript and WebGL.
 
 Licensed under the **MIT** license, see LICENSE for more information.
 
 
 ## Usage & API
 
-WrathNet is an API, allowing one to interact with a World of Warcraft server, behaving exactly as the official client would. Its structure facilitates for any expansion to be supported, however only Wrath of the Lich King actually is - for now.
+Wowser is both a client as well as a low-level API, allowing one to interact with a World of Warcraft server, behaving exactly as the official client would. Its structure facilitates for any expansion to be supported, however only Wrath of the Lich King actually is - for now.
 
 The project is very much a work in progress, but is already capable of successfully authenticating, logging into a realm and listing chat messages.
-
-In the future, please see the [wrathnet-client](https://github.com/timkurvers/wrathnet-client) project for an actual game-client/visual GUI.
 
 
 ## Demo
@@ -38,7 +36,7 @@ To utilize raw TCP connections a WebSocket proxy is required for JavaScript clie
 4. Clone this project:
 
    ```shell
-   git clone git://github.com/timkurvers/wrathnet.git
+   git clone git://github.com/timkurvers/wowser.git
    ```
 
 5. Configure `index.html` with the correct host, username and password.
@@ -48,14 +46,14 @@ To utilize raw TCP connections a WebSocket proxy is required for JavaScript clie
 
 ## Development & Contribution
 
-WrathNet is written in [CoffeeScript](http://coffeescript.org/) and developed with [Grunt](http://gruntjs.com/).
+Wowser is written in [CoffeeScript](http://coffeescript.org/) and developed with [Grunt](http://gruntjs.com/).
 
 Getting this toolchain up and running, is easy and straight-forward:
 
 1. Get the code:
 
    ```shell
-   git clone git://github.com/timkurvers/wrathnet.git
+   git clone git://github.com/timkurvers/wowser.git
    ```
 
 2. Download and install [NodeJS](http://nodejs.org/#download) (includes NPM) for your platform.
@@ -81,14 +79,14 @@ When contributing, please:
 
 * Fork the repository
 * Open a pull request (preferably on a separate branch)
-* Do *not* include any distribution files (such as wrathnet.js or wrathnet.min.js)
+* Do *not* include any distribution files (such as wowser.js or wowser.min.js)
 
 
 ## Dependencies
 
-All of WrathNet's dependencies are bundled in its distributed release and do not have to be downloaded/included separately.
+All of Wowser's dependencies are bundled in its distributed release and do not have to be downloaded/included separately.
 
-* [Backbone](http://backbonejs.org/) (to be used by the [wrathnet-client](https://github.com/timkurvers/wrathnet-client) project, too)
+* [Backbone](http://backbonejs.org/)
 * [Underscore](http://underscorejs.org/)
 * [ByteBuffer](https://github.com/timkurvers/byte-buffer)
 * [JSBN](https://github.com/timkurvers/jsbn)
@@ -96,4 +94,4 @@ All of WrathNet's dependencies are bundled in its distributed release and do not
 
 ## Browser Support
 
-WrathNet is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
+Wowser is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
