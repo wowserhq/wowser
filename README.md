@@ -16,7 +16,7 @@ The project is very much a work in progress, but is already capable of successfu
 
 To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients. The steps below will outline on how to get a demo up and running.
 
-1. Make sure you have [Python](http://python.org/) and [pip](http://www.pip-installer.org/) installed on your system
+1. Make sure you have [Python](http://python.org/) and [pip](http://www.pip-installer.org/) installed on your system.
 
 2. Install [WebSockify](https://github.com/kanaka/websockify/) as follows:
 
