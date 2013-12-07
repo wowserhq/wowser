@@ -1,7 +1,6 @@
 # Denotes a realm handler
 class Wowser.expansions.wotlk.handlers.RealmHandler
-
-  @mixin Backbone.Events
+  @include Backbone.Events
 
   # Imports
   AuthOpcode = Wowser.expansions.wotlk.enums.AuthOpcode

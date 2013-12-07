@@ -1,7 +1,6 @@
 # Base-class for any socket including signals and host/port management
 class Wowser.net.Socket
-
-  @mixin Backbone.Events
+  @include Backbone.Events
 
   # Maximum buffer capacity
   # TODO: Arbitrarily chosen, determine this cap properly

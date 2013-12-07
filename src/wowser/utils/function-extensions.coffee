@@ -8,6 +8,6 @@ Function::setter = (name, setter) ->
   @
 
 # Utility method for prototype mixins
-Function::mixin = (mixins...) ->
+Function::include = (mixins...) ->
   _.extend @::, mixins...
   @

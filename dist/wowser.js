@@ -76,7 +76,7 @@ Function.prototype.setter = function(name, setter) {
   return this;
 };
 
-Function.prototype.mixin = function() {
+Function.prototype.include = function() {
   var mixins;
   mixins = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
   _.extend.apply(_, [this.prototype].concat(__slice.call(mixins)));
@@ -6455,7 +6455,7 @@ Wowser.net.Packet = (function(_super) {
 Wowser.net.Socket = (function() {
   var BUFFER_CAP;
 
-  Socket.mixin(Backbone.Events);
+  Socket.include(Backbone.Events);
 
   BUFFER_CAP = 2048;
 
@@ -7087,7 +7087,7 @@ Wowser.expansions.wotlk.handlers.AuthHandler = (function(_super) {
 Wowser.expansions.wotlk.handlers.CharacterHandler = (function() {
   var Character, WorldOpcode, WorldPacket;
 
-  CharacterHandler.mixin(Backbone.Events);
+  CharacterHandler.include(Backbone.Events);
 
   Character = Wowser.entities.Character;
 
@@ -7160,7 +7160,7 @@ Wowser.expansions.wotlk.handlers.CharacterHandler = (function() {
 Wowser.expansions.wotlk.handlers.RealmHandler = (function() {
   var AuthOpcode, AuthPacket, ObjectUtil, Realm;
 
-  RealmHandler.mixin(Backbone.Events);
+  RealmHandler.include(Backbone.Events);
 
   AuthOpcode = Wowser.expansions.wotlk.enums.AuthOpcode;
 
