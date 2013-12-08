@@ -1,0 +1,10 @@
+{
+  "name": "wowser",
+  "version": "0.0.1",
+  "dependencies": {
+    "backbone": "~1.1.0",
+    "byte-buffer": "git://github.com/timkurvers/byte-buffer.git",
+    "underscore": "~1.5.2",
+    "jsbn": "git://github.com/timkurvers/jsbn.git"
+  }
+}
