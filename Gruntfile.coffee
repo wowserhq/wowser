@@ -39,25 +39,25 @@ module.exports = (grunt) ->
           banner: '<%= meta.banner %>'
         }
         src: [
-          'build/wowser.js',
-          'build/wowser/utils/**/*.js',
-          'vendor/byte-buffer.js',
-          'vendor/jsbn.js',
-          'vendor/underscore.js',
-          'vendor/backbone.js',
-          'build/wowser/crypto/hash/**/*.js',
-          'build/wowser/crypto/**/*.js',
-          'build/wowser/datastructures/**/*.js',
-          'build/wowser/net/**/*.js',
-          'build/wowser/entities/**/*.js',
-          'build/wowser/expansions/expansion.js',
-          'build/wowser/expansions/wotlk/wotlk.js',
-          'build/wowser/expansions/wotlk/enums/**/*.js',
-          'build/wowser/expansions/wotlk/net/**/*.js',
-          'build/wowser/expansions/wotlk/**/*.js',
-          'build/wowser/sessions/**/*.js'
+          'build/scripts/<%= pkg.name %>.js',
+          'build/scripts/<%= pkg.name %>/utils/**/*.js',
+          'vendor/scripts/byte-buffer.js',
+          'vendor/scripts/jsbn.js',
+          'vendor/scripts/underscore.js',
+          'vendor/scripts/backbone.js',
+          'build/scripts/<%= pkg.name %>/crypto/hash/**/*.js',
+          'build/scripts/<%= pkg.name %>/crypto/**/*.js',
+          'build/scripts/<%= pkg.name %>/datastructures/**/*.js',
+          'build/scripts/<%= pkg.name %>/net/**/*.js',
+          'build/scripts/<%= pkg.name %>/entities/**/*.js',
+          'build/scripts/<%= pkg.name %>/expansions/expansion.js',
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/wotlk.js',
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/enums/**/*.js',
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/net/**/*.js',
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/**/*.js',
+          'build/scripts/<%= pkg.name %>/sessions/**/*.js'
         ],
-        dest: 'dist/<%= pkg.name %>.js'
+        dest: 'dist/scripts/<%= pkg.name %>.js'
       }
     },
 
@@ -80,7 +80,7 @@ module.exports = (grunt) ->
           banner: '<%= meta.banner %>'
         },
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/scripts/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
         }
       }
     },
@@ -89,8 +89,8 @@ module.exports = (grunt) ->
     watch: {
       files: [
         'Gruntfile.coffee',
-        'src/**/*.coffee',
-        'vendor/**/*.js'
+        'src/**/*',
+        'vendor/**/*'
       ],
       tasks: ['build']
     }
