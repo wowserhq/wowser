@@ -6,20 +6,33 @@ module.exports = (grunt) ->
 
     # Metadata
     meta: {
-      banner: '/**\n' +
-              ' * Wowser v<%= pkg.version %>\n' +
-              ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
-              ' *\n' +
-              ' * World of Warcraft in the browser using JavaScript and WebGL.\n' +
-              ' *\n' +
-              ' * The contents of this file are subject to the MIT License, under which\n' +
-              ' * this library is licensed. See the LICENSE file for the full license.\n' +
-              ' */\n\n'
+      core: {
+        banner: '/**\n' +
+                ' * Wowser v<%= pkg.version %>\n' +
+                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
+                ' *\n' +
+                ' * World of Warcraft in the browser using JavaScript and WebGL.\n' +
+                ' *\n' +
+                ' * The contents of this file are subject to the MIT License, under which\n' +
+                ' * this library is licensed. See the LICENSE file for the full license.\n' +
+                ' */\n\n'
+      },
+      ui: {
+        banner: '/**\n' +
+                ' * Wowser UI v<%= pkg.version %>\n' +
+                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
+                ' *\n' +
+                ' * World of Warcraft in the browser using JavaScript and WebGL.\n' +
+                ' *\n' +
+                ' * The contents of this file are subject to the MIT License, under which\n' +
+                ' * this library is licensed. See the LICENSE file for the full license.\n' +
+                ' */\n\n'
+      }
     },
 
     # Compiles CoffeeScript source
     coffee: {
-      dist: {
+      all: {
         expand: true,
         cwd: 'src',
         src: '**/*.coffee',
@@ -34,10 +47,10 @@ module.exports = (grunt) ->
     # Concatenate compiled JavaScript files
     # Note: Order is significant due to namespacing
     concat: {
-      dist: {
+      core: {
         options: {
-          banner: '<%= meta.banner %>'
-        }
+          banner: '<%= meta.core.banner %>'
+        },
         src: [
           'build/scripts/<%= pkg.name %>.js',
           'build/scripts/<%= pkg.name %>/utils/**/*.js',
@@ -58,6 +71,17 @@ module.exports = (grunt) ->
           'build/scripts/<%= pkg.name %>/sessions/**/*.js'
         ],
         dest: 'dist/scripts/<%= pkg.name %>.js'
+      },
+      ui: {
+        options: {
+          banner: '<%= meta.ui.banner %>'
+        },
+        src: [
+          'vendor/angular/angular.js',
+          'build/scripts/<%= pkg.name %>/ui.js',
+          'build/scripts/<%= pkg.name %>/ui/**/*.js'
+        ],
+        dest: 'dist/scripts/<%= pkg.name %>-ui.js'
       }
     },
 
@@ -75,12 +99,20 @@ module.exports = (grunt) ->
 
     # Minified distribution
     uglify: {
-      dist: {
+      core: {
         options: {
-          banner: '<%= meta.banner %>'
+          banner: '<%= meta.core.banner %>'
         },
         files: {
-          'dist/scripts/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/scripts/<%= pkg.name %>.min.js': ['<%= concat.core.dest %>']
+        }
+      },
+      ui: {
+        options: {
+          banner: '<%= meta.ui.banner %>'
+        },
+        files: {
+          'dist/scripts/<%= pkg.name %>-ui.min.js': ['<%= concat.ui.dest %>']
         }
       }
     },
