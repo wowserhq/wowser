@@ -6335,7 +6335,7 @@ Wowser.crypto.Crypt = (function() {
 
   Crypt.setter('key', function(key) {
     var dechash, deckey, enchash, enckey, i, _i, _results;
-    console.debug('initializing crypt');
+    console.info('initializing crypt');
     this._encrypt = new ARC4();
     this._decrypt = new ARC4();
     enckey = ArrayUtil.fromHex('C2B3723CC6AED9B5343C53EE2F4367CE');

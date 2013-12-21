@@ -26,7 +26,7 @@ class Wowser.crypto.Crypt
 
   # Sets session key and initializes this crypt
   @setter 'key', (key) ->
-    console.debug 'initializing crypt'
+    console.info 'initializing crypt'
 
     # Fresh RC4's
     @_encrypt = new ARC4()
