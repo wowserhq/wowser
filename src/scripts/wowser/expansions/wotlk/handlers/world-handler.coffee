@@ -131,7 +131,7 @@ class Wowser.expansions.wotlk.handlers.WorldHandler extends Wowser.net.Socket
     @_crypt = new Crypt()
     @_crypt.key = @session.auth.key
 
-  # Auth response handlers (SMSG_AUTH_RESPONSE)
+  # Auth response handler (SMSG_AUTH_RESPONSE)
   handleAuthResponse: (wp) ->
     console.log 'handling auth response'
 
