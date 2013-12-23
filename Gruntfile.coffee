@@ -30,6 +30,12 @@ module.exports = (grunt) ->
       }
     },
 
+    # Cleans build folders
+    clean: {
+      scripts: ['build/scripts'],
+      styles:  ['build/styles']
+    },
+
     # Compiles CoffeeScript source
     coffee: {
       all: {
@@ -127,6 +133,7 @@ module.exports = (grunt) ->
     }
   }
 
+  grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-jshint'
@@ -135,4 +142,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['watch']
   grunt.registerTask 'build',   ['coffee', 'jshint', 'concat']
-  grunt.registerTask 'release', ['build', 'uglify']
+  grunt.registerTask 'release', ['clean', 'build', 'uglify']
