@@ -24,6 +24,7 @@ class Wowser.expansions.wotlk.handlers.WorldHandler extends Wowser.net.Socket
     # Delegate packets
     @on 'packet:receive:SMSG_AUTH_CHALLENGE', @handleAuthChallenge, @
     @on 'packet:receive:SMSG_AUTH_RESPONSE', @handleAuthResponse, @
+    @on 'packet:receive:SMSG_LOGIN_VERIFY_WORLD', @handleWorldLogin, @
 
   # Connects to given host through given port
   connect: (host, port) ->
@@ -150,3 +151,7 @@ class Wowser.expansions.wotlk.handlers.WorldHandler extends Wowser.net.Socket
     # TODO: Ensure the account is flagged as WotLK (expansion #2)
 
     @trigger 'authenticate'
+
+  # World login handler (SMSG_LOGIN_VERIFY_WORLD)
+  handleWorldLogin: (wp) ->
+    @trigger 'join'
