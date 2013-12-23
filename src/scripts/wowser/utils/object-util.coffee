@@ -3,8 +3,10 @@ class Wowser.utils.ObjectUtil
 
   # Retrieves key for given value (if any) in object
   @keyByValue = (object, target) ->
-    for own key, value of object
-      if target is value
-        return key
+    unless 'lookup' of object
+      lookup = {}
+      for own key, value of object
+        lookup[value] = key
+      object.lookup = lookup
 
-    return null
+    return object.lookup[target]
