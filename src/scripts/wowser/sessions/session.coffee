@@ -22,3 +22,4 @@ class Wowser.sessions.Session
     @realms = new expansion.realmHandler(@)
     @world = new expansion.worldHandler(@)
     @characters = new expansion.characterHandler(@)
+    @chat = new expansion.chatHandler(@)

@@ -30,3 +30,6 @@ class Wowser.expansions.Expansion
 
   @getter 'characterHandler', ->
     return @constructor.handlers.CharacterHandler
+
+  @getter 'chatHandler', ->
+    return @constructor.handlers.ChatHandler
