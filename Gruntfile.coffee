@@ -121,8 +121,7 @@ module.exports = (grunt) ->
     watch: {
       files: [
         'Gruntfile.coffee',
-        'src/**/*',
-        'vendor/**/*'
+        'src/**/*'
       ],
       tasks: ['build']
     }
