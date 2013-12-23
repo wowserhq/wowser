@@ -1,0 +1,10 @@
+<panel data-ng-controller="Wowser.ui.screens.RealmSelection as realm">
+  <h1>Realm Selection</h1>
+
+  <form ng-submit="realm.connect()">
+    <select ng-model="realm.selected" ng-options="r.name for r in realm.session.realms.list"></select>
+
+    <input type="button" data-ng-click="realm.refresh()" value="Refresh" />
+    <input type="submit" value="Connect" autofocus />
+  </form>
+</panel>
