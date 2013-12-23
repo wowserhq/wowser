@@ -6,6 +6,7 @@
     "backbone": "~1.1.0",
     "byte-buffer": "git://github.com/timkurvers/byte-buffer.git",
     "jsbn": "git://github.com/timkurvers/jsbn.git",
+    "threejs": "git://github.com/mrdoob/three.js.git",
     "underscore": "~1.5.2"
   }
 }
