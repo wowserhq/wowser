@@ -27,6 +27,19 @@ module.exports = (grunt) ->
                 ' * this library is licensed. See the LICENSE file for the full license.\n' +
                 ' */\n\n'
 
+    # Distribution paths
+    dist:
+      release:
+        core: 'dist/scripts/<%= pkg.name %>.js'
+        ui:
+          script: 'dist/scripts/<%= pkg.name %>-ui.js'
+          style: 'dist/styles/<%= pkg.name %>-ui.css'
+      minified:
+        core: 'dist/scripts/<%= pkg.name %>.min.js'
+        ui:
+          script: 'dist/scripts/<%= pkg.name %>-ui.min.js'
+          style: 'dist/styles/<%= pkg.name %>-ui.min.css'
+
     # Cleans build folders
     clean:
       core: [
@@ -88,12 +101,12 @@ module.exports = (grunt) ->
           'build/scripts/<%= pkg.name %>/expansions/wotlk/**/*.js'
           'build/scripts/<%= pkg.name %>/sessions/**/*.js'
         ]
-        dest: 'dist/scripts/<%= pkg.name %>.js'
+        dest: '<%= dist.release.core %>'
       ui:
         options:
           banner: '<%= meta.ui.banner %>'
         files:
-          'dist/scripts/<%= pkg.name %>-ui.js': [
+          '<%= dist.release.ui.script %>': [
             'vendor/angular/angular.js'
             'vendor/threejs/build/three.js'
             'vendor/threejs/examples/js/controls/OrbitControls.js'
@@ -125,12 +138,12 @@ module.exports = (grunt) ->
         options:
           banner: '<%= meta.core.banner %>'
         files:
-          'dist/scripts/<%= pkg.name %>.min.js': ['<%= concat.core.dest %>']
+          '<%= dist.minified.core %>': ['<%= dist.release.core %>']
       ui:
         options:
           banner: '<%= meta.ui.banner %>'
         files:
-          'dist/scripts/<%= pkg.name %>-ui.min.js': ['<%= concat.ui.dest %>']
+          '<%= dist.minified.ui.script %>': ['<%= dist.release.ui.script %>']
 
     # Watch for file changes
     watch:
