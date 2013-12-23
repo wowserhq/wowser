@@ -1,0 +1,23 @@
+<panel data-ng-controller="Wowser.ui.screens.Authentication as auth">
+  <h1>Authentication</h1>
+
+  <form ng-submit="auth.connect()">
+    <fieldset>
+      <label>Host</label>
+      <input type="text" data-ng-model="auth.host" />
+
+      <label>Port</label>
+      <input type="number" data-ng-model="auth.port" />
+    </fieldset>
+
+    <fieldset>
+      <label>Username</label>
+      <input type="text" data-ng-model="auth.username" autofocus />
+
+      <label>Password</label>
+      <input type="password" data-ng-model="auth.password" />
+    </fieldset>
+
+    <input type="submit" value="Connect" />
+  </form>
+</panel>
