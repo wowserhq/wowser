@@ -176,3 +176,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build:core',   ['clean:core', 'coffee:core', 'jshint:core', 'concat:core']
   grunt.registerTask 'build:ui',     ['clean:ui', 'coffee:ui', 'jshint:ui', 'concat:ui']
   grunt.registerTask 'build',        ['build:core', 'build:ui']
+
+  grunt.registerTask 'release:core', ['build:core', 'uglify:core']
+  grunt.registerTask 'release:ui',   ['build:ui', 'uglify:ui']
+  grunt.registerTask 'release',      ['release:core', 'release:ui']
