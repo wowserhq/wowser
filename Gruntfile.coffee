@@ -1,12 +1,12 @@
 module.exports = (grunt) ->
 
   # Wowser configuration
-  grunt.initConfig {
-    pkg: grunt.file.readJSON('package.json'),
+  grunt.initConfig
+    pkg: grunt.file.readJSON('package.json')
 
     # Metadata
-    meta: {
-      core: {
+    meta:
+      core:
         banner: '/**\n' +
                 ' * Wowser v<%= pkg.version %>\n' +
                 ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
@@ -16,8 +16,7 @@ module.exports = (grunt) ->
                 ' * The contents of this file are subject to the MIT License, under which\n' +
                 ' * this library is licensed. See the LICENSE file for the full license.\n' +
                 ' */\n\n'
-      },
-      ui: {
+      ui:
         banner: '/**\n' +
                 ' * Wowser UI v<%= pkg.version %>\n' +
                 ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.homepage %>>\n' +
@@ -27,159 +26,130 @@ module.exports = (grunt) ->
                 ' * The contents of this file are subject to the MIT License, under which\n' +
                 ' * this library is licensed. See the LICENSE file for the full license.\n' +
                 ' */\n\n'
-      }
-    },
 
     # Cleans build folders
-    clean: {
+    clean:
       core: [
-        'build/scripts/**/*.js',
-        '!build/scripts/<%= pkg.name %>/ui.js',
+        'build/scripts/**/*.js'
+        '!build/scripts/<%= pkg.name %>/ui.js'
         '!build/scripts/<%= pkg.name %>/ui/**/*.js'
-      ],
+      ]
       ui: [
-        'build/scripts/<%= pkg.name %>/ui.js',
+        'build/scripts/<%= pkg.name %>/ui.js'
         'build/scripts/<%= pkg.name %>/ui/**/*.js'
       ]
-    },
 
     # Compiles CoffeeScript source
-    coffee: {
-      options: {
+    coffee:
+      options:
         bare: true
-      }
-      core: {
-        expand: true,
-        cwd: 'src',
+      core:
+        expand: true
+        cwd: 'src'
         src: [
-          'scripts/**/*.coffee',
-          '!scripts/<%= pkg.name %>/ui.coffee',
+          'scripts/**/*.coffee'
+          '!scripts/<%= pkg.name %>/ui.coffee'
           '!scripts/<%= pkg.name %>/ui/**/*.coffee'
-        ],
-        dest: 'build',
+        ]
+        dest: 'build'
         ext: '.js'
-      },
-      ui: {
-        expand: true,
-        cwd: 'src',
+      ui:
+        expand: true
+        cwd: 'src'
         src: [
-          'scripts/<%= pkg.name %>/ui.coffee',
+          'scripts/<%= pkg.name %>/ui.coffee'
           'scripts/<%= pkg.name %>/ui/**/*.coffee'
-        ],
-        dest: 'build',
+        ]
+        dest: 'build'
         ext: '.js'
-      }
-    },
 
     # Concatenate compiled JavaScript files
     # Note: Order is significant due to namespacing
-    concat: {
-      core: {
-        options: {
+    concat:
+      core:
+        options:
           banner: '<%= meta.core.banner %>'
-        },
         src: [
-          'build/scripts/<%= pkg.name %>.js',
-          'build/scripts/<%= pkg.name %>/utils/**/*.js',
-          'vendor/byte-buffer/dist/byte-buffer.js',
-          'vendor/jsbn/dist/jsbn.js',
-          'vendor/underscore/underscore.js',
-          'vendor/backbone/backbone.js',
-          'build/scripts/<%= pkg.name %>/crypto/hash/**/*.js',
-          'build/scripts/<%= pkg.name %>/crypto/**/*.js',
-          'build/scripts/<%= pkg.name %>/datastructures/**/*.js',
-          'build/scripts/<%= pkg.name %>/net/**/*.js',
-          'build/scripts/<%= pkg.name %>/entities/**/*.js',
-          'build/scripts/<%= pkg.name %>/expansions/expansion.js',
-          'build/scripts/<%= pkg.name %>/expansions/wotlk/wotlk.js',
-          'build/scripts/<%= pkg.name %>/expansions/wotlk/enums/**/*.js',
-          'build/scripts/<%= pkg.name %>/expansions/wotlk/net/**/*.js',
-          'build/scripts/<%= pkg.name %>/expansions/wotlk/**/*.js',
+          'build/scripts/<%= pkg.name %>.js'
+          'build/scripts/<%= pkg.name %>/utils/**/*.js'
+          'vendor/byte-buffer/dist/byte-buffer.js'
+          'vendor/jsbn/dist/jsbn.js'
+          'vendor/underscore/underscore.js'
+          'vendor/backbone/backbone.js'
+          'build/scripts/<%= pkg.name %>/crypto/hash/**/*.js'
+          'build/scripts/<%= pkg.name %>/crypto/**/*.js'
+          'build/scripts/<%= pkg.name %>/datastructures/**/*.js'
+          'build/scripts/<%= pkg.name %>/net/**/*.js'
+          'build/scripts/<%= pkg.name %>/entities/**/*.js'
+          'build/scripts/<%= pkg.name %>/expansions/expansion.js'
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/wotlk.js'
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/enums/**/*.js'
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/net/**/*.js'
+          'build/scripts/<%= pkg.name %>/expansions/wotlk/**/*.js'
           'build/scripts/<%= pkg.name %>/sessions/**/*.js'
-        ],
+        ]
         dest: 'dist/scripts/<%= pkg.name %>.js'
-      },
-      ui: {
-        options: {
+      ui:
+        options:
           banner: '<%= meta.ui.banner %>'
-        },
-        files: {
+        files:
           'dist/scripts/<%= pkg.name %>-ui.js': [
-            'vendor/angular/angular.js',
-            'vendor/threejs/build/three.js',
-            'vendor/threejs/examples/js/controls/OrbitControls.js',
-            'build/scripts/<%= pkg.name %>/ui.js',
+            'vendor/angular/angular.js'
+            'vendor/threejs/build/three.js'
+            'vendor/threejs/examples/js/controls/OrbitControls.js'
+            'build/scripts/<%= pkg.name %>/ui.js'
             'build/scripts/<%= pkg.name %>/ui/**/*.js'
           ]
-        }
-      }
-    },
 
     # Lints project files using JSHint
-    jshint: {
-      options: {
-        boss: true,
-        eqnull: true,
+    jshint:
+      options:
+        boss: true
+        eqnull: true
         shadow: true
-      },
-      core: {
+      core:
         src: [
-          'build/scripts/**/*.js',
-          '!build/scripts/<%= pkg.name %>/ui.js',
+          'build/scripts/**/*.js'
+          '!build/scripts/<%= pkg.name %>/ui.js'
           '!build/scripts/<%= pkg.name %>/ui/**/*.js'
         ]
-      },
-      ui: {
+      ui:
         src: [
-          'build/scripts/<%= pkg.name %>/ui.js',
+          'build/scripts/<%= pkg.name %>/ui.js'
           'build/scripts/<%= pkg.name %>/ui/**/*.js'
         ]
-      }
-    },
 
     # Minified distribution
-    uglify: {
-      core: {
-        options: {
+    uglify:
+      core:
+        options:
           banner: '<%= meta.core.banner %>'
-        },
-        files: {
+        files:
           'dist/scripts/<%= pkg.name %>.min.js': ['<%= concat.core.dest %>']
-        }
-      },
-      ui: {
-        options: {
+      ui:
+        options:
           banner: '<%= meta.ui.banner %>'
-        },
-        files: {
+        files:
           'dist/scripts/<%= pkg.name %>-ui.min.js': ['<%= concat.ui.dest %>']
-        }
-      }
-    },
 
     # Watch for file changes
-    watch: {
-      grunt: {
-        files: ['Gruntfile.coffee'],
+    watch:
+      grunt:
+        files: ['Gruntfile.coffee']
         tasks: ['build']
-      }
-      core: {
+      core:
         files: [
-          'src/scripts/**/*.coffee',
-          '!src/scripts/<%= pkg.name %>/ui.coffee',
+          'src/scripts/**/*.coffee'
+          '!src/scripts/<%= pkg.name %>/ui.coffee'
           '!src/scripts/<%= pkg.name %>/ui/**/*.coffee'
-        ],
+        ]
         tasks: ['build:core']
-      }
-      ui: {
+      ui:
         files: [
-          'src/scripts/<%= pkg.name %>/ui.coffee',
+          'src/scripts/<%= pkg.name %>/ui.coffee'
           'src/scripts/<%= pkg.name %>/ui/**/*.coffee'
-        ],
+        ]
         tasks: ['build:ui']
-      }
-    }
-  }
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
