@@ -1,7 +1,7 @@
 class Wowser.ui.screens.Authentication
 
-  constructor: (@$scope, @$rootScope) ->
-    @session = new Wowser(Wowser.expansions.wotlk)
+  constructor: (@$scope) ->
+    @session = @$scope.session
     @host = 'localhost'
     @username = ''
     @password = ''
@@ -10,8 +10,8 @@ class Wowser.ui.screens.Authentication
       @authenticate()
 
     @session.auth.on 'authenticate', =>
-      @$rootScope.state = 'realm-selection'
-      @$rootScope.$apply()
+      @$scope.$apply =>
+        @session.screen = 'realm-selection'
 
     @session.auth.on 'reject', =>
       @session.auth.disconnect()
