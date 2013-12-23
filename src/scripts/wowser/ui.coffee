@@ -4,4 +4,5 @@ class Wowser.ui
   @VERSION = '0.0.1'
 
   # Package structure
+  @panels = {}
   @screens = {}
