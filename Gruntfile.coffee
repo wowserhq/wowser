@@ -32,21 +32,42 @@ module.exports = (grunt) ->
 
     # Cleans build folders
     clean: {
-      scripts: ['build/scripts'],
-      styles:  ['build/styles']
+      core: [
+        'build/scripts/**/*.js',
+        '!build/scripts/<%= pkg.name %>/ui.js',
+        '!build/scripts/<%= pkg.name %>/ui/**/*.js'
+      ],
+      ui: [
+        'build/scripts/<%= pkg.name %>/ui.js',
+        'build/scripts/<%= pkg.name %>/ui/**/*.js'
+      ]
     },
 
     # Compiles CoffeeScript source
     coffee: {
-      all: {
+      options: {
+        bare: true
+      }
+      core: {
         expand: true,
         cwd: 'src',
-        src: '**/*.coffee',
+        src: [
+          'scripts/**/*.coffee',
+          '!scripts/<%= pkg.name %>/ui.coffee',
+          '!scripts/<%= pkg.name %>/ui/**/*.coffee'
+        ],
         dest: 'build',
-        ext: '.js',
-        options: {
-          bare: true
-        }
+        ext: '.js'
+      },
+      ui: {
+        expand: true,
+        cwd: 'src',
+        src: [
+          'scripts/<%= pkg.name %>/ui.coffee',
+          'scripts/<%= pkg.name %>/ui/**/*.coffee'
+        ],
+        dest: 'build',
+        ext: '.js'
       }
     },
 
@@ -82,12 +103,15 @@ module.exports = (grunt) ->
         options: {
           banner: '<%= meta.ui.banner %>'
         },
-        src: [
-          'vendor/angular/angular.js',
-          'build/scripts/<%= pkg.name %>/ui.js',
-          'build/scripts/<%= pkg.name %>/ui/**/*.js'
-        ],
-        dest: 'dist/scripts/<%= pkg.name %>-ui.js'
+        files: {
+          'dist/scripts/<%= pkg.name %>-ui.js': [
+            'vendor/angular/angular.js',
+            'vendor/threejs/build/three.js',
+            'vendor/threejs/examples/js/controls/OrbitControls.js',
+            'build/scripts/<%= pkg.name %>/ui.js',
+            'build/scripts/<%= pkg.name %>/ui/**/*.js'
+          ]
+        }
       }
     },
 
@@ -98,9 +122,19 @@ module.exports = (grunt) ->
         eqnull: true,
         shadow: true
       },
-      files: [
-        'build/**/*.js'
-      ]
+      core: {
+        src: [
+          'build/scripts/**/*.js',
+          '!build/scripts/<%= pkg.name %>/ui.js',
+          '!build/scripts/<%= pkg.name %>/ui/**/*.js'
+        ]
+      },
+      ui: {
+        src: [
+          'build/scripts/<%= pkg.name %>/ui.js',
+          'build/scripts/<%= pkg.name %>/ui/**/*.js'
+        ]
+      }
     },
 
     # Minified distribution
@@ -125,11 +159,25 @@ module.exports = (grunt) ->
 
     # Watch for file changes
     watch: {
-      files: [
-        'Gruntfile.coffee',
-        'src/**/*'
-      ],
-      tasks: ['build']
+      grunt: {
+        files: ['Gruntfile.coffee'],
+        tasks: ['build']
+      }
+      core: {
+        files: [
+          'src/scripts/**/*.coffee',
+          '!src/scripts/<%= pkg.name %>/ui.coffee',
+          '!src/scripts/<%= pkg.name %>/ui/**/*.coffee'
+        ],
+        tasks: ['build:core']
+      }
+      ui: {
+        files: [
+          'src/scripts/<%= pkg.name %>/ui.coffee',
+          'src/scripts/<%= pkg.name %>/ui/**/*.coffee'
+        ],
+        tasks: ['build:ui']
+      }
     }
   }
 
@@ -140,5 +188,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
-  grunt.registerTask 'default', ['watch']
-  grunt.registerTask 'build',   ['coffee', 'jshint', 'concat']
+  grunt.registerTask 'default',      ['watch']
+
+  grunt.registerTask 'build:core',   ['clean:core', 'coffee:core', 'jshint:core', 'concat:core']
+  grunt.registerTask 'build:ui',     ['clean:ui', 'coffee:ui', 'jshint:ui', 'concat:ui']
+  grunt.registerTask 'build',        ['build:core', 'build:ui']
