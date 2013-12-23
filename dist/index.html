@@ -8,48 +8,8 @@
     <script src="./scripts/wowser-ui.js"></script>
   </head>
   <body>
-    <wowser data-ng-app ng-switch="state">
-
-      <section data-ng-controller="Wowser.ui.screens.Authentication as auth" ng-switch-default>
-        <h1>Authentication</h1>
-
-        <fieldset>
-          <label>Host</label>
-          <input type="text" ng-model="auth.host" />
-
-          <label>Port</label>
-          <input type="number" ng-model="auth.port" />
-        </fieldset>
-
-        <fieldset>
-          <label>Username</label>
-          <input type="text" ng-model="auth.username" />
-
-          <label>Password</label>
-          <input type="text" ng-model="auth.password" />
-        </fieldset>
-
-        <button ng-click="auth.connect()">Connect</button>
-      </section>
-
-      <section ng-switch-when="realm-selection">
-        <h1>Realm Selection</h1>
-
-        <p>Coming soon</p>
-      </section>
-
-      <section ng-switch-when="character-selection">
-        <h1>Character Selection</h1>
-
-        <p>Coming soon</p>
-      </section>
-
-      <section ng-switch-when="world">
-        <h1>World</h1>
-
-        <p>Coming soon</p>
-      </section>
-
+    <wowser data-ng-app data-ng-controller="Wowser.ui.App">
+      <section data-ng-include="'templates/screens/' + session.screen + '.html'" />
     </wowser>
   </body>
 </html>
