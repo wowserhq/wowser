@@ -1,0 +1,10 @@
+<panel data-ng-controller="Wowser.ui.screens.CharacterSelection as character">
+  <h1>Character Selection</h1>
+
+  <form ng-submit="character.join()">
+    <select ng-model="character.selected" ng-options="c.name for c in character.session.characters.list"></select>
+
+    <input type="button" data-ng-click="character.refresh()" value="Refresh" />
+    <input type="submit" value="Join world" autofocus />
+  </form>
+</panel>
