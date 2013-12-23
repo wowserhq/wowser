@@ -89,15 +89,17 @@ Wowser.utils.ObjectUtil = (function() {
   function ObjectUtil() {}
 
   ObjectUtil.keyByValue = function(object, target) {
-    var key, value;
-    for (key in object) {
-      if (!__hasProp.call(object, key)) continue;
-      value = object[key];
-      if (target === value) {
-        return key;
+    var key, lookup, value;
+    if (!('lookup' in object)) {
+      lookup = {};
+      for (key in object) {
+        if (!__hasProp.call(object, key)) continue;
+        value = object[key];
+        lookup[value] = key;
       }
+      object.lookup = lookup;
     }
-    return null;
+    return object.lookup[target];
   };
 
   return ObjectUtil;
@@ -6694,6 +6696,19 @@ Wowser.entities.Config = (function() {
 
 })();
 
+Wowser.entities.Message = (function() {
+  function Message() {
+    this.timestamp = new Date();
+  }
+
+  Message.prototype.toString = function() {
+    return "[Message; Text: " + this.text + "; GUID: " + this.guid + "]";
+  };
+
+  return Message;
+
+})();
+
 Wowser.entities.Realm = (function() {
   function Realm() {
     this._host = null;
@@ -6777,6 +6792,10 @@ Wowser.expansions.Expansion = (function() {
 
   Expansion.getter('characterHandler', function() {
     return this.constructor.handlers.CharacterHandler;
+  });
+
+  Expansion.getter('chatHandler', function() {
+    return this.constructor.handlers.ChatHandler;
   });
 
   return Expansion;
@@ -7262,6 +7281,48 @@ Wowser.expansions.wotlk.handlers.CharacterHandler = (function() {
 
 })();
 
+Wowser.expansions.wotlk.handlers.ChatHandler = (function() {
+  var Message, WorldOpcode, WorldPacket;
+
+  ChatHandler.include(Backbone.Events);
+
+  Message = Wowser.entities.Message;
+
+  WorldOpcode = Wowser.expansions.wotlk.enums.WorldOpcode;
+
+  WorldPacket = Wowser.expansions.wotlk.net.WorldPacket;
+
+  function ChatHandler(session) {
+    this.session = session;
+    this.messages = [];
+    this.session.world.on('packet:receive:SMSG_MESSAGE_CHAT', this.handleMessage, this);
+  }
+
+  ChatHandler.prototype.send = function(message) {
+    throw new Error('Sending chat messages is not yet implemented');
+  };
+
+  ChatHandler.prototype.handleMessage = function(wp) {
+    var flags, guid1, guid2, lang, len, message, text, type;
+    type = wp.readUnsignedByte();
+    lang = wp.readUnsignedInt();
+    guid1 = wp.readGUID();
+    wp.readUnsignedInt();
+    guid2 = wp.readGUID();
+    len = wp.readUnsignedInt();
+    text = wp.readString(len);
+    flags = wp.readUnsignedByte();
+    message = new Message();
+    message.text = text;
+    message.guid = guid1;
+    this.messages.push(message);
+    return this.trigger('message', message);
+  };
+
+  return ChatHandler;
+
+})();
+
 Wowser.expansions.wotlk.handlers.RealmHandler = (function() {
   var AuthOpcode, AuthPacket, ObjectUtil, Realm;
 
@@ -7342,6 +7403,7 @@ Wowser.expansions.wotlk.handlers.WorldHandler = (function(_super) {
     this.on('data:receive', this.dataReceived, this);
     this.on('packet:receive:SMSG_AUTH_CHALLENGE', this.handleAuthChallenge, this);
     this.on('packet:receive:SMSG_AUTH_RESPONSE', this.handleAuthResponse, this);
+    this.on('packet:receive:SMSG_LOGIN_VERIFY_WORLD', this.handleWorldLogin, this);
   }
 
   WorldHandler.prototype.connect = function(host, port) {
@@ -7454,6 +7516,10 @@ Wowser.expansions.wotlk.handlers.WorldHandler = (function(_super) {
     return this.trigger('authenticate');
   };
 
+  WorldHandler.prototype.handleWorldLogin = function(wp) {
+    return this.trigger('join');
+  };
+
   return WorldHandler;
 
 })(Wowser.net.Socket);
@@ -7473,6 +7539,7 @@ Wowser.sessions.Session = (function() {
     this.realms = new expansion.realmHandler(this);
     this.world = new expansion.worldHandler(this);
     this.characters = new expansion.characterHandler(this);
+    this.chat = new expansion.chatHandler(this);
   }
 
   return Session;
