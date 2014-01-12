@@ -7,6 +7,7 @@
     "byte-buffer": "git://github.com/timkurvers/byte-buffer.git",
     "jsbn": "git://github.com/timkurvers/jsbn.git",
     "threejs": "git://github.com/mrdoob/three.js.git",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "normalize-css": "~2.1.3"
   }
 }

@@ -50,6 +50,7 @@ module.exports = (grunt) ->
       ui: [
         'build/scripts/<%= pkg.name %>/ui.js'
         'build/scripts/<%= pkg.name %>/ui/**/*.js'
+        'build/styles'
       ]
 
     # Compiles CoffeeScript sources
@@ -76,7 +77,7 @@ module.exports = (grunt) ->
         dest: 'build'
         ext: '.js'
 
-    # Concatenate compiled JavaScript files
+    # Concatenates release files
     # Note: Order is significant due to namespacing
     concat:
       core:
@@ -113,6 +114,12 @@ module.exports = (grunt) ->
             'build/scripts/<%= pkg.name %>/ui.js'
             'build/scripts/<%= pkg.name %>/ui/**/*.js'
           ]
+          '<%= dist.release.ui.style %>': [
+            'vendor/normalize-css/normalize.css'
+            'build/styles/wowser.css'
+            'build/styles/wowser/**/*.css'
+            'build/styles/**/*.css'
+          ]
 
     # Lints project files using JSHint
     jshint:
@@ -131,6 +138,22 @@ module.exports = (grunt) ->
           'build/scripts/<%= pkg.name %>/ui.js'
           'build/scripts/<%= pkg.name %>/ui/**/*.js'
         ]
+
+    # Compiles Stylus sources
+    stylus:
+      ui:
+        options:
+          compress: false
+          import: [
+            'nib'
+          ]
+        expand: true
+        cwd: 'src'
+        src: [
+          'styles/**/*.styl'
+        ]
+        dest: 'build'
+        ext: '.css'
 
     # Minified distribution
     uglify:
@@ -161,6 +184,7 @@ module.exports = (grunt) ->
         files: [
           'src/scripts/<%= pkg.name %>/ui.coffee'
           'src/scripts/<%= pkg.name %>/ui/**/*.coffee'
+          'src/styles/**/*.styl'
         ]
         tasks: ['build:ui']
 
@@ -168,13 +192,14 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-jshint'
+  grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
   grunt.registerTask 'default',      ['watch']
 
   grunt.registerTask 'build:core',   ['clean:core', 'coffee:core', 'jshint:core', 'concat:core']
-  grunt.registerTask 'build:ui',     ['clean:ui', 'coffee:ui', 'jshint:ui', 'concat:ui']
+  grunt.registerTask 'build:ui',     ['clean:ui', 'coffee:ui', 'jshint:ui', 'stylus:ui', 'concat:ui']
   grunt.registerTask 'build',        ['build:core', 'build:ui']
 
   grunt.registerTask 'release:core', ['build:core', 'uglify:core']
