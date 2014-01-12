@@ -52,7 +52,7 @@ module.exports = (grunt) ->
         'build/scripts/<%= pkg.name %>/ui/**/*.js'
       ]
 
-    # Compiles CoffeeScript source
+    # Compiles CoffeeScript sources
     coffee:
       options:
         bare: true
