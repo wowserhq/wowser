@@ -1,7 +1,8 @@
-<panel class="chat" data-ng-controller="Wowser.ui.panels.Chat as chat">
+<section class="frame chat" data-ng-controller="Wowser.ui.panels.Chat as chat">
+  <h2>Chat</h2>
   <ul>
     <li data-ng-repeat="message in chat.session.chat.messages">
       [{{message.timestamp}}] {{message.text}}
     </li>
   </ul>
-</panel>
+</section>
