@@ -1,0 +1,24 @@
+.wowser
+
+  input[type='submit'], button
+    margin: .4em 0 .3em .5em
+    border: none
+    border-radius: 4px
+    background-image: linear-gradient(180deg, #990000 0%, #660000 60%, #660000 100%)
+    border-width: 1px
+    border-style: solid
+    border-color: #E50202 #330000 #330000 #E50202
+    color: #FFFFFF
+    text-shadow: 1px 1px 0px #330000
+    font-smoothing: antialiased
+    outline: none
+
+    &:active, &.active
+      background-image: linear-gradient(180deg, #660000 0%, #660000 26%, #990000 100%)
+      border-color: #330000 #E50202 #E50202 #330000
+
+    &:hover, &.hover
+      color: #FFCC00
+
+    &[disabled]
+      color: #990000 !important
