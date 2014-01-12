@@ -10,8 +10,21 @@
     <link href="https://fonts.googleapis.com/css?family=Galdeano" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <wowser data-ng-app data-ng-controller="Wowser.ui.App">
-      <section data-ng-include="'templates/screens/' + session.screen + '.html'" />
-    </wowser>
+    <div class="wowser" data-ng-app data-ng-controller="Wowser.ui.App">
+      <section class="branding">
+        <header>Wowser</header>
+        <div class="divider"></div>
+        <div class="slogan">World of Warcraft in the browser</div>
+      </section>
+
+      <select class="screen-selector" data-ng-model="session.screen">
+        <option value="authentication">Authentication</option>
+        <option value="realm-selection">Realm Selection</option>
+        <option value="character-selection">Character Selection</option>
+        <option value="world">World</option>
+      </select>
+
+      <div class="screen {{session.screen}}" data-ng-include="'templates/screens/' + session.screen + '.html'"></div>
+    </div>
   </body>
 </html>
