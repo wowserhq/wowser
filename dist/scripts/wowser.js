@@ -1,6 +1,6 @@
 /**
  * Wowser v0.0.1
- * Copyright (c) 2013 Tim Kurvers <http://moonsphere.net>
+ * Copyright (c) 2014 Tim Kurvers <http://moonsphere.net>
  *
  * World of Warcraft in the browser using JavaScript and WebGL.
  *
