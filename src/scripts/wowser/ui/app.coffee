@@ -1,5 +1,5 @@
 class Wowser.ui.App
 
-  constructor: (@$scope, @$window) ->
+  constructor: (@$scope) ->
     @session = @$scope.session = new Wowser(Wowser.expansions.wotlk)
     @session.screen = 'authentication'
