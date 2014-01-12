@@ -4,7 +4,9 @@
   <div class="divider"></div>
 
   <form ng-submit="character.join()">
-    <select ng-model="character.selected" ng-options="c.name for c in character.session.characters.list"></select>
+    <fieldset>
+      <select ng-model="character.selected" ng-options="c.name for c in character.session.characters.list"></select>
+    </fieldset>
 
     <div class="divider"></div>
 

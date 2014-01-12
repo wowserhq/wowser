@@ -4,7 +4,9 @@
   <div class="divider"></div>
 
   <form ng-submit="realm.connect()">
-    <select ng-model="realm.selected" ng-options="r.name for r in realm.session.realms.list"></select>
+    <fieldset>
+      <select ng-model="realm.selected" ng-options="r.name for r in realm.session.realms.list"></select>
+    </fieldset>
 
     <div class="divider"></div>
 
