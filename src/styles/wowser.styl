@@ -1,0 +1,40 @@
+html, body
+  width: 100%
+  height: 100%
+  overflow: hidden
+
+*
+  box-sizing: border-box
+
+.wowser
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 100%
+  height: 100%
+  background: #222222
+  font-family: Galdeano
+  font-size: 13px
+  font-smoothing: antialiased
+  color: #FFFFFF
+
+  .branding
+    absolute: top 10px right 10px
+    z-index: 2
+
+    header
+      width: 204px
+      height: 47px
+      background: url('../images/logo.png') no-repeat
+      hide-text()
+
+    .divider
+      margin: 5px 0
+
+    .slogan
+      color: #FFCC00
+      letter-spacing: .075em
+
+  select.screen-selector
+    absolute: top 100px right 10px
+    z-index: 1
