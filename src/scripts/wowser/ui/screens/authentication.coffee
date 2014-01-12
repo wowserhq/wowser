@@ -3,6 +3,7 @@ class Wowser.ui.screens.Authentication
   constructor: (@$scope) ->
     @session = @$scope.session
     @host = 'localhost'
+    @port = @session.auth.constructor.PORT
     @username = ''
     @password = ''
 
