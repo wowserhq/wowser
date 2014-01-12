@@ -4,6 +4,17 @@
     position: relative
     margin: 10px
 
+    &:before
+      content: ' '
+      display: block
+      position: absolute
+      top: -3px
+      bottom: -3px
+      left: -3px
+      right: -3px
+      z-index: -1
+      background: rgba(0, 0, 0, .3)
+
   .frame
     border-width: 5px
     border-image: url('../images/frames/thin.png') 5 5 5 5 repeat
