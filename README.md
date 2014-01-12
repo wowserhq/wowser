@@ -40,15 +40,9 @@ To utilize raw TCP connections a WebSocket proxy is required for JavaScript clie
    websockify 8129 host:8129
    ```
 
-4. Clone this project:
+4. Visit http://timkurvers.github.io/wowser in your favourite modern browser.
 
-   ```shell
-   git clone git://github.com/timkurvers/wowser.git
-   ```
-
-5. Configure `index.html` with the correct host, username and password.
-
-6. Open `index.html` in your favourite modern browser (Chrome 20+, Firefox 15+, Safari 5+) and see the console for activity.
+5. For more insight into what's going on, open the developer tools and view the console.
 
 
 ## Development & Contribution
