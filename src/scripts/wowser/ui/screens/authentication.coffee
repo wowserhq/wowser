@@ -18,7 +18,7 @@ class Wowser.ui.screens.Authentication
       @session.auth.disconnect()
 
   connect: ->
-    @session.auth.connect(@host)
+    @session.auth.connect(@host, @port)
 
   authenticate: ->
     @session.auth.authenticate(@username, @password)
