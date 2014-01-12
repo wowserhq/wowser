@@ -1,0 +1,48 @@
+.wowser
+
+  .frame, .panel
+    position: relative
+    margin: 10px
+
+  .frame
+    border-width: 5px
+    border-image: url('../images/frames/thin.png') 5 5 5 5 repeat
+
+    .divider
+
+      &, &.horizontal
+        margin-left: -3px
+        margin-right: -3px
+
+    &.thick
+      border-width: 11px
+      border-image: url('../images/frames/thick.png') 11 11 11 11 repeat
+
+      .divider
+
+        &, &.horizontal
+          margin-left: -5px
+          margin-right: -5px
+
+  .panel
+    border-width: 23px
+    border-image: url('../images/frames/panel.png') 23 23 23 23 repeat
+
+    .icon.portrait
+      absolute: top -30px left -46px
+
+      & + h1, & + h2, & + h3
+        margin-left: 1.5em
+
+    .divider
+
+      &, &.horizontal
+        margin-left: -6px
+        margin-right: -6px
+
+    &.headless
+      border-width: 11px 23px 23px 23px
+      border-image: url('../images/frames/panel-headless.png') 11 23 23 23 repeat
+
+      .icon.portrait
+        top: -20px
