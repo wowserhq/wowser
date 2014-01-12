@@ -171,6 +171,8 @@ module.exports = (grunt) ->
     # Watch for file changes
     watch:
       grunt:
+        options:
+          atBegin: true
         files: ['Gruntfile.coffee']
         tasks: ['build']
       core:
