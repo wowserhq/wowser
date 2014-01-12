@@ -1,6 +1,8 @@
 <section class="panel" data-ng-controller="Wowser.ui.screens.Authentication as auth">
   <h1>Authentication</h1>
 
+  <div class="divider"></div>
+
   <form ng-submit="auth.connect()">
     <fieldset>
       <label>Host</label>
@@ -17,6 +19,8 @@
       <label>Password</label>
       <input type="password" data-ng-model="auth.password" />
     </fieldset>
+
+    <div class="divider"></div>
 
     <input type="submit" value="Connect" />
   </form>
