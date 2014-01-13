@@ -2,24 +2,30 @@
 
   input[type='submit'], input[type='button'], button
     margin: .4em 0 .3em .5em
+    padding: .2em 1em
     border: none
     border-radius: 4px
     background-image: linear-gradient(180deg, #990000 0%, #660000 60%, #660000 100%)
     border-width: 1px
     border-style: solid
-    border-color: #E50202 #330000 #330000 #E50202
+    border-color: #E50202 #990000 #770000 #E50202
     color: #FFFFFF
     text-shadow: 1px 1px 0px #330000
     font-size: 13px
     font-smoothing: antialiased
     outline: none
 
-    &:active, &.active
+    &:enabled:active
       background-image: linear-gradient(180deg, #660000 0%, #660000 26%, #990000 100%)
-      border-color: #330000 #E50202 #E50202 #330000
+      border-color: #330000
+      transform: scale(.97)
+      text-shadow: none
+      box-shadow: -1px -1px 1px rgba(#000000, .2), 1px 1px 1px rgba(#000000, .2)
 
-    &:hover, &.hover
+    &:enabled:hover
       color: #FFCC00
 
-    &[disabled]
-      color: #990000 !important
+    &:disabled
+      background-image: linear-gradient(180deg, #4A0000 0%, #2A0000 100%)
+      border-color: #8A0000 #400000 #400000 #8A0000
+      color: #990000
