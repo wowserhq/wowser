@@ -8,7 +8,7 @@ class Wowser.ui.screens.World
     @camera.position.y = 500
     @camera.position.x = 500
 
-    @controls = new THREE.OrbitControls @camera
+    @controls = new THREE.OrbitControls @camera, @$element[0]
     @controls.noKeys = true
     @controls.minPolarAngle = Math.PI * 0.05
     @controls.maxPolarAngle = Math.PI * 0.45
