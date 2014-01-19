@@ -613,12 +613,45 @@ body {
   background: url("../images/icon-portrait.png") no-repeat;
 }
 
-.wowser .frame.chat {
+.wowser .chat {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 30%;
   width: 300px;
+}
+.wowser .chat ul {
+  height: 182px;
+  padding: 0;
+  margin: 0.4em;
+  list-style: none;
+  overflow: auto;
+}
+.wowser .chat .message {
+  font-size: 14px;
+}
+.wowser .chat .message.system {
+  color: #fc0;
+}
+.wowser .chat .message.info {
+  color: #26c9ff;
+}
+.wowser .chat .message.error {
+  color: #f00;
+}
+.wowser .chat .message.channel {
+  color: #ffb872;
+}
+.wowser .chat .message.whisper {
+  color: #ff72ff;
+}
+.wowser .chat .message.guild {
+  color: #2cb200;
+}
+.wowser .chat form {
+  margin: 10px;
+}
+.wowser .chat form input {
+  width: 100%;
 }
 
 .wowser .panel.quest-log {
@@ -738,12 +771,7 @@ body {
 }
 
 .wowser .screen.world .hud {
-  position: absolute;
-  top: 0;
-  left: 0;
   z-index: 2;
-  width: 100%;
-  height: 100%;
   display: -webkit-box;
   display: -moz-box;
   display: -webkit-flex;
@@ -794,6 +822,7 @@ body {
 .wowser input[type='button'],
 .wowser button {
   margin: 0.4em 0 0.3em 0.5em;
+  padding: 0.2em 1em;
   border: none;
   -webkit-border-radius: 4px;
   border-radius: 4px;
@@ -804,36 +833,44 @@ body {
   background-image: linear-gradient(180deg, #900 0%, #600 60%, #600 100%);
   border-width: 1px;
   border-style: solid;
-  border-color: #e50202 #300 #300 #e50202;
+  border-color: #e50202 #900 #700 #e50202;
   color: #fff;
   text-shadow: 1px 1px 0px #300;
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
   outline: none;
 }
-.wowser input[type='submit']:active,
-.wowser input[type='button']:active,
-.wowser button:active,
-.wowser input[type='submit'].active,
-.wowser input[type='button'].active,
-.wowser button.active {
+.wowser input[type='submit']:enabled:active,
+.wowser input[type='button']:enabled:active,
+.wowser button:enabled:active {
   background-image: -webkit-linear-gradient(270deg, #600 0%, #600 26%, #900 100%);
   background-image: -moz-linear-gradient(270deg, #600 0%, #600 26%, #900 100%);
   background-image: -o-linear-gradient(270deg, #600 0%, #600 26%, #900 100%);
   background-image: -ms-linear-gradient(270deg, #600 0%, #600 26%, #900 100%);
   background-image: linear-gradient(180deg, #600 0%, #600 26%, #900 100%);
-  border-color: #300 #e50202 #e50202 #300;
+  border-color: #300;
+  -webkit-transform: scale(0.97);
+  -moz-transform: scale(0.97);
+  -o-transform: scale(0.97);
+  -ms-transform: scale(0.97);
+  transform: scale(0.97);
+  text-shadow: none;
+  -webkit-box-shadow: -1px -1px 1px rgba(0,0,0,0.2), 1px 1px 1px rgba(0,0,0,0.2);
+  box-shadow: -1px -1px 1px rgba(0,0,0,0.2), 1px 1px 1px rgba(0,0,0,0.2);
 }
-.wowser input[type='submit']:hover,
-.wowser input[type='button']:hover,
-.wowser button:hover,
-.wowser input[type='submit'].hover,
-.wowser input[type='button'].hover,
-.wowser button.hover {
+.wowser input[type='submit']:enabled:hover,
+.wowser input[type='button']:enabled:hover,
+.wowser button:enabled:hover {
   color: #fc0;
 }
-.wowser input[type='submit'][disabled],
-.wowser input[type='button'][disabled],
-.wowser button[disabled] {
-  color: #900 !important;
+.wowser input[type='submit']:disabled,
+.wowser input[type='button']:disabled,
+.wowser button:disabled {
+  background-image: -webkit-linear-gradient(270deg, #4a0000 0%, #2a0000 100%);
+  background-image: -moz-linear-gradient(270deg, #4a0000 0%, #2a0000 100%);
+  background-image: -o-linear-gradient(270deg, #4a0000 0%, #2a0000 100%);
+  background-image: -ms-linear-gradient(270deg, #4a0000 0%, #2a0000 100%);
+  background-image: linear-gradient(180deg, #4a0000 0%, #2a0000 100%);
+  border-color: #8a0000 #400000 #400000 #8a0000;
+  color: #900;
 }
