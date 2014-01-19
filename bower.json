@@ -2,7 +2,7 @@
   "name": "wowser",
   "version": "0.0.1",
   "dependencies": {
-    "angular": "~1.2.8",
+    "angular": "1.2.8",
     "backbone": "~1.1.0",
     "byte-buffer": "git://github.com/timkurvers/byte-buffer.git",
     "jsbn": "git://github.com/timkurvers/jsbn.git",
