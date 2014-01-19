@@ -1,4 +1,37 @@
-.wowser .frame.chat
+.wowser .chat
   absolute: bottom 0 left 0
-  height: 30%
   width: 300px
+
+  ul
+    height: 182px
+    padding: 0
+    margin: .4em
+    list-style: none
+    overflow: auto
+
+  .message
+    font-size: 14px
+
+    &.system
+      color: #FFCC00
+
+    &.info
+      color: #26C9FF
+
+    &.error
+      color: #FF0000
+
+    &.channel
+      color: #FFB872
+
+    &.whisper
+      color: #FF72FF
+
+    &.guild
+      color: #2CB200
+
+  form
+    margin: 10px
+
+    input
+      width: 100%
