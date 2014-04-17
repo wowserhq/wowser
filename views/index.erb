@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <title>Wowser</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <script src="./scripts/wowser.js"></script>
-    <script src="./scripts/wowser-ui.js"></script>
-    <link href="./styles/wowser-ui.css" media="all" rel="stylesheet" />
+    <%= javascript_tag 'wowser' %>
+    <%= javascript_tag 'wowser/ui' %>
+    <%= stylesheet_tag 'wowser' %>
     <link href="https://fonts.googleapis.com/css?family=Galdeano" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -24,7 +24,7 @@
         <option value="world">World</option>
       </select>
 
-      <div class="screen {{session.screen}}" data-ng-include="'templates/screens/' + session.screen + '.html'"></div>
+      <div class="screen {{session.screen}}" data-ng-include="'assets/screens/' + session.screen + '.html'"></div>
     </div>
   </body>
 </html>
