@@ -1,0 +1,25 @@
+=hide-text
+  overflow: hidden
+
+  &:before
+    content: ''
+    display: block
+    width: 0
+    height: 100%
+
+=position($position, $coordinates)
+  position: $position
+  @each $coord in $coordinates
+    $index: index($coordinates, $coord)
+    @if $index % 2 == 1
+      $value: nth($coordinates, $index + 1)
+      #{$coord}: $value
+
+=absolute($coordinates)
+  +position(absolute, $coordinates)
+
+=relative($coordinates)
+  +position(relative, $coordinates)
+
+=fixed($coordinates)
+  +position(fixed, $coordinates)

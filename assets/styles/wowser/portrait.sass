@@ -1,24 +1,26 @@
+@import 'wowser/mixins'
+
 .wowser section.portrait
   width: 178px
   height: 60px
-  background: url('../images/portrait.png') no-repeat
+  background: image-url('portrait.png') no-repeat
 
   .icon
-    absolute: top -4px left -4px
+    +absolute(top -4px left -4px)
     z-index: 1
 
   .name
-    absolute: top 4px left 64px
+    +absolute(top 4px left 64px)
     color: #FFCC00
     font-size: 15px
 
   .level
-    absolute: top 6px right 12px
+    +absolute(top 6px right 12px)
     font-size: 11px
 
   .divider
+    +absolute(top 20px right 3px)
     width: 113px
-    absolute: top 20px right 3px
 
   .health, .energy
     width: 115px
@@ -29,11 +31,11 @@
     text-align: center
 
   .health
-    absolute: bottom 23px right 6px
+    +absolute(bottom 23px right 6px)
     background-image: linear-gradient(180deg, #330000 0%, #990000 100%)
     box-shadow: -1px -1px 0px #660000, 1px 1px 0px #E50202
 
   .energy
-    absolute: bottom 7px right 20px
+    +absolute(bottom 7px right 20px)
     background-image: linear-gradient(180deg, #021D39 0%, #0B4C93 100%)
     box-shadow: -1px -1px 0px #063467, 1px 1px 0px #146CD0
