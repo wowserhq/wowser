@@ -1,6 +1,6 @@
 require 'sinatra/asset_pipeline'
 require 'sinatra/base'
-require 'sinatra/contrib'
+require 'sinatra/reloader'
 
 class Wowser < Sinatra::Base
 
