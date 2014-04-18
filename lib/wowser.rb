@@ -4,9 +4,9 @@ require 'sinatra/reloader'
 
 class Wowser < Sinatra::Base
 
-  set :root, File.dirname(__FILE__) + '/../'
-
   configure do
+    set :root, File.dirname(__FILE__) + '/../'
+
     register Sinatra::AssetPipeline
 
     # Locate vendor assets installed through Bower
