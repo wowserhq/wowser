@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 ruby '2.1.0'
 
+# Ruby library for mastering the wizardry that is Blizzard's game files
+gem 'blizzardry', github: 'timkurvers/blizzardry'
+
 # Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort
 gem 'sinatra'
 

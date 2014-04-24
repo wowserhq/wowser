@@ -1,13 +1,23 @@
+GIT
+  remote: git://github.com/timkurvers/blizzardry.git
+  revision: 191f0eb2f5364004dbb171b49dee55b0c64e93a3
+  specs:
+    blizzardry (0.0.0)
+      bindata (~> 2.0.0)
+      ffi (~> 1.9.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.0)
+    bindata (2.0.0)
     coderay (1.1.0)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
     coffee-script-source (1.7.0)
     execjs (2.0.2)
+    ffi (1.9.3)
     hike (1.2.3)
     method_source (0.8.2)
     multi_json (1.9.2)
@@ -58,6 +68,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  blizzardry!
   pry
   sinatra
   sinatra-asset-pipeline
