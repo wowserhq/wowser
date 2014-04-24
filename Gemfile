@@ -9,3 +9,10 @@ gem 'sinatra-asset-pipeline'
 
 # Collection of useful Sinatra extensions
 gem 'sinatra-contrib'
+
+group :development do
+
+  # Powerful alternative to the standard IRB shell for Ruby
+  gem 'pry'
+
+end
