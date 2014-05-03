@@ -12,13 +12,13 @@
       <li class="message whisper incoming">Someone: This is an incoming whisper</li>
       <li class="message guild">[Guild] Someone: This is a guild message</li>
 
-      <li data-ng-repeat="message in chat.session.chat.messages">
+      <li class="message" data-ng-repeat="message in chat.session.chat.messages">
         {{message.text}}
       </li>
     </ul>
   </div>
 
   <form data-ng-submit="chat.send()">
-    <input type="text" value="" />
+    <input type="text" value="" data-ng-model="chat.message" />
   </form>
 </section>
