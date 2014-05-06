@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.1.0'
+ruby '2.1.1'
 
 # Ruby library for mastering the wizardry that is Blizzard's game files
 gem 'blizzardry', github: 'timkurvers/blizzardry'
