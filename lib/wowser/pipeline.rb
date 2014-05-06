@@ -1,7 +1,12 @@
+require 'pathname'
 require 'sinatra/base'
 require 'sinatra/reloader'
 
 class Wowser::Pipeline < Sinatra::Base
+
+  configure do
+    set :root, Pathname.pwd
+  end
 
   configure :development do
     register Sinatra::Reloader

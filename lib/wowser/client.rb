@@ -1,3 +1,4 @@
+require 'pathname'
 require 'sinatra/asset_pipeline'
 require 'sinatra/base'
 require 'sinatra/reloader'
@@ -5,7 +6,7 @@ require 'sinatra/reloader'
 class Wowser::Client < Sinatra::Base
 
   configure do
-    set :root, File.dirname(__FILE__) + '/../../'
+    set :root, Pathname.pwd
 
     register Sinatra::AssetPipeline
 
