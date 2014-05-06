@@ -1,16 +1,16 @@
 GIT
   remote: git://github.com/timkurvers/blizzardry.git
-  revision: 191f0eb2f5364004dbb171b49dee55b0c64e93a3
+  revision: db5eaa70bdb879edb5a3f1cfdc153e070106910a
   specs:
     blizzardry (0.0.0)
-      bindata (~> 2.0.0)
+      bindata (~> 2.1.0)
       ffi (~> 1.9.3)
 
 GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.0)
-    bindata (2.0.0)
+    bindata (2.1.0)
     coderay (1.1.0)
     coffee-script (2.2.0)
       coffee-script-source
