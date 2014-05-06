@@ -21,7 +21,6 @@ class Wowser::Expansion
   )
 
   def archives
-    identifier = self.class.identifier
     ARCHIVES.map do |archive|
       "data/#{identifier}/#{archive}"
     end
@@ -29,6 +28,10 @@ class Wowser::Expansion
 
   def archive
     @archive ||= Blizzardry::MPQ.open Dir[*archives], prefix: ''
+  end
+
+  def identifier
+    self.class.identifier
   end
 
   alias_method :available?, :archive
@@ -45,7 +48,7 @@ class Wowser::Expansion
     end
 
     def identifier
-      name.split('::').last.downcase
+      @identifier ||= name.split('::').last.downcase
     end
 
   end
