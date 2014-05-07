@@ -6,6 +6,7 @@ class Wowser::Pipeline < Sinatra::Base
 
   configure do
     set :root, Pathname.pwd
+    set :cache_folder, root + 'cache'
   end
 
   configure :development do
