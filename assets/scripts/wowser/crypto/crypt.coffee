@@ -1,11 +1,11 @@
 # Denotes packet cryptography
-class Wowser.crypto.Crypt
+class Wowser.Crypto.Crypt
 
   # Imports
   ARC4 = JSBN.crypto.prng.ARC4
-  ArrayUtil = Wowser.utils.ArrayUtil
+  ArrayUtil = Wowser.Utils.ArrayUtil
   HMAC = JSBN.crypto.hash.hmac.sha1
-  SHA1 = Wowser.crypto.hash.SHA1
+  SHA1 = Wowser.Crypto.Hash.SHA1
 
   # Creates crypt
   constructor: ->

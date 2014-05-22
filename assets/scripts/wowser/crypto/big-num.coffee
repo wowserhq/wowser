@@ -1,5 +1,5 @@
 # C-like BigNum decorator for JSBN's BigInteger
-class Wowser.crypto.BigNum
+class Wowser.Crypto.BigNum
 
   # Imports
   BigInteger = JSBN.math.BigInteger

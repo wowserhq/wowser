@@ -1,6 +1,6 @@
-class Wowser.ui.panels.Chat
+class Wowser.UI.Panels.Chat
 
-  Message = Wowser.entities.Message
+  Message = Wowser.Entities.Message
 
   constructor: (@$scope) ->
     @session = @$scope.session

@@ -1,5 +1,5 @@
 # Denotes a character
-class Wowser.entities.Character
+class Wowser.Entities.Character
 
   # Short string representation of this character
   toString: ->

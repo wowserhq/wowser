@@ -1,5 +1,5 @@
 # Array utility
-class Wowser.utils.ArrayUtil
+class Wowser.Utils.ArrayUtil
 
   # Generates array from given hex string
   @fromHex: (hex) ->

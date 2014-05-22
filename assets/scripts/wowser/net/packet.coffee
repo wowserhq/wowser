@@ -1,8 +1,8 @@
 # Denotes a network packet
-class Wowser.net.Packet extends ByteBuffer
+class Wowser.Net.Packet extends ByteBuffer
 
   # Imports
-  GUID = Wowser.datastructures.GUID
+  GUID = Wowser.Datastructures.GUID
 
   # Creates a new packet with given opcode from given source or length
   constructor: (opcode, source, outgoing=true) ->

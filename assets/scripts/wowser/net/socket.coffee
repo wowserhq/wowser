@@ -1,5 +1,5 @@
 # Base-class for any socket including signals and host/port management
-class Wowser.net.Socket
+class Wowser.Net.Socket
   @include Backbone.Events
 
   # Maximum buffer capacity

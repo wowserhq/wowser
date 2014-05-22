@@ -1,5 +1,5 @@
 # Configuration containing platform, operating system and locale
-class Wowser.entities.Config
+class Wowser.Entities.Config
 
   @LOCALE_ENGLISH_AMERICAN = 'enUS'
   @LOCALE_ENGLISH_BRITISH = 'enGB'

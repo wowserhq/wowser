@@ -14,12 +14,11 @@
 #= require_tree ./ui
 #= require_tree ../../templates
 
-class Wowser.ui
+class Wowser.UI
 
   # Denotes the version number
   @VERSION = '0.0.1'
 
-  # Package structure
-  @panels = {}
-  @screens = {}
-  @templates = {}
+  constructor: (@$scope) ->
+    @session = @$scope.session = new Wowser(Wowser.Expansion.WotLK)
+    @session.screen = 'authentication'

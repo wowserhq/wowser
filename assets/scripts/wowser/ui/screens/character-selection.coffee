@@ -1,4 +1,4 @@
-class Wowser.ui.screens.CharacterSelection
+class Wowser.UI.Screens.CharacterSelection
 
   constructor: (@$scope) ->
     @session = @$scope.session

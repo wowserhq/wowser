@@ -1,5 +1,5 @@
 # SHA-1 implementation
-class Wowser.crypto.hash.SHA1 extends Wowser.crypto.hash.Hash
+class Wowser.Crypto.Hash.SHA1 extends Wowser.Crypto.Hash
 
   # Finalizes this SHA-1 hash
   finalize: ->

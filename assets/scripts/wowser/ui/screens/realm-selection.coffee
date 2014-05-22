@@ -1,4 +1,4 @@
-class Wowser.ui.screens.RealmSelection
+class Wowser.UI.Screens.RealmSelection
 
   constructor: (@$scope) ->
     @session = @$scope.session

@@ -1,10 +1,10 @@
 # Secure Remote Password
 # http://tools.ietf.org/html/rfc2945
-class Wowser.crypto.SRP
+class Wowser.Crypto.SRP
 
   # Imports
-  BigNum = Wowser.crypto.BigNum
-  SHA1 = Wowser.crypto.hash.SHA1
+  BigNum = Wowser.Crypto.BigNum
+  SHA1 = Wowser.Crypto.Hash.SHA1
 
   # Creates new SRP instance with given constant prime and generator
   constructor: (N, g) ->

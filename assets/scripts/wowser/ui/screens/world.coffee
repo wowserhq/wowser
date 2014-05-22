@@ -1,4 +1,4 @@
-class Wowser.ui.screens.World
+class Wowser.UI.Screens.World
 
   constructor: (@$scope, @$element) ->
     @scene = new THREE.Scene()

@@ -1,5 +1,5 @@
 # Object utility
-class Wowser.utils.ObjectUtil
+class Wowser.Utils.ObjectUtil
 
   # Retrieves key for given value (if any) in object
   @keyByValue = (object, target) ->

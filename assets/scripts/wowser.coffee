@@ -13,15 +13,14 @@
 #= require jsbn/dist/jsbn
 #= require underscore/underscore
 #= require backbone/backbone
-#= require_tree ./wowser/utils
-#= require_tree ./wowser/crypto/hash
-#= require_tree ./wowser/crypto
-#= require_tree ./wowser/datastructures
-#= require_tree ./wowser/net
-#= require_tree ./wowser/entities
-#= require ./wowser/expansions/expansion
-#= require ./wowser/expansions/wotlk/wotlk
-#= require_tree ./wowser/sessions
+
+#= require ./wowser/utils
+#= require ./wowser/crypto
+#= require ./wowser/datastructures
+#= require ./wowser/net
+#= require ./wowser/entities
+#= require ./wowser/expansion
+#= require ./wowser/session
 
 class Wowser
 
@@ -31,17 +30,6 @@ class Wowser
   # World of Warcraft game identifier
   @IDENT = 'Wow '
 
-  # Package structure
-  @crypto = {
-    hash: {}
-  }
-  @datastructures = {}
-  @entities = {}
-  @expansions = {}
-  @net = {}
-  @sessions = {}
-  @utils = {}
-
   # Convenience constructor for starting a new Wowser session for given expansion
   constructor: (expansion, userAgent) ->
-    return new Wowser.sessions.Session expansion, userAgent
+    return new Wowser.Session expansion, userAgent

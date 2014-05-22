@@ -1,5 +1,5 @@
 # Denotes a realm
-class Wowser.entities.Realm
+class Wowser.Entities.Realm
 
   # Creates a new realm
   constructor: ->
