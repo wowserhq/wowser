@@ -21,7 +21,6 @@
 #= require_tree ./wowser/entities
 #= require ./wowser/expansions/expansion
 #= require ./wowser/expansions/wotlk/wotlk
-#= require_tree ./wowser/expansions/wotlk
 #= require_tree ./wowser/sessions
 
 class Wowser

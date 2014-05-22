@@ -1,3 +1,8 @@
+#= require_self
+#= require_tree ./enums
+#= require_tree ./net
+#= require_tree ./handlers
+
 # Wrath of the Lich King (3.x)
 class Wowser.expansions.wotlk extends Wowser.expansions.Expansion
 
