@@ -2,8 +2,8 @@
 class Wowser.Crypto.BigNum
 
   # Imports
-  BigInteger = JSBN.math.BigInteger
-  SecureRandom = JSBN.crypto.prng.SecureRandom
+  BigInteger = JSBN.Math.BigInteger
+  SecureRandom = JSBN.Crypto.PRNG.SecureRandom
 
   # Convenience BigInteger.ZERO decorator
   @ZERO = new BigNum(BigInteger.ZERO)

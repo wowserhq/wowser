@@ -2,9 +2,9 @@
 class Wowser.Crypto.Crypt
 
   # Imports
-  ARC4 = JSBN.crypto.prng.ARC4
+  ARC4 = JSBN.Crypto.PRNG.ARC4
   ArrayUtil = Wowser.Utils.ArrayUtil
-  HMAC = JSBN.crypto.hash.hmac.sha1
+  HMAC = JSBN.Crypto.Hash.HMAC.SHA1
   SHA1 = Wowser.Crypto.Hash.SHA1
 
   # Creates crypt
