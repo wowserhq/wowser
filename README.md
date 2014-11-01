@@ -1,4 +1,4 @@
-# Wowser
+# ![Wowser](https://raw.githubusercontent.com/timkurvers/wowser/master/public/images/logo.png)
 
 World of Warcraft in the browser using JavaScript and WebGL.
 
