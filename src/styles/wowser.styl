@@ -1,8 +1,4 @@
-//= require normalize
-//= require_self
-//= require_tree ./wowser
-
-@import 'wowser/mixins'
+@import 'stylus-normalize/normalize'
 
 html, body
   width: 100%
@@ -25,14 +21,14 @@ html, body
   -webkit-font-smoothing: antialiased
 
   .branding
-    +absolute(top 10px right 10px)
+    absolute: top 10px right 10px
     z-index: 4
 
     header
       width: 204px
       height: 47px
-      background: image-url('logo.png') no-repeat
-      +hide-text
+      background: url('/images/logo.png') no-repeat
+      hide-text()
 
     .divider
       margin: 5px 0
@@ -42,5 +38,5 @@ html, body
       letter-spacing: .075em
 
   select.screen-selector
-    +absolute(top 100px right 10px)
+    absolute: top 100px right 10px
     z-index: 4
