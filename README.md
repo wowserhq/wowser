@@ -8,7 +8,7 @@ Licensed under the **MIT** license, see LICENSE for more information.
 ## Features
 
  * Lightweight in-browser client without reliance on external plugins.
- * Aims to be expansion agnostic, currently supporting Wrath of the Lich King.
+ * Currently targeting Wrath of the Lich King.
  * A low-level interface for developing bots/tools and debugging servers.
 
 
