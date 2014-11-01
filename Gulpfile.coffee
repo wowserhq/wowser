@@ -35,7 +35,8 @@ gulp.task 'clean', ->
     'public/scripts/*',
     'public/styles/*',
     'public/templates/*',
-    'public/index.html'
+    'public/index.html',
+    'spec/*'
   ]).pipe clean()
 
 gulp.task 'scripts:compile', ->
