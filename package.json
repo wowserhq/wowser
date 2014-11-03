@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "angular": "^1.2.23",
-    "browserify": "^6.0.3",
+    "browserify": "^6.2.0",
     "coffee-script": "^1.8.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-coffee": "^2.2.0",
