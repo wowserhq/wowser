@@ -1,4 +1,5 @@
-class Wowser.UI.Screens.CharacterSelection
+class Screen
+  module.exports = @
 
   constructor: (@$scope) ->
     @session = @$scope.session

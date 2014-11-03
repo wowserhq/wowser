@@ -1,4 +1,7 @@
-class Wowser.UI.Screens.World
+THREE = require('three')
+
+class Screen
+  module.exports = @
 
   constructor: (@$scope, @$element) ->
     @scene = new THREE.Scene()
@@ -8,12 +11,12 @@ class Wowser.UI.Screens.World
     @camera.position.y = 500
     @camera.position.x = 500
 
-    @controls = new THREE.OrbitControls @camera, @$element[0]
-    @controls.noKeys = true
-    @controls.minPolarAngle = Math.PI * 0.05
-    @controls.maxPolarAngle = Math.PI * 0.45
-    @controls.minDistance = 200
-    @controls.maxDistance = 600
+    # @controls = new THREE.OrbitControls @camera, @$element[0]
+    # @controls.noKeys = true
+    # @controls.minPolarAngle = Math.PI * 0.05
+    # @controls.maxPolarAngle = Math.PI * 0.45
+    # @controls.minDistance = 200
+    # @controls.maxDistance = 600
 
     @renderer = new THREE.WebGLRenderer canvas: @$element[0]
     @renderer.setSize window.innerWidth, window.innerHeight
@@ -26,6 +29,16 @@ class Wowser.UI.Screens.World
     grid.setColors new THREE.Color(0x666666), new THREE.Color(0x222222)
     @scene.add grid
 
+    @loader = new THREE.JSONLoader()
+    @loader.load 'wotlk/Creature/Illidan/Illidan.m2.3geo', (geometry, materials) =>
+      # geometry.applyMatrix(matrix);
+      mesh = new THREE.Mesh geometry, new THREE.MeshBasicMaterial(
+        color: 0x0099FF,
+        wireframe: true
+      )
+      # mesh.scale.set(scale, scale, scale);
+      @scene.add(mesh)
+
     @run()
 
   run: ->
@@ -35,7 +48,7 @@ class Wowser.UI.Screens.World
       @run()
 
   update: ->
-    @controls.update()
+    # @controls.update()
 
   animate: ->
     @renderer.render @scene, @camera

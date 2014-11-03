@@ -1,4 +1,5 @@
-class Wowser.UI.Screens.RealmSelection
+class Screen
+  module.exports = @
 
   constructor: (@$scope) ->
     @session = @$scope.session

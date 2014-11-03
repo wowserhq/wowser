@@ -1,8 +1,9 @@
-class Wowser.UI.Screens.Authentication
+class Screen
+  module.exports = @
 
   constructor: (@$scope) ->
     @session = @$scope.session
-    @host = 'localhost'
+    @host = window.location.hostname
     @port = @session.auth.constructor.PORT
     @username = ''
     @password = ''
