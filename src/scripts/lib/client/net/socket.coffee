@@ -1,6 +1,12 @@
+attr         = require('attr-accessor')
+ByteBuffer   = require('byte-buffer')
+EventEmitter = require('events')
+
 # Base-class for any socket including signals and host/port management
-class Wowser.Net.Socket
-  @include Backbone.Events
+class Socket extends EventEmitter
+  module.exports = @
+
+  [get] = attr.accessors(@)
 
   # Maximum buffer capacity
   # TODO: Arbitrarily chosen, determine this cap properly
@@ -24,8 +30,8 @@ class Wowser.Net.Socket
     @remaining = false
 
   # Whether this socket is currently connected
-  @getter 'connected', ->
-    @socket and @socket.readyState is WebSocket.OPEN
+  get connected: ->
+    @socket && @socket.readyState == WebSocket.OPEN
 
   # Connects to given host through given port (if any; default port is implementation specific)
   connect: (host, port=NaN) ->
@@ -41,19 +47,19 @@ class Wowser.Net.Socket
       @socket.binaryType = 'arraybuffer'
 
       @socket.onopen = (e) =>
-        @trigger 'connect', e
+        @emit 'connect', e
 
       @socket.onclose = (e) =>
-        @trigger 'disconnect', e
+        @emit 'disconnect', e
 
       @socket.onmessage = (e) =>
         index = @buffer.index
         @buffer.end().append(e.data.byteLength).write(e.data)
         @buffer.index = index
 
-        @trigger 'data:receive', @
+        @emit 'data:receive', @
 
-        if @buffer.available is 0 and @buffer.length > BUFFER_CAP
+        if @buffer.available == 0 && @buffer.length > BUFFER_CAP
           @buffer.clip()
 
       @socket.onerror = (e) ->
@@ -63,7 +69,7 @@ class Wowser.Net.Socket
 
   # Attempts to reconnect to cached host and port
   reconnect: ->
-    if not @connected and @host and @port
+    if !@connected && @host && @port
       @connect(@host, @port)
     return @
 
@@ -85,7 +91,7 @@ class Wowser.Net.Socket
 
       @socket.send(packet.buffer)
 
-      @trigger 'packet:send', packet
+      @emit 'packet:send', packet
 
       return true
 
