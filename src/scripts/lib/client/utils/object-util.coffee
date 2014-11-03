@@ -1,5 +1,5 @@
-# Object utility
-class Wowser.Utils.ObjectUtil
+class ObjectUtil
+  module.exports = @
 
   # Retrieves key for given value (if any) in object
   @keyByValue = (object, target) ->

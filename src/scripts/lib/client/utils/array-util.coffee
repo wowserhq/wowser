@@ -1,5 +1,5 @@
-# Array utility
-class Wowser.Utils.ArrayUtil
+class ArrayUtil
+  module.exports = @
 
   # Generates array from given hex string
   @fromHex: (hex) ->
