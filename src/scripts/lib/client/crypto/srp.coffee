@@ -1,10 +1,16 @@
+attr = require('attr-accessor')
+BigNum = require('./big-num')
+
 # Secure Remote Password
 # http://tools.ietf.org/html/rfc2945
-class Wowser.Crypto.SRP
+class SRP
+  module.exports = @
+
+  [get] = attr.accessors(@)
 
   # Imports
-  BigNum = Wowser.Crypto.BigNum
-  SHA1 = Wowser.Crypto.Hash.SHA1
+  # BigNum = Wowser.Crypto.BigNum
+  # SHA1 = Wowser.Crypto.Hash.SHA1
 
   # Creates new SRP instance with given constant prime and generator
   constructor: (N, g) ->
@@ -25,7 +31,7 @@ class Wowser.Crypto.SRP
     @_u = null
 
     # Derived key
-    @_k = BigNum.fromInt(3)
+    @_k = new BigNum(3)
 
     # Server's public ephemeral value (provided by server)
     @_B = null
@@ -57,15 +63,15 @@ class Wowser.Crypto.SRP
       break unless @_A.mod(@_N).equals(BigNum.ZERO)
 
   # Retrieves client's public ephemeral value
-  @getter 'A', ->
+  get A: ->
     return @_A
 
   # Retrieves the session key
-  @getter 'K', ->
+  get K: ->
     return @_K
 
   # Retrieves the client proof hash
-  @getter 'M1', ->
+  get M1: ->
     return @_M1
 
   # Feeds salt, server's public ephemeral value, account and password strings

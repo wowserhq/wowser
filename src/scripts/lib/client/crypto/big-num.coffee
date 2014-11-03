@@ -1,12 +1,17 @@
+attr = require('attr-accessor')
+
 # C-like BigNum decorator for JSBN's BigInteger
-class Wowser.Crypto.BigNum
+class BigNum
+  module.exports = @
+
+  [get] = attr.accessors(@)
 
   # Imports
-  BigInteger = JSBN.Math.BigInteger
-  SecureRandom = JSBN.Crypto.PRNG.SecureRandom
+  # BigInteger = JSBN.Math.BigInteger
+  # SecureRandom = JSBN.Crypto.PRNG.SecureRandom
 
   # Convenience BigInteger.ZERO decorator
-  @ZERO = new BigNum(BigInteger.ZERO)
+  # @ZERO = new BigNum(BigInteger.ZERO)
 
   # Creates a new BigNum
   constructor: (value, radix, unsigned=true) ->
@@ -22,7 +27,7 @@ class Wowser.Crypto.BigNum
     return "[BigNum; Value: #{@_bi}; Hex: #{@_bi.toString(16).toUpperCase()}]"
 
   # Retrieves BigInteger instance being decorated
-  @getter 'bi', ->
+  get bi: ->
     return @_bi
 
   # Performs a modulus operation
