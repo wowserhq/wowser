@@ -1,6 +1,5 @@
-# Denotes a character handler
-class Wowser.Expansion.WotLK.Handlers.CharacterHandler
-  @include Backbone.Events
+class Handler
+  @include BackboneEvents
 
   # Imports
   Character = Wowser.Entities.Character
