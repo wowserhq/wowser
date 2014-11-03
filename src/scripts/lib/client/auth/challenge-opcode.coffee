@@ -1,5 +1,5 @@
-# Authentication challenge opcodes
-class Wowser.Expansion.WotLK.Enums.AuthChallengeOpcode
+class ChallengeOpcode
+  module.exports = @
 
   @SUCCESS            = 0x00
   @UNKNOWN0           = 0x01
