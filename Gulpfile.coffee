@@ -77,6 +77,10 @@ gulp.task 'spec', ->
       .pipe plumber()
       .pipe mocha()
 
+gulp.task 'rebuild', gulp.series(
+  'clean', 'scripts', 'styles', 'templates'
+)
+
 gulp.task 'watch', ->
   gulp.watch config.scripts, gulp.series('scripts', 'spec')
       .on 'change', (event) ->
@@ -88,5 +92,5 @@ gulp.task 'watch', ->
   gulp.watch config.templates, 'templates'
 
 gulp.task 'default', gulp.series(
-  'scripts', 'spec', 'styles', 'templates', 'watch'
+  'rebuild', 'spec', 'watch'
 )
