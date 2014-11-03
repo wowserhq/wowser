@@ -1,6 +1,6 @@
 # Denotes a chat handler
 class Wowser.Expansion.WotLK.Handlers.ChatHandler
-  @include Backbone.Events
+  @include BackboneEvents
 
   # Imports
   Message = Wowser.Entities.Message
