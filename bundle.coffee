@@ -14,7 +14,6 @@ class Bundle
   constructor: (src, destination, @options = {}) ->
     @src = path.resolve(src)
     @options.cache = {}
-    @options.packageCache = {}
     @options.fullPaths = true
     @target =
       name: path.basename(destination)
