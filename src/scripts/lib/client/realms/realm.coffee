@@ -38,5 +38,5 @@ class Wowser.Entities.Realm
   @setter 'address', (address) ->
     @_address = address
     parts = @_address.split(':')
-    @_host = parts[0] or null
-    @_port = parts[1] or NaN
+    @_host = parts[0] || null
+    @_port = parts[1] || NaN
