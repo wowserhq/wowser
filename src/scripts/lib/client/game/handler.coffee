@@ -75,7 +75,7 @@ class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
 
           @remaining = @buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN)
 
-        if @remaining > 0 and @buffer.available >= @remaining
+        if @remaining > 0 && @buffer.available >= @remaining
           size = WorldPacket.OPCODE_SIZE_INCOMING + @remaining
           wp = new WorldPacket(@buffer.readUnsignedShort(), @buffer.seek(-WorldPacket.HEADER_SIZE_INCOMING).read(size), false)
 
@@ -89,7 +89,7 @@ class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
           if wp.opcodeName
             @trigger "packet:receive:#{wp.opcodeName}", wp
 
-        else if @remaining isnt 0
+        else if @remaining != 0
           return
 
   # Auth challenge handler (SMSG_AUTH_CHALLENGE)
@@ -138,12 +138,12 @@ class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
 
     # Handle result byte
     result = wp.readUnsignedByte()
-    if result is 0x0D
+    if result == 0x0D
       console.warn 'server-side auth/realm failure; try again'
       @trigger 'reject'
       return
 
-    if result is 0x15
+    if result == 0x15
       console.warn 'account in use/invalid; aborting'
       @trigger 'reject'
       return
