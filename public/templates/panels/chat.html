@@ -1,9 +1,9 @@
-<section class="chat" data-ng-controller="Wowser.UI.Panels.Chat as chat">
+
+<section data-ng-controller="Wowser.UI.Panels.Chat as chat" class="chat">
   <div class="frame">
     <ul>
       <li class="message system">Welcome to Wowser!</li>
-      <li class="message system">This is a very alpha-ish build.<br />Do not expect miracles.</li>
-
+      <li class="message system">This is a very alpha-ish build. Do not expect miracles.</li>
       <li class="message info">This is an info message</li>
       <li class="message error">This is an error message</li>
       <li class="message area">KaZooM: This is a message emitted nearby</li>
@@ -11,14 +11,10 @@
       <li class="message whisper outgoing">To Someone: This is an outgoing whisper</li>
       <li class="message whisper incoming">Someone: This is an incoming whisper</li>
       <li class="message guild">[Guild] Someone: This is a guild message</li>
-
-      <li class="message" data-ng-repeat="message in chat.session.chat.messages">
-        {{message.text}}
-      </li>
+      <li data-ng-repeat="message in chat.session.chat.messages" class="message">{{message.text}}</li>
     </ul>
   </div>
-
   <form data-ng-submit="chat.send()">
-    <input type="text" value="" data-ng-model="chat.message" />
+    <input type="text" value="" data-ng-model="chat.message"/>
   </form>
 </section>

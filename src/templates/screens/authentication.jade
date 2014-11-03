@@ -1,0 +1,25 @@
+section.panel(data-ng-controller='Wowser.UI.Auth.Screen as auth')
+  h1 Authentication
+
+  .divider
+
+  p #[strong Note:] Wowser requires a WebSocket proxy, see the README on GitHub.
+
+  form(data-ng-submit='auth.connect()')
+    fieldset
+      label Host
+      input(type='text' data-ng-model='auth.host')
+
+      label Port
+      input(type='number' data-ng-model='auth.port')
+
+    fieldset
+      label Username
+      input(type='text' data-ng-model='auth.username' autofocus)
+
+      label Password
+      input(type='password' data-ng-model='auth.password')
+
+    .divider
+
+    input(type='submit' value='Connect')

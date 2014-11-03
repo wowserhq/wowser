@@ -1,0 +1,15 @@
+section.panel(data-ng-controller='Wowser.UI.Characters.Screen as chars')
+  h1 Character Selection
+
+  .divider
+
+  p At some point this screen will allow managing characters. Soon™
+
+  form(data-ng-submit='chars.join()')
+    fieldset
+      select(data-ng-model='chars.selected' data-ng-options='c.name for c in chars.session.characters.list')
+
+    .divider
+
+    input(type='submit' value='Join world' autofocus)
+    input(type='button' data-ng-click='chars.refresh()' value='Refresh')

@@ -1,0 +1,14 @@
+
+<section data-ng-controller="Wowser.UI.Characters.Screen as chars" class="panel">
+  <h1>Character Selection</h1>
+  <div class="divider"></div>
+  <p>At some point this screen will allow managing characters. Soon™</p>
+  <form data-ng-submit="chars.join()">
+    <fieldset>
+      <select data-ng-model="chars.selected" data-ng-options="c.name for c in chars.session.characters.list"></select>
+    </fieldset>
+    <div class="divider"></div>
+    <input type="submit" value="Join world" autofocus="autofocus"/>
+    <input type="button" data-ng-click="chars.refresh()" value="Refresh"/>
+  </form>
+</section>
