@@ -27,6 +27,7 @@
     "wow"
   ],
   "dependencies": {
+    "angular": "^1.2.23",
     "attr-accessor": "^0.2.0",
     "byte-buffer": "^1.0.3",
     "express": "^4.9.3",
@@ -34,7 +35,6 @@
     "three": "^0.66.9"
   },
   "devDependencies": {
-    "angular": "^1.2.23",
     "browserify": "^6.2.0",
     "coffee-script": "^1.8.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
