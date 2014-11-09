@@ -19,19 +19,19 @@ class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
     super
 
     # Listen for incoming data
-    @on 'data:receive', @dataReceived, @
+    @on 'data:receive', @dataReceived, this
 
     # Delegate packets
-    @on 'packet:receive:SMSG_AUTH_CHALLENGE', @handleAuthChallenge, @
-    @on 'packet:receive:SMSG_AUTH_RESPONSE', @handleAuthResponse, @
-    @on 'packet:receive:SMSG_LOGIN_VERIFY_WORLD', @handleWorldLogin, @
+    @on 'packet:receive:SMSG_AUTH_CHALLENGE', @handleAuthChallenge, this
+    @on 'packet:receive:SMSG_AUTH_RESPONSE', @handleAuthResponse, this
+    @on 'packet:receive:SMSG_LOGIN_VERIFY_WORLD', @handleWorldLogin, this
 
   # Connects to given host through given port
   connect: (host, port) ->
     unless @connected
       super(host, port)
       console.info 'connecting to world-server @', @host, ':', @port
-    return @
+    return this
 
   # Finalizes and sends given packet
   send: (packet) ->

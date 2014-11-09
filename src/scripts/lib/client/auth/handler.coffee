@@ -6,9 +6,9 @@ Socket = require('../net/socket')
 SRP = require('../crypto/srp')
 
 class Handler extends Socket
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Imports
   # AuthChallengeOpcode = Wowser.Expansion.WotLK.Enums.AuthChallengeOpcode
@@ -38,11 +38,11 @@ class Handler extends Socket
     super
 
     # Listen for incoming data
-    @on 'data:receive', @dataReceived, @
+    @on 'data:receive', @dataReceived, this
 
     # Delegate packets
-    @on 'packet:receive:LOGON_CHALLENGE', @handleLogonChallenge, @
-    @on 'packet:receive:LOGON_PROOF', @handleLogonProof, @
+    @on 'packet:receive:LOGON_CHALLENGE', @handleLogonChallenge, this
+    @on 'packet:receive:LOGON_PROOF', @handleLogonProof, this
 
   # Retrieves the session key (if any)
   get key: ->
@@ -53,7 +53,7 @@ class Handler extends Socket
     unless @connected
       super(host, port || @constructor.PORT)
       console.info 'connecting to auth-server @', @host, ':', @port
-    return @
+    return this
 
   # Sends authentication request to connected host
   authenticate: (account, password) ->

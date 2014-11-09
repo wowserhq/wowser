@@ -7,9 +7,9 @@ plumber    = require('gulp-plumber')
 source     = require('vinyl-source-stream')
 
 class Bundle
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   constructor: (src, destination, @options = {}) ->
     @src = path.resolve(src)
@@ -22,7 +22,7 @@ class Bundle
   get bundler: ->
     unless @_bundler
       @_bundler = browserify(@src, @options)
-      @_bundler.on 'dep', @cache.bind(@)
+      @_bundler.on 'dep', @cache.bind(this)
     @_bundler
 
   bundle: ->

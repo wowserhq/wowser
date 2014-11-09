@@ -1,5 +1,5 @@
 class UI
-  module.exports = @
+  module.exports = this
 
   constructor: (@$scope) ->
     @session = @$scope.session = new Wowser()

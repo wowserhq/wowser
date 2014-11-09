@@ -1,5 +1,5 @@
 class ArrayUtil
-  module.exports = @
+  module.exports = this
 
   # Generates array from given hex string
   @fromHex: (hex) ->

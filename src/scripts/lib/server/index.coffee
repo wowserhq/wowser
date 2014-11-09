@@ -2,7 +2,7 @@ express = require('express')
 logger  = require('morgan')
 
 class Server
-  module.exports = @
+  module.exports = this
 
   constructor: (@root = __dirname) ->
     @app = express()

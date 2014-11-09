@@ -16,7 +16,7 @@ class Handler
     @list = []
 
     # Listen for character list
-    @session.world.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, @
+    @session.world.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, this
 
   # Requests a fresh list of characters
   refresh: ->

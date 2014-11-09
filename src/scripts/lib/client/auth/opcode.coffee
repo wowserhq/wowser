@@ -1,5 +1,5 @@
 class Opcode
-  module.exports = @
+  module.exports = this
 
   @LOGON_CHALLENGE     = 0x00
   @LOGON_PROOF         = 0x01

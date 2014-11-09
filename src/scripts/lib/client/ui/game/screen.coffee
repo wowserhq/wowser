@@ -1,7 +1,7 @@
 THREE = require('three')
 
 class Screen
-  module.exports = @
+  module.exports = this
 
   constructor: (@$scope, @$element) ->
     @scene = new THREE.Scene()

@@ -4,9 +4,9 @@ BigNum = require('./big-num')
 # Secure Remote Password
 # http://tools.ietf.org/html/rfc2945
 class SRP
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Imports
   # BigNum = Wowser.Crypto.BigNum

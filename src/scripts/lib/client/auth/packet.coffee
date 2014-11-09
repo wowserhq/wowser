@@ -4,9 +4,9 @@ BasePacket = require('../net/packet')
 ObjectUtil = require('../utils/object-util')
 
 class Packet extends BasePacket
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Imports
   #AuthOpcode = Wowser.Expansion.WotLK.Enums.AuthOpcode

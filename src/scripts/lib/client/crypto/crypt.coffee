@@ -17,12 +17,12 @@ class Wowser.Crypto.Crypt
   # Encrypts given data through RC4
   encrypt: (data) ->
     @_encrypt?.encrypt(data)
-    return @
+    return this
 
   # Decrypts given data through RC4
   decrypt: (data) ->
     @_decrypt?.decrypt(data)
-    return @
+    return this
 
   # Sets session key and initializes this crypt
   @setter 'key', (key) ->

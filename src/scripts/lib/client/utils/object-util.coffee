@@ -1,5 +1,5 @@
 class ObjectUtil
-  module.exports = @
+  module.exports = this
 
   # Retrieves key for given value (if any) in object
   @keyByValue = (object, target) ->

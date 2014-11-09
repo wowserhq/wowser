@@ -1,5 +1,5 @@
 class Screen
-  module.exports = @
+  module.exports = this
 
   constructor: (@$scope) ->
     @session = @$scope.session

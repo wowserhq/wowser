@@ -1,5 +1,5 @@
 class ChallengeOpcode
-  module.exports = @
+  module.exports = this
 
   @SUCCESS            = 0x00
   @UNKNOWN0           = 0x01

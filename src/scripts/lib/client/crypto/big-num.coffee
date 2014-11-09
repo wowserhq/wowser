@@ -2,9 +2,9 @@ attr = require('attr-accessor')
 
 # C-like BigNum decorator for JSBN's BigInteger
 class BigNum
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Imports
   # BigInteger = JSBN.Math.BigInteger

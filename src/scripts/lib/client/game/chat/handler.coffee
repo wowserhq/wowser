@@ -17,7 +17,7 @@ class Wowser.Expansion.WotLK.Handlers.ChatHandler
     @messages = []
 
     # Listen for messages
-    @session.world.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage, @
+    @session.world.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage, this
 
   # Sends given message
   send: (message) ->

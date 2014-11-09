@@ -25,20 +25,20 @@ class Wowser.Crypto.Hash
   reset: ->
     @_data = new ByteBuffer(0, ByteBuffer.BIG_ENDIAN, true)
     @_digest = null
-    return @
+    return this
 
   # Feeds hash given value
   feed: (value) ->
     if @_digest
-      return @
+      return this
 
     if value.constructor == String
       @_data.writeString(value)
     else
       @_data.write(value)
 
-    return @
+    return this
 
   # Finalizes this hash, calculates the digest and blocks additional feeds
   finalize: ->
-    return @
+    return this

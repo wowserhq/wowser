@@ -4,9 +4,9 @@ EventEmitter = require('events')
 
 # Base-class for any socket including signals and host/port management
 class Socket extends EventEmitter
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Maximum buffer capacity
   # TODO: Arbitrarily chosen, determine this cap properly
@@ -57,7 +57,7 @@ class Socket extends EventEmitter
         @buffer.end().append(e.data.byteLength).write(e.data)
         @buffer.index = index
 
-        @emit 'data:receive', @
+        @emit 'data:receive', this
 
         if @buffer.available == 0 && @buffer.length > BUFFER_CAP
           @buffer.clip()
@@ -65,19 +65,19 @@ class Socket extends EventEmitter
       @socket.onerror = (e) ->
         console.error e
 
-    return @
+    return this
 
   # Attempts to reconnect to cached host and port
   reconnect: ->
     if !@connected && @host && @port
       @connect(@host, @port)
-    return @
+    return this
 
   # Disconnects this socket
   disconnect: ->
     if @connected
       @socket.close()
-    return @
+    return this
 
   # Finalizes and sends given packet
   send: (packet) ->

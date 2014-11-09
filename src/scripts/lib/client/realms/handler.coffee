@@ -1,5 +1,5 @@
 class Handler
-  module.exports = @
+  module.exports = this
 
   # @include BackboneEvents
 
@@ -19,7 +19,7 @@ class Handler
     @list = []
 
     # Listen for realm list
-    @session.auth.on 'packet:receive:REALM_LIST', @handleRealmList, @
+    @session.auth.on 'packet:receive:REALM_LIST', @handleRealmList, this
 
   # Requests a fresh list of realms
   refresh: ->

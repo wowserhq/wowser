@@ -1,9 +1,9 @@
 attr = require('attr-accessor')
 
 class Config
-  module.exports = @
+  module.exports = this
 
-  [get, set] = attr.accessors(@)
+  [get, set] = attr.accessors(this)
 
   constructor: ->
     @game = 'Wow '
@@ -15,7 +15,7 @@ class Config
     @os = 'Mac'
     @platform = 'x86'
 
-    @raw = new Raw(@)
+    @raw = new Raw(this)
 
   set version: (version) ->
     [
@@ -26,7 +26,7 @@ class Config
 
 
 class Raw
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   constructor: (@config) ->
 

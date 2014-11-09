@@ -3,9 +3,9 @@ ByteBuffer = require('byte-buffer')
 
 # Denotes a network packet
 class Packet extends ByteBuffer
-  module.exports = @
+  module.exports = this
 
-  [get] = attr.accessors(@)
+  [get] = attr.accessors(this)
 
   # Creates a new packet with given opcode from given source or length
   constructor: (opcode, source, outgoing=true) ->
@@ -44,7 +44,7 @@ class Packet extends ByteBuffer
 
   # Finalizes this packet
   finalize: ->
-    return @
+    return this
 
   # Reads GUID from this packet
   # readGUID: ->
@@ -65,4 +65,4 @@ class Packet extends ByteBuffer
   # # Writes given GUID to this packet in packed form
   # # TODO: Implementation
   # writePackedGUID: (guid) ->
-  #   return @
+  #   return this
