@@ -32,7 +32,7 @@ class Wowser.Crypto.Hash
     if @_digest
       return @
 
-    if value.constructor is String
+    if value.constructor == String
       @_data.writeString(value)
     else
       @_data.write(value)

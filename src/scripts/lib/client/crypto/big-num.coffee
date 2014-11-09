@@ -15,9 +15,9 @@ class BigNum
 
   # Creates a new BigNum
   constructor: (value, radix, unsigned=true) ->
-    if value.constructor is BigInteger
+    if value.constructor == BigInteger
       @_bi = value
-    else if value.constructor is BigNum
+    else if value.constructor == BigNum
       @_bi = value.bi
     else
       @_bi = new BigInteger(value, radix, unsigned)

@@ -64,7 +64,7 @@ class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
         if not @connected
           return
 
-        if @remaining is false
+        if @remaining == false
 
           if @buffer.available < WorldPacket.HEADER_SIZE_INCOMING
             return
