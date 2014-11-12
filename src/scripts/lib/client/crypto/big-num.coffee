@@ -77,7 +77,5 @@ class BigNum
 
   # Creates a new random BigNum of the given number of bytes
   @fromRand = (bytes) ->
-    buffer = new Array(bytes)
-    rnd = new SecureRandom()
-    rnd.nextBytes(buffer)
-    return new BigNum(buffer)
+    # TODO: This should use a properly seeded, secure RNG
+    return new BigNum(Math.random().toString().slice(2))
