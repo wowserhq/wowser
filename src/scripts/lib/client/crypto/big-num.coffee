@@ -58,10 +58,15 @@ class BigNum
     return @_bi.equals(o.bi)
 
   # Generates a byte-array from this BigNum (defaults to little-endian)
-  toArray: (littleEndian=true) ->
-    ba = @_bi.toArray()
+  toArray: (littleEndian=true, unsigned=true) ->
+    ba = @_bi.toByteArray()
+
+    if unsigned && @_bi.s == 0 && ba[0] == 0
+      ba.shift()
+
     if littleEndian
       return ba.reverse()
+
     return ba
 
   # Creates a new BigNum from given byte-array
@@ -70,9 +75,14 @@ class BigNum
       bytes = bytes.toArray()
     else
       bytes = bytes.slice(0)
+
     if littleEndian
       bytes = bytes.reverse()
-    return new BigNum(bytes, null, unsigned)
+
+    if unsigned && bytes[0] & 0x80
+      bytes.unshift(0)
+
+    return new BigNum(bytes)
 
   # Creates a new random BigNum of the given number of bytes
   @fromRand = (bytes) ->
