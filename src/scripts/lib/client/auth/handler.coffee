@@ -71,10 +71,6 @@ class Handler extends Socket
       timezone
     } = @session.config
 
-    console.log @session.config
-
-    console.log build, game, os, locale, platform, majorVersion, minorVersion, patchVersion
-
     ap = new AuthPacket(AuthOpcode.LOGON_CHALLENGE, 4 + 29 + 1 + @account.length)
     ap.writeByte(0x00)
     ap.writeShort(30 + @account.length)
