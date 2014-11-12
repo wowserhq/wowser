@@ -1,7 +1,9 @@
-class Handler
-  module.exports = this
+AuthOpcode = require('../auth/opcode')
+AuthPacket = require('../auth/packet')
+EventEmitter = require('events')
 
-  # @include BackboneEvents
+class Handler extends EventEmitter
+  module.exports = this
 
   # Creates a new realm handler
   constructor: (session) ->
@@ -13,7 +15,7 @@ class Handler
     @list = []
 
     # Listen for realm list
-    @session.auth.on 'packet:receive:REALM_LIST', @handleRealmList, this
+    @session.auth.on 'packet:receive:REALM_LIST', @handleRealmList.bind(this)
 
   # Requests a fresh list of realms
   refresh: ->
@@ -47,4 +49,4 @@ class Handler
 
       @list.push(realm)
 
-    @trigger 'refresh'
+    @emit 'refresh'
