@@ -8,7 +8,7 @@ class BigNum
   [get] = attr.accessors(this)
 
   # Convenience BigInteger.ZERO decorator
-  # @ZERO = new BigNum(BigInteger.ZERO)
+  @ZERO = new BigNum(BigInteger.ZERO)
 
   # Creates a new BigNum
   constructor: (value, radix) ->
