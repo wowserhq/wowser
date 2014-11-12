@@ -1,11 +1,6 @@
 class Handler
   @include BackboneEvents
 
-  # Imports
-  Character = Wowser.Entities.Character
-  WorldOpcode = Wowser.Expansion.WotLK.Enums.WorldOpcode
-  WorldPacket = Wowser.Expansion.WotLK.Net.WorldPacket
-
   # Creates a new character handler
   constructor: (session) ->
 

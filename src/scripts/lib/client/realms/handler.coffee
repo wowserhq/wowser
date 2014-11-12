@@ -3,12 +3,6 @@ class Handler
 
   # @include BackboneEvents
 
-  # Imports
-  # AuthOpcode = Wowser.Expansion.WotLK.Enums.AuthOpcode
-  # AuthPacket = Wowser.Expansion.WotLK.Net.AuthPacket
-  # ObjectUtil = Wowser.Utils.ObjectUtil
-  # Realm = Wowser.Entities.Realm
-
   # Creates a new realm handler
   constructor: (session) ->
 

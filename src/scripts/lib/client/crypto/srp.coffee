@@ -8,10 +8,6 @@ class SRP
 
   [get] = attr.accessors(this)
 
-  # Imports
-  # BigNum = Wowser.Crypto.BigNum
-  # SHA1 = Wowser.Crypto.Hash.SHA1
-
   # Creates new SRP instance with given constant prime and generator
   constructor: (N, g) ->
 

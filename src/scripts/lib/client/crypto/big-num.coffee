@@ -6,10 +6,6 @@ class BigNum
 
   [get] = attr.accessors(this)
 
-  # Imports
-  # BigInteger = JSBN.Math.BigInteger
-  # SecureRandom = JSBN.Crypto.PRNG.SecureRandom
-
   # Convenience BigInteger.ZERO decorator
   # @ZERO = new BigNum(BigInteger.ZERO)
 

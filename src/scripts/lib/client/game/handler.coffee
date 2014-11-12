@@ -1,15 +1,6 @@
 # Denotes a world handler
 class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
 
-  # Imports
-  BigNum = Wowser.Crypto.BigNum
-  Crypt = Wowser.Crypto.Crypt
-  GUID = Wowser.Datastructures.GUID
-  ObjectUtil = Wowser.Utils.ObjectUtil
-  SHA1 = Wowser.Crypto.Hash.SHA1
-  WorldOpcode = Wowser.Expansion.WotLK.Enums.WorldOpcode
-  WorldPacket = Wowser.Expansion.WotLK.Net.WorldPacket
-
   # Creates a new world handler
   constructor: (session) ->
 

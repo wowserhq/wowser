@@ -2,11 +2,6 @@
 class Wowser.Expansion.WotLK.Handlers.ChatHandler
   @include BackboneEvents
 
-  # Imports
-  Message = Wowser.Entities.Message
-  WorldOpcode = Wowser.Expansion.WotLK.Enums.WorldOpcode
-  WorldPacket = Wowser.Expansion.WotLK.Net.WorldPacket
-
   # Creates a new chat handler
   constructor: (session) ->
 

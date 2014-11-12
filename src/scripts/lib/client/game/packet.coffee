@@ -1,10 +1,6 @@
 # Denotes a world packet
 class Wowser.Expansion.WotLK.Net.WorldPacket extends Wowser.Net.Packet
 
-  # Imports
-  ObjectUtil = Wowser.Utils.ObjectUtil
-  WorldOpcode = Wowser.Expansion.WotLK.Enums.WorldOpcode
-
   # Header sizes in bytes for both incoming and outgoing packets
   @HEADER_SIZE_INCOMING = 4
   @HEADER_SIZE_OUTGOING = 6

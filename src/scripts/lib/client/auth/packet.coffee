@@ -8,10 +8,6 @@ class Packet extends BasePacket
 
   [get] = attr.accessors(this)
 
-  # Imports
-  #AuthOpcode = Wowser.Expansion.WotLK.Enums.AuthOpcode
-  #ObjectUtil = Wowser.Utils.ObjectUtil
-
   # Header size in bytes for both incoming and outgoing packets
   @HEADER_SIZE = 1
 

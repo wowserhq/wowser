@@ -10,13 +10,6 @@ class Handler extends Socket
 
   [get] = attr.accessors(this)
 
-  # Imports
-  # AuthChallengeOpcode = Wowser.Expansion.WotLK.Enums.AuthChallengeOpcode
-  # AuthOpcode = Wowser.Expansion.WotLK.Enums.AuthOpcode
-  # AuthPacket = Wowser.Expansion.WotLK.Net.AuthPacket
-  # ObjectUtil = Wowser.Utils.ObjectUtil
-  # SRP = Wowser.Crypto.SRP
-
   # Default port for the auth-server
   @PORT = 3724
 
