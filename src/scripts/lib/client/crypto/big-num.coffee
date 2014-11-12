@@ -1,4 +1,5 @@
 attr = require('attr-accessor')
+{Math: {BigInteger}} = require('jsbn')
 
 # C-like BigNum decorator for JSBN's BigInteger
 class BigNum
@@ -10,13 +11,15 @@ class BigNum
   # @ZERO = new BigNum(BigInteger.ZERO)
 
   # Creates a new BigNum
-  constructor: (value, radix, unsigned=true) ->
-    if value.constructor == BigInteger
+  constructor: (value, radix) ->
+    if typeof value == 'number'
+      @_bi = BigInteger.fromInt(value)
+    else if value.constructor == BigInteger
       @_bi = value
     else if value.constructor == BigNum
       @_bi = value.bi
     else
-      @_bi = new BigInteger(value, radix, unsigned)
+      @_bi = new BigInteger(value, radix)
 
   # Short string description of this BigNum
   toString: ->
@@ -60,10 +63,6 @@ class BigNum
     if littleEndian
       return ba.reverse()
     return ba
-
-  # Creates a new BigNum from given integer
-  @fromInt = (n) ->
-    return new BigNum(BigInteger.fromInt(n))
 
   # Creates a new BigNum from given byte-array
   @fromArray = (bytes, littleEndian=true, unsigned=true) ->
