@@ -1,5 +1,6 @@
 attr = require('attr-accessor')
 BigNum = require('./big-num')
+SHA1 = require('./hash/sha1')
 
 # Secure Remote Password
 # http://tools.ietf.org/html/rfc2945
