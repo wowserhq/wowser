@@ -1,4 +1,5 @@
 attr = require('attr-accessor')
+equal = require('deep-equal')
 BigNum = require('./big-num')
 SHA1 = require('./hash/sha1')
 
@@ -167,4 +168,4 @@ class SRP
   validate: (M2) ->
     unless @_M2
       return false
-    return _.isEqual(M2.toArray(), @_M2.digest)
+    return equal(M2.toArray(), @_M2.digest)
