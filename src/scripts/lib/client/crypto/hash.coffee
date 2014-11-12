@@ -1,8 +1,11 @@
-#= require_self
-#= require_tree ./hash
+attr = require('attr-accessor')
+ByteBuffer = require('byte-buffer')
 
 # Feedable hash implementation
-class Wowser.Crypto.Hash
+class Hash
+  module.exports = this
+
+  [get] = attr.accessors(this)
 
   # Creates a new hash
   constructor: ->
@@ -16,7 +19,7 @@ class Wowser.Crypto.Hash
     @reset()
 
   # Retrieves digest (finalizes this hash if needed)
-  @getter 'digest', ->
+  get digest: ->
     unless @_digest
       @finalize()
     return @_digest
