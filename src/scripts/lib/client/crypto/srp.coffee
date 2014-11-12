@@ -89,7 +89,7 @@ class SRP
     x = new SHA1()
     x.feed(@_s.toArray())
     x.feed(auth.digest)
-    @_x = BigNum.fromArray(x.digest) #, 20)
+    @_x = BigNum.fromArray(x.digest)
 
     # Password verifier
     # v = g ^ x mod N
@@ -100,7 +100,7 @@ class SRP
     u = new SHA1()
     u.feed(@_A.toArray())
     u.feed(@_B.toArray())
-    @_u = BigNum.fromArray(u.digest) #, 20)
+    @_u = BigNum.fromArray(u.digest)
 
     # Client-side session key
     # S = (B - (kg^x)) ^ (a + ux)
@@ -158,7 +158,7 @@ class SRP
     # M2 = H( A | M1 | K )
     @_M2 = new SHA1()
     @_M2.feed(@_A.toArray())
-    @_M2.feed(@_M1.digest) #, 0, _M1.digestLength)
+    @_M2.feed(@_M1.digest)
     @_M2.feed(@_K)
     @_M2.finalize()
 
