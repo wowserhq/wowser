@@ -134,9 +134,9 @@ class Handler extends Socket
         lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2)
         lpp.write(@srp.A.toArray())
         lpp.write(@srp.M1.digest)
-        lpp.write(new ByteBuffer(20)) # CRC hash
-        lpp.writeByte(0x00)           # number of keys
-        lpp.writeByte(0x00)           # security flags
+        lpp.write(new Array(20)) # CRC hash
+        lpp.writeByte(0x00)      # number of keys
+        lpp.writeByte(0x00)      # security flags
 
         @send lpp
 
