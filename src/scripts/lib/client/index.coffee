@@ -12,6 +12,6 @@ class Client
     @config = config || new Config()
     @auth = new AuthHandler(this)
     @realms = new RealmsHandler(this)
-    @characters = new CharactersHandler(this)
     @game = new GameHandler(this)
+    @characters = new CharactersHandler(this)
     @chat = new ChatHandler(this)
