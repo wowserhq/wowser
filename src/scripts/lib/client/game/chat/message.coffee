@@ -1,4 +1,3 @@
-# Denotes a chat message
 class Wowser.Entities.Message
 
   # Creates a new message

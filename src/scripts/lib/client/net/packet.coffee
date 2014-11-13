@@ -1,7 +1,6 @@
 attr = require('attr-accessor')
 ByteBuffer = require('byte-buffer')
 
-# Denotes a network packet
 class Packet extends ByteBuffer
   module.exports = this
 

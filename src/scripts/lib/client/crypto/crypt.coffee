@@ -1,4 +1,3 @@
-# Denotes packet cryptography
 class Wowser.Crypto.Crypt
 
   # Creates crypt

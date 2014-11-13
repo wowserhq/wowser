@@ -1,4 +1,3 @@
-# Denotes a realm
 class Wowser.Entities.Realm
 
   # Creates a new realm

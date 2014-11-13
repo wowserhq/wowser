@@ -2,7 +2,6 @@ AuthHandler   = require('./auth/handler')
 Config        = require('./config')
 RealmsHandler = require('./realms/handler')
 
-# Denotes a single game client/session
 class Client
   module.exports = this
 

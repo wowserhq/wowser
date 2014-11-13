@@ -1,4 +1,3 @@
-# Denotes a world packet
 class Wowser.Expansion.WotLK.Net.WorldPacket extends Wowser.Net.Packet
 
   # Header sizes in bytes for both incoming and outgoing packets

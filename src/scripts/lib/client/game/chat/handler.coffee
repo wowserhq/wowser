@@ -1,4 +1,3 @@
-# Denotes a chat handler
 class Wowser.Expansion.WotLK.Handlers.ChatHandler
   @include BackboneEvents
 

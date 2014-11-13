@@ -1,4 +1,3 @@
-# Denotes a character
 class Wowser.Entities.Character
 
   # Short string representation of this character

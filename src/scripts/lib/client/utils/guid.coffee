@@ -1,4 +1,3 @@
-# Denotes an entity GUID (unique identifier)
 class Wowser.Datastructures.GUID
 
   # GUID byte-length (64-bit)

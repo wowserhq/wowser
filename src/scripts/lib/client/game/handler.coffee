@@ -1,4 +1,3 @@
-# Denotes a world handler
 class Wowser.Expansion.WotLK.Handlers.WorldHandler extends Wowser.Net.Socket
 
   # Creates a new world handler
