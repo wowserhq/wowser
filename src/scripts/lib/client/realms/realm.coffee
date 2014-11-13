@@ -1,4 +1,9 @@
-class Wowser.Entities.Realm
+attr = require('attr-accessor')
+
+class Realm
+  module.exports = this
+
+  [get, set] = attr.accessors(this)
 
   # Creates a new realm
   constructor: ->
@@ -22,19 +27,19 @@ class Wowser.Entities.Realm
     return "[Realm; Name: #{@name}; Address: #{@_address}; Characters: #{@characters}]"
 
   # Retrieves host for this realm
-  @getter 'host', ->
+  get host: ->
     return @_host
 
   # Retrieves port for this realm
-  @getter 'port', ->
+  get port: ->
     return @_port
 
   # Retrieves address for this realm
-  @getter 'address', ->
+  get address: ->
     return @_address
 
   # Sets address for this realm
-  @setter 'address', (address) ->
+  set address: (address) ->
     @_address = address
     parts = @_address.split(':')
     @_host = parts[0] || null

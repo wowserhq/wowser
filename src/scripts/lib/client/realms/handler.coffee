@@ -1,8 +1,9 @@
 AuthOpcode = require('../auth/opcode')
 AuthPacket = require('../auth/packet')
 EventEmitter = require('events')
+Realm = require('./realm')
 
-class Handler extends EventEmitter
+class RealmsHandler extends EventEmitter
   module.exports = this
 
   # Creates a new realm handler
