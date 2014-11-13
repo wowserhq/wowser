@@ -1,5 +1,5 @@
-# World opcodes
-class Wowser.Expansion.WotLK.Enums.WorldOpcode
+class GameOpcode
+  module.exports = this
 
   @CMSG_CHAR_ENUM                     = 0x0037
 
