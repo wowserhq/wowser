@@ -1,5 +1,8 @@
-AuthHandler   = require('./auth/handler')
-Config        = require('./config')
+AuthHandler = require('./auth/handler')
+CharactersHandler = require('./characters/handler')
+ChatHandler = require('./game/chat/handler')
+Config = require('./config')
+GameHandler = require('./game/handler')
 RealmsHandler = require('./realms/handler')
 
 class Client
@@ -9,6 +12,6 @@ class Client
     @config = config || new Config()
     @auth = new AuthHandler(this)
     @realms = new RealmsHandler(this)
-    # @game = new GameHandler(this)
-    # @characters = new CharactersHandler(this)
-    # @chat = new ChatHandler(this)
+    @characters = new CharactersHandler(this)
+    @game = new GameHandler(this)
+    @chat = new ChatHandler(this)
