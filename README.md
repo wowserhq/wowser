@@ -71,16 +71,6 @@ When contributing, please:
 * Do *not* include any distribution files (such as wowser.js or wowser.min.js)
 
 
-## Dependencies
-
-All of Wowser's dependencies are bundled in its distributed release and do not have to be downloaded/included separately.
-
-* [Backbone](http://backbonejs.org/)
-* [Underscore](http://underscorejs.org/)
-* [ByteBuffer](https://github.com/timkurvers/byte-buffer)
-* [JSBN](https://github.com/timkurvers/jsbn)
-
-
 ## Browser Support
 
 Wowser is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
