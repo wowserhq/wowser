@@ -19,35 +19,9 @@ Wowser is both a client as well as a low-level API, allowing one to interact wit
 The project is very much a work in progress, but is already capable of successfully authenticating, logging into a realm and listing chat messages.
 
 
-## Demo
-
-To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients. The steps below will outline on how to get a demo up and running.
-
-1. Make sure you have [Python](http://python.org/) and [pip](http://www.pip-installer.org/) installed on your system.
-
-2. Install [WebSockify](https://github.com/kanaka/websockify/) as follows:
-
-  ```shell
-  sudo pip install websockify
-  ```
-
-3. WebSockify can - among other things - act as a proxy for raw TCP sockets.
-
-   For now, you will want to proxy both port 3724 (auth) and 8129 (world). If your server is on the same machine as your client, use a different set of ports.
-
-   ```shell
-   websockify 3724 host:3724
-   websockify 8129 host:8129
-   ```
-
-4. Visit http://timkurvers.github.io/wowser in your favourite modern browser.
-
-5. For more insight into what's going on, open the developer tools and view the console.
-
-
 ## Development & Contribution
 
-Wowser is written in [CoffeeScript](http://coffeescript.org/) and developed with [Grunt](http://gruntjs.com/).
+Wowser is written in [CoffeeScript](http://coffeescript.org/) and developed with [Gulp](http://gulpjs.com/).
 
 Getting this toolchain up and running, is easy and straight-forward:
 
@@ -65,15 +39,29 @@ Getting this toolchain up and running, is easy and straight-forward:
    npm install
    ```
 
-4. Make sure you have installed `grunt-cli` globally:
+5. Run `gulp` which will automatically build the project when source files change.
 
-   ```shell
-   npm install -g grunt-cli
-   ```
+6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients.
 
-5. Run `grunt watch` which will automatically build the project when source files change.
+    1. Make sure you have [Python](http://python.org/) and [pip](http://www.pip-installer.org/)
+       installed on your system.
 
-6. For now, please use the demo setup above for development.
+    2. Install [WebSockify](https://github.com/kanaka/websockify/) as follows:
+
+       ```shell
+       sudo pip install websockify
+       ```
+
+    3. WebSockify can - among other things - act as a proxy for raw TCP sockets.
+
+       For now, you will want to proxy both port 3724 (auth) and 8129 (world). If your server is on the same machine as your client, use a different set of ports.
+
+       ```shell
+       websockify 3724 host:3724
+       websockify 8129 host:8129
+       ```
+
+6. Use `npm run serve` to serve Wowser on `localhost:3000`.
 
 
 When contributing, please:
