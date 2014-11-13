@@ -1,6 +1,6 @@
 {
   "name": "wowser",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "World of Warcraft in the browser using JavaScript and WebGL",
   "main": "lib/client/index.js",
   "files": [
@@ -19,7 +19,6 @@
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
   "license": "MIT",
-  "private": true,
   "keywords": [
     "world of warcraft",
     "warcraft",
