@@ -8,7 +8,7 @@ class Screen
       @$scope.$apply =>
         @selected = @session.realms.list[0]
 
-    @session.world.on 'authenticate', =>
+    @session.game.on 'authenticate', =>
       @$scope.$apply =>
         @session.screen = 'character-selection'
 
@@ -19,4 +19,4 @@ class Screen
 
   connect: ->
     if @selected
-      @session.world.connect 'localhost', @selected.port
+      @session.game.connect 'localhost', @selected.port

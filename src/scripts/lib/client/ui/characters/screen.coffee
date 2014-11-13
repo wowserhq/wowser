@@ -8,9 +8,9 @@ class Screen
       @$scope.$apply =>
         @selected = @session.characters.list[0]
 
-    @session.world.on 'join', =>
+    @session.game.on 'join', =>
       @$scope.$apply =>
-        @session.screen = 'world'
+        @session.screen = 'game'
 
     @refresh()
 
@@ -19,4 +19,4 @@ class Screen
 
   join: ->
     if @selected
-      @session.world.join @selected
+      @session.game.join @selected
