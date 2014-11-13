@@ -1,5 +1,10 @@
 # ![Wowser](https://raw.githubusercontent.com/timkurvers/wowser/master/public/images/logo.png)
 
+[![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
+[![Build Status](https://img.shields.io/travis/timkurvers/wowser.svg?style=flat)](https://travis-ci.org/timkurvers/wowser)
+[![Dependency Status](https://img.shields.io/gemnasium/timkurvers/wowser.svg?style=flat)](https://gemnasium.com/timkurvers/wowser)
+[![Code Climate](https://img.shields.io/codeclimate/github/timkurvers/wowser.svg?style=flat)](https://codeclimate.com/github/timkurvers/wowser)
+
 World of Warcraft in the browser using JavaScript and WebGL.
 
 Licensed under the **MIT** license, see LICENSE for more information.
