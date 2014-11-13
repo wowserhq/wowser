@@ -58,7 +58,7 @@ class BigNum
     return @_bi.equals(o.bi)
 
   # Generates a byte-array from this BigNum (defaults to little-endian)
-  toArray: (littleEndian=true, unsigned=true) ->
+  toArray: (littleEndian = true, unsigned = true) ->
     ba = @_bi.toByteArray()
 
     if unsigned && @_bi.s == 0 && ba[0] == 0
@@ -70,7 +70,7 @@ class BigNum
     return ba
 
   # Creates a new BigNum from given byte-array
-  @fromArray = (bytes, littleEndian=true, unsigned=true) ->
+  @fromArray = (bytes, littleEndian = true, unsigned = true) ->
     if bytes.toArray?
       bytes = bytes.toArray()
     else

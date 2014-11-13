@@ -34,7 +34,7 @@ class Socket extends EventEmitter
     @socket && @socket.readyState == WebSocket.OPEN
 
   # Connects to given host through given port (if any; default port is implementation specific)
-  connect: (host, port=NaN) ->
+  connect: (host, port = NaN) ->
     unless @connected
       @host = host
       @port = port

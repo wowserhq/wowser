@@ -42,7 +42,7 @@ class Handler extends Socket
     return @srp?.K
 
   # Connects to given host through given port
-  connect: (host, port=NaN) ->
+  connect: (host, port = NaN) ->
     unless @connected
       super(host, port || @constructor.PORT)
       console.info 'connecting to auth-server @', @host, ':', @port

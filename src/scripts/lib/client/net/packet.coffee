@@ -8,7 +8,7 @@ class Packet extends ByteBuffer
   [get] = attr.accessors(this)
 
   # Creates a new packet with given opcode from given source or length
-  constructor: (opcode, source, outgoing=true) ->
+  constructor: (opcode, source, outgoing = true) ->
 
     # Holds the opcode for this packet
     @opcode = opcode
