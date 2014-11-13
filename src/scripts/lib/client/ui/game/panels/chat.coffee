@@ -1,6 +1,7 @@
-class Wowser.UI.Panels.Chat
+Message = require('./message')
 
-  Message = Wowser.Entities.Message
+class Chat
+  module.exports = this
 
   constructor: (@$scope) ->
     @session = @$scope.session
