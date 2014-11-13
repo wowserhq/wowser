@@ -1,4 +1,5 @@
-class Wowser.Entities.Message
+class ChatMessage
+  module.exports = this
 
   # Creates a new message
   constructor: ->

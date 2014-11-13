@@ -1,5 +1,7 @@
-class Handler
-  @include BackboneEvents
+EventEmitter = require('events')
+
+class CharacterHandler extends EventEmitter
+  module.exports = this
 
   # Creates a new character handler
   constructor: (session) ->
@@ -11,48 +13,48 @@ class Handler
     @list = []
 
     # Listen for character list
-    @session.world.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, this
+    @session.game.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, this
 
   # Requests a fresh list of characters
   refresh: ->
     console.info 'refreshing character list'
 
-    wp = new WorldPacket(WorldOpcode.CMSG_CHAR_ENUM)
+    gp = new GamePacket(GameOpcode.CMSG_CHAR_ENUM)
 
-    return @session.world.send(wp)
+    return @session.game.send(gp)
 
   # Character list refresh handler (SMSG_CHAR_ENUM)
-  handleCharacterList: (wp) ->
-    count = wp.readByte() # number of characters
+  handleCharacterList: (gp) ->
+    count = gp.readByte() # number of characters
 
     @list.length = 0
 
     for i in [0...count]
       character = new Character()
 
-      character.guid = wp.readGUID()
-      character.name = wp.readCString()
-      character.race = wp.readUnsignedByte()
-      character.class = wp.readUnsignedByte()
-      character.gender = wp.readUnsignedByte()
-      character.bytes = wp.readUnsignedInt()
-      character.facial = wp.readUnsignedByte()
-      character.level = wp.readUnsignedByte()
-      character.zone = wp.readUnsignedInt()
-      character.map = wp.readUnsignedInt()
-      character.x = wp.readFloat()
-      character.y = wp.readFloat()
-      character.z = wp.readFloat()
-      character.guild = wp.readUnsignedInt()
-      character.flags = wp.readUnsignedInt()
+      character.guid = gp.readGUID()
+      character.name = gp.readCString()
+      character.race = gp.readUnsignedByte()
+      character.class = gp.readUnsignedByte()
+      character.gender = gp.readUnsignedByte()
+      character.bytes = gp.readUnsignedInt()
+      character.facial = gp.readUnsignedByte()
+      character.level = gp.readUnsignedByte()
+      character.zone = gp.readUnsignedInt()
+      character.map = gp.readUnsignedInt()
+      character.x = gp.readFloat()
+      character.y = gp.readFloat()
+      character.z = gp.readFloat()
+      character.guild = gp.readUnsignedInt()
+      character.flags = gp.readUnsignedInt()
 
-      wp.readUnsignedInt() # character customization
-      wp.readUnsignedByte() # (?)
+      gp.readUnsignedInt() # character customization
+      gp.readUnsignedByte() # (?)
 
       pet = {
-        model: wp.readUnsignedInt()
-        level: wp.readUnsignedInt()
-        family: wp.readUnsignedInt()
+        model: gp.readUnsignedInt()
+        level: gp.readUnsignedInt()
+        family: gp.readUnsignedInt()
       }
       if pet.model
         character.pet = pet
@@ -60,9 +62,9 @@ class Handler
       character.equipment = []
       for j in [0...23]
         item = {
-          model: wp.readUnsignedInt()
-          type: wp.readUnsignedByte()
-          enchantment: wp.readUnsignedInt()
+          model: gp.readUnsignedInt()
+          type: gp.readUnsignedByte()
+          enchantment: gp.readUnsignedInt()
         }
         character.equipment.push item
 

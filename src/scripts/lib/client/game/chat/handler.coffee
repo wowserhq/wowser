@@ -1,5 +1,5 @@
-class Wowser.Expansion.WotLK.Handlers.ChatHandler
-  @include BackboneEvents
+class ChatHandler
+  module.exports = this
 
   # Creates a new chat handler
   constructor: (session) ->
@@ -11,22 +11,22 @@ class Wowser.Expansion.WotLK.Handlers.ChatHandler
     @messages = []
 
     # Listen for messages
-    @session.world.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage, this
+    @session.game.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage, this
 
   # Sends given message
   send: (message) ->
     throw new Error 'Sending chat messages is not yet implemented'
 
   # Message handler (SMSG_MESSAGE_CHAT)
-  handleMessage: (wp) ->
-    type = wp.readUnsignedByte()
-    lang = wp.readUnsignedInt()
-    guid1 = wp.readGUID()
-    wp.readUnsignedInt()
-    guid2 = wp.readGUID()
-    len = wp.readUnsignedInt()
-    text = wp.readString(len)
-    flags = wp.readUnsignedByte()
+  handleMessage: (gp) ->
+    type = gp.readUnsignedByte()
+    lang = gp.readUnsignedInt()
+    guid1 = gp.readGUID()
+    gp.readUnsignedInt()
+    guid2 = gp.readGUID()
+    len = gp.readUnsignedInt()
+    text = gp.readString(len)
+    flags = gp.readUnsignedByte()
 
     message = new Message()
     message.text = text
