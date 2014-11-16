@@ -1,1 +1,0 @@
-class Wowser.UI.Panels

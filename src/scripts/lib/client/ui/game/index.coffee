@@ -1,7 +1,3 @@
-# Work around Browserify bug
-# See: https://github.com/substack/node-browserify/issues/940
-typeof Game
-
-# Game specific
 module.exports =
+  Chat: require('./chat'),
   Screen: require('./screen')

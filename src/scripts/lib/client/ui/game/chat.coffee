@@ -1,4 +1,4 @@
-Message = require('./message')
+Message = require('../../game/chat/message')
 
 class Chat
   module.exports = this
