@@ -3,6 +3,7 @@ ByteBuffer = require('byte-buffer')
 Crypt = require('../crypto/crypt')
 GameOpcode = require('./opcode')
 GamePacket = require('./packet')
+GUID = require('../game/guid')
 SHA1 = require('../crypto/hash/sha1')
 Socket = require('../net/socket')
 

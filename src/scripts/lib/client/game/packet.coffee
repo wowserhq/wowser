@@ -1,6 +1,7 @@
 attr = require('attr-accessor')
 BasePacket = require('../net/packet')
 GameOpcode = require('./opcode')
+GUID = require('./guid')
 ObjectUtil = require('../utils/object-util')
 
 class GamePacket extends BasePacket
@@ -24,16 +25,14 @@ class GamePacket extends BasePacket
   get headerSize: ->
     return if @outgoing then @constructor.HEADER_SIZE_OUTGOING else @constructor.HEADER_SIZE_INCOMING
 
-  # # Reads GUID from this packet
-  # readGUID: ->
-  #   if @available < GUID.LENGTH
-  #     return null
+  # Reads GUID from this packet
+  readGUID: ->
+    return new GUID(@read(GUID.LENGTH))
 
-  #   return new GUID(@read(GUID.LENGTH))
-
-  # # Writes given GUID to this packet
-  # writeGUID: (guid) ->
-  #   @write(guid.raw)
+  # Writes given GUID to this packet
+  writeGUID: (guid) ->
+    @write(guid.raw)
+    return this
 
   # # Reads packed GUID from this packet
   # # TODO: Implementation
