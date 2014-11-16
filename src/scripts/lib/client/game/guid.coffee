@@ -1,4 +1,5 @@
-class Wowser.Datastructures.GUID
+class GUID
+  module.exports = this
 
   # GUID byte-length (64-bit)
   @LENGTH = 8
