@@ -23,3 +23,24 @@ class GamePacket extends BasePacket
   # Header size in bytes (dependent on packet origin)
   get headerSize: ->
     return if @outgoing then @constructor.HEADER_SIZE_OUTGOING else @constructor.HEADER_SIZE_INCOMING
+
+  # # Reads GUID from this packet
+  # readGUID: ->
+  #   if @available < GUID.LENGTH
+  #     return null
+
+  #   return new GUID(@read(GUID.LENGTH))
+
+  # # Writes given GUID to this packet
+  # writeGUID: (guid) ->
+  #   @write(guid.raw)
+
+  # # Reads packed GUID from this packet
+  # # TODO: Implementation
+  # readPackedGUID: ->
+  #   return null
+
+  # # Writes given GUID to this packet in packed form
+  # # TODO: Implementation
+  # writePackedGUID: (guid) ->
+  #   return this

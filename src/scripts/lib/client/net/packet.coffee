@@ -44,24 +44,3 @@ class Packet extends ByteBuffer
   # Finalizes this packet
   finalize: ->
     return this
-
-  # Reads GUID from this packet
-  # readGUID: ->
-  #   if @available < GUID.LENGTH
-  #     return null
-
-  #   return new GUID(@read(GUID.LENGTH))
-
-  # # # Writes given GUID to this packet
-  # writeGUID: (guid) ->
-  #   @write(guid.raw)
-
-  # # Reads packed GUID from this packet
-  # # TODO: Implementation
-  # readPackedGUID: ->
-  #   return null
-
-  # # Writes given GUID to this packet in packed form
-  # # TODO: Implementation
-  # writePackedGUID: (guid) ->
-  #   return this
