@@ -1,4 +1,12 @@
-class Wowser.Crypto.Crypt
+attr = require('attr-accessor')
+ArrayUtil = require('../utils/array-util')
+{HMAC} = require('jsbn/lib/sha1')
+RC4 = require('jsbn/lib/rc4')
+
+class Crypt
+  module.exports = this
+
+  [get, set] = attr.accessors(this)
 
   # Creates crypt
   constructor: ->
@@ -18,12 +26,12 @@ class Wowser.Crypto.Crypt
     return this
 
   # Sets session key and initializes this crypt
-  @setter 'key', (key) ->
+  set key: (key) ->
     console.info 'initializing crypt'
 
     # Fresh RC4's
-    @_encrypt = new ARC4()
-    @_decrypt = new ARC4()
+    @_encrypt = new RC4()
+    @_decrypt = new RC4()
 
     # Calculate the encryption hash (through the server decryption key)
     enckey = ArrayUtil.fromHex('C2B3723CC6AED9B5343C53EE2F4367CE')
