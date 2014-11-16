@@ -1,5 +1,5 @@
 attr = require('attr-accessor')
-{Math: {BigInteger}} = require('jsbn')
+BigInteger = require('jsbn/lib/big-integer')
 
 # C-like BigNum decorator for JSBN's BigInteger
 class BigNum
