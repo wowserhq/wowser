@@ -1,4 +1,5 @@
 EventEmitter = require('events')
+Message = require('./message')
 
 class ChatHandler extends EventEmitter
   module.exports = this
@@ -36,4 +37,4 @@ class ChatHandler extends EventEmitter
 
     @messages.push(message)
 
-    @trigger 'message', message
+    @emit 'message', message
