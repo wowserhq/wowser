@@ -93,7 +93,7 @@ class GameHandler extends Socket
 
   # Auth challenge handler (SMSG_AUTH_CHALLENGE)
   handleAuthChallenge: (gp) ->
-    console.log 'handling auth challenge'
+    console.info 'handling auth challenge'
 
     gp.readUnsignedInt() # (0x01)
 
@@ -134,7 +134,7 @@ class GameHandler extends Socket
 
   # Auth response handler (SMSG_AUTH_RESPONSE)
   handleAuthResponse: (gp) ->
-    console.log 'handling auth response'
+    console.info 'handling auth response'
 
     # Handle result byte
     result = gp.readUnsignedByte()
