@@ -1,5 +1,5 @@
-attr         = require('attr-accessor')
-ByteBuffer   = require('byte-buffer')
+attr = require('attr-accessor')
+ByteBuffer = require('byte-buffer')
 EventEmitter = require('events')
 
 # Base-class for any socket including signals and host/port management
