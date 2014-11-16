@@ -1,4 +1,7 @@
+Character = require('./character')
 EventEmitter = require('events')
+GamePacket = require('../game/packet')
+GameOpcode = require('../game/opcode')
 
 class CharacterHandler extends EventEmitter
   module.exports = this
@@ -13,7 +16,7 @@ class CharacterHandler extends EventEmitter
     @list = []
 
     # Listen for character list
-    @session.game.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList, this
+    @session.game.on 'packet:receive:SMSG_CHAR_ENUM', @handleCharacterList.bind(this)
 
   # Requests a fresh list of characters
   refresh: ->
@@ -70,4 +73,4 @@ class CharacterHandler extends EventEmitter
 
       @list.push character
 
-    @trigger 'refresh'
+    @emit 'refresh'
