@@ -30,7 +30,7 @@ class Screen
     @scene.add grid
 
     @loader = new THREE.JSONLoader()
-    @loader.load 'wotlk/Creature/Illidan/Illidan.m2.3geo', (geometry, materials) =>
+    @loader.load 'pipeline/Creature/Illidan/Illidan.m2.3geo', (geometry, materials) =>
       # geometry.applyMatrix(matrix);
       mesh = new THREE.Mesh geometry, new THREE.MeshBasicMaterial(
         color: 0x0099FF,
