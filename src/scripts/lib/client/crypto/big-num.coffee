@@ -85,6 +85,8 @@ class BigNum
     return new BigNum(bytes)
 
   # Creates a new random BigNum of the given number of bytes
-  @fromRand = (bytes) ->
+  @fromRand = (length) ->
     # TODO: This should use a properly seeded, secure RNG
-    return new BigNum(Math.random().toString().slice(2))
+    bytes = for i in [0...length]
+      Math.floor(Math.random() * 128)
+    return new BigNum(bytes)
