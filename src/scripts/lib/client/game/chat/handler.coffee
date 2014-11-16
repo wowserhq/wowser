@@ -1,4 +1,6 @@
-class ChatHandler
+EventEmitter = require('events')
+
+class ChatHandler extends EventEmitter
   module.exports = this
 
   # Creates a new chat handler
@@ -11,7 +13,7 @@ class ChatHandler
     @messages = []
 
     # Listen for messages
-    @session.game.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage, this
+    @session.game.on 'packet:receive:SMSG_MESSAGE_CHAT', @handleMessage.bind(this)
 
   # Sends given message
   send: (message) ->
