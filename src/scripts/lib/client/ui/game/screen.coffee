@@ -29,7 +29,7 @@ class Screen
     @scene.add axes
 
     @loader = new THREE.JSONLoader()
-    @loader.load 'pipeline/Creature/Illidan/Illidan.m2.3geo', (geometry, materials) =>
+    @loader.load 'pipeline/Creature%5CIllidan%5CIllidan.m2.3geo', (geometry, materials) =>
       # geometry.applyMatrix(matrix);
       mesh = new THREE.Mesh geometry, new THREE.MeshBasicMaterial(
         color: 0x0099FF,
