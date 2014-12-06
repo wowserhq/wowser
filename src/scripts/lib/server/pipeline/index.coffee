@@ -33,7 +33,7 @@ class Pipeline
     else
       err = new Error('Resource not found')
       err.status = 404
-      next(err)
+      throw err
 
   skinFor: (m2, req) ->
     # TODO: Quality should be verified against M2's viewCount
@@ -47,7 +47,7 @@ class Pipeline
     unless skin = @skinFor(m2, req)
       err = new Error('Skin not found for M2')
       err.status = 404
-      return next(err)
+      throw err
 
     res.send {
       metadata: {
