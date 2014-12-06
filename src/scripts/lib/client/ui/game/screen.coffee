@@ -7,9 +7,12 @@ class Screen
     @scene = new THREE.Scene()
 
     @camera = new THREE.PerspectiveCamera 60, window.innerWidth / window.innerHeight, 1, 1000
-    @camera.position.x = 0
-    @camera.position.z = 40
-    @camera.position.y = 10
+    @camera.position.x = 40
+    @camera.position.y = 0
+    @camera.position.z = 10
+
+    @camera.rotation.x = Math.PI / 2
+    @camera.rotation.y = Math.PI / 2
 
     # @controls = new THREE.OrbitControls @camera, @$element[0]
     # @controls.noKeys = true
@@ -30,12 +33,10 @@ class Screen
 
     @loader = new THREE.JSONLoader()
     @loader.load 'pipeline/Creature%5CIllidan%5CIllidan.m2.3geo', (geometry, materials) =>
-      # geometry.applyMatrix(matrix);
       mesh = new THREE.Mesh geometry, new THREE.MeshBasicMaterial(
         color: 0x0099FF,
         wireframe: true
       )
-      # mesh.scale.set(scale, scale, scale);
       @scene.add(mesh)
 
     @run()
