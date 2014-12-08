@@ -2,6 +2,7 @@ attr = require('attr-accessor')
 express = require('express')
 Archive = require('./archive')
 DecodeStream = require('blizzardry/node_modules/restructure/src/DecodeStream')
+DBC = require('blizzardry/lib/dbc/entities')
 M2 = require('blizzardry/lib/m2')
 Skin = require('blizzardry/lib/m2/skin')
 
@@ -19,6 +20,7 @@ class Pipeline
   constructor: ->
     @router = express()
     @router.param 'resource', @resource.bind(this)
+    @router.get '/:resource(*.dbc).json', @dbc.bind(this)
     @router.get '/:resource(*.m2).3geo', @m2.bind(this)
     @router.get '/find/:query', @find.bind(this)
     @router.get '/:resource', @serve.bind(this)
@@ -32,6 +34,16 @@ class Pipeline
       next()
     else
       err = new Error('Resource not found')
+      err.status = 404
+      throw err
+
+  dbc: (req, res) ->
+    name = req.resourcePath.match(/(\w+)\.dbc/)[1]
+    if entity = DBC[name]
+      dbc = entity.dbc.decode new DecodeStream(req.resource.data)
+      res.send dbc.records
+    else
+      err = new Error('DBC entity definition not found')
       err.status = 404
       throw err
 
