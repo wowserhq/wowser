@@ -33,7 +33,7 @@ class Pipeline
     if req.resource = @archive.files.get path
       next()
     else
-      err = new Error('Resource not found')
+      err = new Error 'resource not found'
       err.status = 404
       throw err
 
@@ -43,7 +43,7 @@ class Pipeline
       dbc = entity.dbc.decode new DecodeStream(req.resource.data)
       res.send dbc.records
     else
-      err = new Error('DBC entity definition not found')
+      err = new Error 'entity definition not found'
       err.status = 404
       throw err
 
@@ -57,7 +57,7 @@ class Pipeline
   m2: (req, res, next) ->
     m2 = M2.decode new DecodeStream(req.resource.data)
     unless skin = @skinFor(m2, req)
-      err = new Error('Skin not found for M2')
+      err = new Error 'skin not found for M2'
       err.status = 404
       throw err
 

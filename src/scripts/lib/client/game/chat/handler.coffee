@@ -18,7 +18,7 @@ class ChatHandler extends EventEmitter
 
   # Sends given message
   send: (message) ->
-    throw new Error 'Sending chat messages is not yet implemented'
+    throw new Error 'sending chat messages is not yet implemented'
 
   # Message handler (SMSG_MESSAGE_CHAT)
   handleMessage: (gp) ->
