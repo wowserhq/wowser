@@ -1,9 +1,11 @@
 attr = require('attr-accessor')
 express = require('express')
 Archive = require('./archive')
+BLP = require('blizzardry/lib/blp')
 DecodeStream = require('blizzardry/node_modules/restructure/src/DecodeStream')
 DBC = require('blizzardry/lib/dbc/entities')
 M2 = require('blizzardry/lib/m2')
+{PNG} = require('pngjs')
 Skin = require('blizzardry/lib/m2/skin')
 
 # TODO: Find a module for this
@@ -20,6 +22,7 @@ class Pipeline
   constructor: ->
     @router = express()
     @router.param 'resource', @resource.bind(this)
+    @router.get '/:resource(*.blp).png', @blp.bind(this)
     @router.get '/:resource(*.dbc).json', @dbc.bind(this)
     @router.get '/:resource(*.m2).3geo', @m2.bind(this)
     @router.get '/find/:query', @find.bind(this)
@@ -36,6 +39,16 @@ class Pipeline
       err = new Error 'resource not found'
       err.status = 404
       throw err
+
+  blp: (req, res) ->
+    BLP.from req.resource.data, (blp) ->
+      mipmap = blp.largest
+
+      png = new PNG(width: mipmap.width, height: mipmap.height)
+      png.data = mipmap.data
+
+      res.set 'Content-Type', 'image/png'
+      png.pack().pipe(res)
 
   dbc: (req, res) ->
     name = req.resourcePath.match(/(\w+)\.dbc/)[1]
