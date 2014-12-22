@@ -27,6 +27,7 @@
   ],
   "dependencies": {
     "angular": "~1.2.23",
+    "array-find": "^0.1.1",
     "attr-accessor": "^0.2.0",
     "blizzardry": "git://github.com/timkurvers/blizzardry.git",
     "byte-buffer": "^1.0.3",
