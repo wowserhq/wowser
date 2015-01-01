@@ -31,13 +31,14 @@ class Screen
     axes = new THREE.AxisHelper 20
     @scene.add axes
 
-    @loader = new THREE.JSONLoader()
-    @loader.load 'pipeline/Creature%5CIllidan%5CIllidan.m2.3geo', (geometry, materials) =>
-      mesh = new THREE.Mesh geometry, new THREE.MeshBasicMaterial(
-        color: 0x0099FF,
-        wireframe: true
-      )
-      @scene.add(mesh)
+    @load 'Creature\\Rabbit\\Rabbit.m2.3geo', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
+      @scene.add model
+
+    #@load 'Creature\\Illidan\\Illidan.m2.3geo', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
+    #  @scene.add model
+
+    @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3geo', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
+      @scene.add model
 
     @run()
 
@@ -52,3 +53,12 @@ class Screen
 
   animate: ->
     @renderer.render @scene, @camera
+
+  load: (path, texturePath, callback) ->
+    @loader ||= new THREE.JSONLoader()
+    @loader.load "pipeline/#{path}", (geometry) =>
+      texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
+      texture.flipY = false
+      material = new THREE.MeshBasicMaterial map: texture
+      mesh = new THREE.Mesh geometry, material
+      callback(mesh)
