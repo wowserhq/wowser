@@ -84,9 +84,6 @@ class Pipeline
       throw err
 
     res.send {
-      metadata: {
-        formatVersion: 3
-      }
       vertices: flatten m2.vertices.map (vertex) -> vertex.position
       faces: flatten skin.triangles.map (triangle) ->
         [0].concat triangle.map (vi) ->
