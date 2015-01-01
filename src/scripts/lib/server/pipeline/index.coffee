@@ -46,7 +46,7 @@ class Pipeline
       mipmap = blp.largest
 
       png = new PNG(width: mipmap.width, height: mipmap.height)
-      png.data = mipmap.data
+      png.data = mipmap.rgba
 
       res.set 'Content-Type', 'image/png'
       png.pack().pipe(res)
