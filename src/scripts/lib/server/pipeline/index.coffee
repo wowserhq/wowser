@@ -83,11 +83,23 @@ class Pipeline
       err.status = 404
       throw err
 
+    vertices = m2.vertices.map (vertex) -> vertex.position
+    faces = []
+    uvs = m2.vertices.map (vertex) -> vertex.textureCoords
+
+    skin.triangles.forEach (vertices, index) ->
+      face = [1 << 3]
+
+      for index, i in vertices
+        face[1 + i] = skin.indices[index]
+        face[1 + i + 3] = skin.indices[index]
+
+      faces.push face
+
     res.send {
-      vertices: flatten m2.vertices.map (vertex) -> vertex.position
-      faces: flatten skin.triangles.map (triangle) ->
-        [0].concat triangle.map (vi) ->
-          skin.indices[vi]
+      vertices: flatten vertices
+      faces: flatten faces
+      uvs: [flatten uvs]
     }
 
   find: (req, res) ->
