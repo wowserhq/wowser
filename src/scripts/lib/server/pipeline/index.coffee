@@ -72,7 +72,7 @@ class Pipeline
   skinFor: (m2, req) ->
     # TODO: Quality should be verified against M2's viewCount
     quality = req.query.quality || 0
-    path = req.resourcePath.replace '.m2', "0#{quality}.skin"
+    path = req.resourcePath.replace /\.m2/i, "0#{quality}.skin"
     if skin = @archive.files.get path
       Skin.decode new DecodeStream(skin.data)
 
