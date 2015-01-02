@@ -57,8 +57,11 @@ class Screen
   load: (path, texturePath, callback) ->
     @loader ||= new THREE.JSONLoader()
     @loader.load "pipeline/#{path}", (geometry) =>
-      texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
-      texture.flipY = false
-      material = new THREE.MeshBasicMaterial map: texture
+      material = if texturePath
+        texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
+        texture.flipY = false
+        new THREE.MeshBasicMaterial map: texture
+      else
+        new THREE.MeshBasicMaterial wireframe: true
       mesh = new THREE.Mesh geometry, material
       callback(mesh)
