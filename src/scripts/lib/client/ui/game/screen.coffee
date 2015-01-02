@@ -31,13 +31,13 @@ class Screen
     axes = new THREE.AxisHelper 20
     @scene.add axes
 
-    @load 'Creature\\Rabbit\\Rabbit.m2.3geo', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
+    @load 'Creature\\Rabbit\\Rabbit.m2.3js', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
       @scene.add model
 
-    #@load 'Creature\\Illidan\\Illidan.m2.3geo', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
+    #@load 'Creature\\Illidan\\Illidan.m2.3js', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
     #  @scene.add model
 
-    @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3geo', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
+    @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3js', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
       @scene.add model
 
     @run()

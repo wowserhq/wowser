@@ -25,7 +25,7 @@ class Pipeline
     @router.param 'resource', @resource.bind(this)
     @router.get '/:resource(*.blp).png', @blp.bind(this)
     @router.get '/:resource(*.dbc)/:id(*)?.json', @dbc.bind(this)
-    @router.get '/:resource(*.m2).3geo', @m2.bind(this)
+    @router.get '/:resource(*.m2).3js', @m2.bind(this)
     @router.get '/find/:query', @find.bind(this)
     @router.get '/:resource', @serve.bind(this)
 
