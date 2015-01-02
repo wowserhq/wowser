@@ -76,7 +76,7 @@ class Pipeline
     if skin = @archive.files.get path
       Skin.decode new DecodeStream(skin.data)
 
-  m2: (req, res, next) ->
+  m2: (req, res) ->
     m2 = M2.decode new DecodeStream(req.resource.data)
     unless skin = @skinFor(m2, req)
       err = new Error 'skin not found for M2'
@@ -105,5 +105,5 @@ class Pipeline
   find: (req, res) ->
     res.send @archive.files.find req.params.query
 
-  serve: (req, res, next) ->
+  serve: (req, res) ->
     res.send req.resource.data
