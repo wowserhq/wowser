@@ -29,12 +29,17 @@ class Screen
     @scene.add axes
 
     @load 'Creature\\Rabbit\\Rabbit.m2.3js', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
+      model.position.x = 2
+      model.position.y = -1
       @scene.add model
 
-    #@load 'Creature\\Illidan\\Illidan.m2.3js', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
-    #  @scene.add model
+    @load 'Creature\\Illidan\\Illidan.m2.3js', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
+      @scene.add model
 
     @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3js', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
+      model.position.x = -5
+      model.position.y = 5.5
+      model.scale.set 0.3, 0.3, 0.3
       @scene.add model
 
     @run()
