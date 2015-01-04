@@ -47,6 +47,12 @@ class Screen
       model.position.y = 1.5
       @scene.add model
 
+    @load 'World\\Maps\\Azeroth\\Azeroth_31_49.adt.3js', null, (model) =>
+      model.position.x = -266.667
+      model.position.y = -266.667
+      model.position.z = -67
+      @scene.add model
+
     @run()
     @controls.update()
 
