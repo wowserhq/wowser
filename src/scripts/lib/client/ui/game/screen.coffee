@@ -42,6 +42,11 @@ class Screen
       model.scale.set 0.3, 0.3, 0.3
       @scene.add model
 
+    @load 'Creature\\MurlocCostume\\murloccostume_whiteflag.M2.3js', 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png', (model) =>
+      model.position.x = 2
+      model.position.y = 1.5
+      @scene.add model
+
     @run()
     @controls.update()
 
