@@ -1,3 +1,4 @@
+Orbit = require('../orbit')
 THREE = require('three')
 
 class Screen
@@ -14,12 +15,13 @@ class Screen
     @camera.rotation.x = Math.PI / 2
     @camera.rotation.y = Math.PI / 2
 
-    # @controls = new THREE.OrbitControls @camera, @$element[0]
-    # @controls.noKeys = true
-    # @controls.minPolarAngle = Math.PI * 0.05
-    # @controls.maxPolarAngle = Math.PI * 0.45
-    # @controls.minDistance = 200
-    # @controls.maxDistance = 600
+    @controls = new Orbit @camera, @$element[0]
+    @controls.noKeys = true
+    @controls.noPan = true
+    @controls.minPolarAngle = 0
+    @controls.maxPolarAngle = Math.PI * 0.5
+    @controls.minDistance = 10
+    @controls.maxDistance = 600
 
     @renderer = new THREE.WebGLRenderer canvas: @$element[0]
     @renderer.setSize window.innerWidth, window.innerHeight
@@ -41,6 +43,7 @@ class Screen
       @scene.add model
 
     @run()
+    @controls.update()
 
   run: ->
     @update()
