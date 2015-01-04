@@ -8,12 +8,7 @@ class Screen
     @scene = new THREE.Scene()
 
     @camera = new THREE.PerspectiveCamera 60, window.innerWidth / window.innerHeight, 1, 1000
-    @camera.position.x = 40
-    @camera.position.y = 0
-    @camera.position.z = 10
-
-    @camera.rotation.x = Math.PI / 2
-    @camera.rotation.y = Math.PI / 2
+    @camera.up.set 0, 0, 1
 
     @controls = new Orbit @camera, @$element[0]
     @controls.noKeys = true
