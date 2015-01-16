@@ -87,10 +87,10 @@ class Screen
         @character.translateZ -distance
 
       if key.isPressed('left') || key.isPressed('a')
-        @character.rotation.z += angle
+        @character.rotateZ angle
 
       if key.isPressed('right') || key.isPressed('d')
-        @character.rotation.z -= angle
+        @character.rotateZ -angle
 
       @controls.target = @character.position
       @controls.update()
