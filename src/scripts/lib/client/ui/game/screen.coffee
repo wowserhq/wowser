@@ -1,3 +1,4 @@
+key = require('keymaster')
 Orbit = require('../orbit')
 THREE = require('three')
 
@@ -6,6 +7,7 @@ class Screen
 
   constructor: (@$scope, @$element) ->
     @scene = new THREE.Scene()
+    @clock = new THREE.Clock()
 
     @camera = new THREE.PerspectiveCamera 60, window.innerWidth / window.innerHeight, 1, 1000
     @camera.up.set 0, 0, 1
@@ -28,12 +30,15 @@ class Screen
     axes = new THREE.AxisHelper 20
     @scene.add axes
 
+    @character = null
+
     @load 'Creature\\Rabbit\\Rabbit.m2.3js', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
       model.position.x = 2
       model.position.y = -1
       @scene.add model
 
     @load 'Creature\\Illidan\\Illidan.m2.3js', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
+      @character = model
       @scene.add model
 
     @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3js', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
@@ -63,7 +68,32 @@ class Screen
       @run()
 
   update: ->
-    # @controls.update()
+    if @character
+
+      delta = @clock.getDelta()
+      distance = 20 * delta
+      angle = Math.PI / 2 * delta
+
+      if key.isPressed('up') || key.isPressed('w')
+        @character.translateX distance
+
+      if key.isPressed('down') || key.isPressed('s')
+        @character.translateX -distance
+
+      if key.isPressed('space')
+        @character.translateZ distance
+
+      if key.isPressed('x')
+        @character.translateZ -distance
+
+      if key.isPressed('left') || key.isPressed('a')
+        @character.rotation.z += angle
+
+      if key.isPressed('right') || key.isPressed('d')
+        @character.rotation.z -= angle
+
+      @controls.target = @character.position
+      @controls.update()
 
   animate: ->
     @renderer.render @scene, @camera
