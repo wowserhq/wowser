@@ -8,3 +8,11 @@ class ArrayUtil
       array.push(parseInt(hex.slice(index, index + 2), 16))
 
     return array
+
+  # Converts given data to buffer
+  @toBuffer: (data) ->
+    buffer = new Buffer(data.byteLength || data.length)
+    view = new Uint8Array(data)
+    for byte, i in view
+      buffer[i] = view[i]
+    buffer
