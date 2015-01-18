@@ -6,9 +6,7 @@ Archive = require('./archive')
 BLP = require('blizzardry/lib/blp')
 {DecodeStream} = require('blizzardry/lib/restructure')
 DBC = require('blizzardry/lib/dbc/entities')
-M2 = require('blizzardry/lib/m2')
 {PNG} = require('pngjs')
-Skin = require('blizzardry/lib/m2/skin')
 
 # TODO: Find a module for this
 flatten = (array) ->
@@ -26,7 +24,6 @@ class Pipeline
     @router.param 'resource', @resource.bind(this)
     @router.get '/:resource(*.blp).png', @blp.bind(this)
     @router.get '/:resource(*.dbc)/:id(*)?.json', @dbc.bind(this)
-    @router.get '/:resource(*.m2).3js', @m2.bind(this)
     @router.get '/:resource(*.adt).3js', @adt.bind(this)
     @router.get '/find/:query', @find.bind(this)
     @router.get '/:resource', @serve.bind(this)
@@ -70,39 +67,6 @@ class Pipeline
       err = new Error 'entity definition not found'
       err.status = 404
       throw err
-
-  skinFor: (m2, req) ->
-    # TODO: Quality should be verified against M2's viewCount
-    quality = req.query.quality || 0
-    path = req.resourcePath.replace /\.m2/i, "0#{quality}.skin"
-    if skin = @archive.files.get path
-      Skin.decode new DecodeStream(skin.data)
-
-  m2: (req, res) ->
-    m2 = M2.decode new DecodeStream(req.resource.data)
-    unless skin = @skinFor(m2, req)
-      err = new Error 'skin not found for M2'
-      err.status = 404
-      throw err
-
-    vertices = m2.vertices.map (vertex) -> vertex.position
-    faces = []
-    uvs = m2.vertices.map (vertex) -> vertex.textureCoords
-
-    skin.triangles.forEach (vertices, index) ->
-      face = [1 << 3]
-
-      for index, i in vertices
-        face[1 + i] = skin.indices[index]
-        face[1 + i + 3] = skin.indices[index]
-
-      faces.push face
-
-    res.send {
-      vertices: flatten vertices
-      faces: flatten faces
-      uvs: [flatten uvs]
-    }
 
   adt: (req, res) ->
     adt = ADT.decode new DecodeStream(req.resource.data)

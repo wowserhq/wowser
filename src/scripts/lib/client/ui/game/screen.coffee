@@ -1,4 +1,5 @@
 key = require('keymaster')
+M2 = require('../../pipeline/m2')
 Orbit = require('../orbit')
 THREE = require('three')
 
@@ -32,31 +33,39 @@ class Screen
 
     @character = null
 
-    @load 'Creature\\Rabbit\\Rabbit.m2.3js', 'Creature\\Rabbit\\RabbitSkin.blp.png', (model) =>
+    # TODO: Apply texture ('Creature\\Rabbit\\RabbitSkin.blp.png')
+    M2.load 'Creature\\Rabbit\\Rabbit.m2', (m2) =>
+      model = m2.mesh
       model.position.x = 2
       model.position.y = -1
       @scene.add model
 
-    @load 'Creature\\Illidan\\Illidan.m2.3js', 'Creature\\Illidan\\Illidan.blp.png', (model) =>
+    # TODO: Apply texture ('Creature\\Illidan\\Illidan.blp.png')
+    M2.load 'Creature\\Illidan\\Illidan.m2', (m2) =>
+      model = m2.mesh
       @character = model
       @scene.add model
 
-    @load 'Creature\\RAGNAROS\\RAGNAROS.m2.3js', 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png', (model) =>
+    # TODO: Apply texture ('Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png')
+    M2.load 'Creature\\RAGNAROS\\RAGNAROS.m2', (m2) =>
+      model = m2.mesh
       model.position.x = -5
       model.position.y = 5.5
       model.scale.set 0.3, 0.3, 0.3
       @scene.add model
 
-    @load 'Creature\\MurlocCostume\\murloccostume_whiteflag.M2.3js', 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png', (model) =>
+    # TODO: Apply texture ('Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png')
+    M2.load 'Creature\\MurlocCostume\\murloccostume_whiteflag.M2', (m2) =>
+      model = m2.mesh
       model.position.x = 2
       model.position.y = 1.5
       @scene.add model
 
-    @load 'World\\Maps\\Azeroth\\Azeroth_31_49.adt.3js', null, (model) =>
-      model.position.x = -266.667
-      model.position.y = -266.667
-      model.position.z = -67
-      @scene.add model
+    # ADT.load 'World\\Maps\\Azeroth\\Azeroth_31_49.adt.3js', null, (model) =>
+    #   model.position.x = -266.667
+    #   model.position.y = -266.667
+    #   model.position.z = -67
+    #   @scene.add model
 
     @run()
     @controls.update()
@@ -98,14 +107,14 @@ class Screen
   animate: ->
     @renderer.render @scene, @camera
 
-  load: (path, texturePath, callback) ->
-    @loader ||= new THREE.JSONLoader()
-    @loader.load "pipeline/#{path}", (geometry) =>
-      material = if texturePath
-        texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
-        texture.flipY = false
-        new THREE.MeshBasicMaterial map: texture
-      else
-        new THREE.MeshBasicMaterial wireframe: true
-      mesh = new THREE.Mesh geometry, material
-      callback(mesh)
+  # load: (path, texturePath, callback) ->
+  #   @loader ||= new THREE.JSONLoader()
+  #   @loader.load "pipeline/#{path}", (geometry) =>
+  #     material = if texturePath
+  #       texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
+  #       texture.flipY = false
+  #       new THREE.MeshBasicMaterial map: texture
+  #     else
+  #       new THREE.MeshBasicMaterial wireframe: true
+  #     mesh = new THREE.Mesh geometry, material
+  #     callback(mesh)
