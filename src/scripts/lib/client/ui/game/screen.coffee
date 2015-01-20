@@ -33,29 +33,29 @@ class Screen
 
     @character = null
 
-    # TODO: Apply texture ('Creature\\Rabbit\\RabbitSkin.blp.png')
     M2.load 'Creature\\Rabbit\\Rabbit.m2', (m2) =>
+      m2.texture = 'Creature\\Rabbit\\RabbitSkin.blp.png'
       model = m2.mesh
       model.position.x = 2
       model.position.y = -1
       @scene.add model
 
-    # TODO: Apply texture ('Creature\\Illidan\\Illidan.blp.png')
     M2.load 'Creature\\Illidan\\Illidan.m2', (m2) =>
+      m2.texture = 'Creature\\Illidan\\Illidan.blp.png'
       model = m2.mesh
       @character = model
       @scene.add model
 
-    # TODO: Apply texture ('Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png')
     M2.load 'Creature\\RAGNAROS\\RAGNAROS.m2', (m2) =>
+      m2.texture = 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png'
       model = m2.mesh
       model.position.x = -5
       model.position.y = 5.5
       model.scale.set 0.3, 0.3, 0.3
       @scene.add model
 
-    # TODO: Apply texture ('Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png')
     M2.load 'Creature\\MurlocCostume\\murloccostume_whiteflag.M2', (m2) =>
+      m2.texture = 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png'
       model = m2.mesh
       model.position.x = 2
       model.position.y = 1.5
@@ -106,15 +106,3 @@ class Screen
 
   animate: ->
     @renderer.render @scene, @camera
-
-  # load: (path, texturePath, callback) ->
-  #   @loader ||= new THREE.JSONLoader()
-  #   @loader.load "pipeline/#{path}", (geometry) =>
-  #     material = if texturePath
-  #       texture = THREE.ImageUtils.loadTexture "pipeline/#{texturePath}"
-  #       texture.flipY = false
-  #       new THREE.MeshBasicMaterial map: texture
-  #     else
-  #       new THREE.MeshBasicMaterial wireframe: true
-  #     mesh = new THREE.Mesh geometry, material
-  #     callback(mesh)
