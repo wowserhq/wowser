@@ -24,10 +24,6 @@ class Screen
     @renderer = new THREE.WebGLRenderer canvas: @$element[0]
     @renderer.setSize window.innerWidth, window.innerHeight
 
-    grid = new THREE.GridHelper 300, 10
-    grid.setColors new THREE.Color(0x666666), new THREE.Color(0x222222)
-    @scene.add grid
-
     axes = new THREE.AxisHelper 20
     @scene.add axes
 
