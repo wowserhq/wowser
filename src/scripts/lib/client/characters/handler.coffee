@@ -7,10 +7,7 @@ class CharacterHandler extends EventEmitter
   module.exports = this
 
   # Creates a new character handler
-  constructor: (session) ->
-
-    # Holds session
-    @session = session
+  constructor: (@session) ->
 
     # Initially empty list of characters
     @list = []

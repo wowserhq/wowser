@@ -11,11 +11,7 @@ class GameHandler extends Socket
   module.exports = this
 
   # Creates a new game handler
-  constructor: (session) ->
-
-    # Holds session
-    @session = session
-
+  constructor: (@session) ->
     super
 
     # Listen for incoming data

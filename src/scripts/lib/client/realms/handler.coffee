@@ -7,10 +7,7 @@ class RealmsHandler extends EventEmitter
   module.exports = this
 
   # Creates a new realm handler
-  constructor: (session) ->
-
-    # Holds session
-    @session = session
+  constructor: (@session) ->
 
     # Initially empty list of realms
     @list = []

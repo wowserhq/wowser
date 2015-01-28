@@ -14,15 +14,10 @@ class Handler extends Socket
   @PORT = 3724
 
   # Creates a new authentication handler
-  constructor: (session) ->
+  constructor: (@session) ->
 
-    # Holds session
-    @session = session
-
-    # Holds account for this session (if any)
+    # Holds credentials for this session (if any)
     @account = null
-
-    # Holds password for this session (if any)
     @password = null
 
     # Holds Secure Remote Password implementation
