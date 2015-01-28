@@ -26,11 +26,11 @@ class Handler extends Socket
     super
 
     # Listen for incoming data
-    @on 'data:receive', @dataReceived, this
+    @on 'data:receive', @dataReceived
 
     # Delegate packets
-    @on 'packet:receive:LOGON_CHALLENGE', @handleLogonChallenge, this
-    @on 'packet:receive:LOGON_PROOF', @handleLogonProof, this
+    @on 'packet:receive:LOGON_CHALLENGE', @handleLogonChallenge
+    @on 'packet:receive:LOGON_PROOF', @handleLogonProof
 
   # Retrieves the session key (if any)
   get key: ->
