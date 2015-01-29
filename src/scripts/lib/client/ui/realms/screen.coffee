@@ -10,7 +10,7 @@ class Screen
 
     @session.game.on 'authenticate', =>
       @$scope.$apply =>
-        @session.screen = 'character-selection'
+        @session.screen = 'characters'
 
     @refresh()
 

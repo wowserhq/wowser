@@ -18,9 +18,9 @@
         <div class="slogan">World of Warcraft in the browser</div>
       </section>
       <select data-ng-model="session.screen" class="screen-selector">
-        <option value="authentication">Authentication</option>
-        <option value="realm-selection">Realm Selection</option>
-        <option value="character-selection">Character Selection</option>
+        <option value="auth">Authentication</option>
+        <option value="realms">Realm Selection</option>
+        <option value="characters">Character Selection</option>
         <option value="game">Game</option>
       </select>
       <div data-ng-include="'templates/' + session.screen + '.html'" class="screen {{session.screen}}"></div>

@@ -13,7 +13,7 @@ class Screen
 
     @session.auth.on 'authenticate', =>
       @$scope.$apply =>
-        @session.screen = 'realm-selection'
+        @session.screen = 'realms'
 
     @session.auth.on 'reject', =>
       @session.auth.disconnect()

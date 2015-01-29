@@ -18,9 +18,9 @@ html
         div.slogan World of Warcraft in the browser
 
       select.screen-selector(data-ng-model='session.screen')
-        option(value='authentication') Authentication
-        option(value='realm-selection') Realm Selection
-        option(value='character-selection') Character Selection
+        option(value='auth') Authentication
+        option(value='realms') Realm Selection
+        option(value='characters') Character Selection
         option(value='game') Game
 
       div(class='screen {{session.screen}}' data-ng-include="'templates/' + session.screen + '.html'")
