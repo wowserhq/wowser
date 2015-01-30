@@ -3,4 +3,4 @@ class UI
 
   constructor: (@$scope) ->
     @session = @$scope.session = new Wowser()
-    @session.screen = 'authentication'
+    @session.screen = 'auth'
