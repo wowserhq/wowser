@@ -1,4 +1,4 @@
-# ![Wowser](https://raw.githubusercontent.com/timkurvers/wowser/master/public/images/logo.png)
+# Wowser
 
 [![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
 [![Build Status](https://img.shields.io/travis/timkurvers/wowser.svg?style=flat)](https://travis-ci.org/timkurvers/wowser)
