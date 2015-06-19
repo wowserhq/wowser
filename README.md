@@ -1,5 +1,7 @@
 # Wowser
 
+[![Join the chat at https://gitter.im/timkurvers/wowser](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timkurvers/wowser?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
 [![Build Status](https://img.shields.io/travis/timkurvers/wowser.svg?style=flat)](https://travis-ci.org/timkurvers/wowser)
 [![Dependency Status](https://img.shields.io/gemnasium/timkurvers/wowser.svg?style=flat)](https://gemnasium.com/timkurvers/wowser)
