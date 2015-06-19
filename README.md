@@ -1,6 +1,7 @@
 # Wowser
 
 [![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
+[![Join chat](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat)](https://gitter.im/timkurvers/wowser)
 [![Build Status](https://img.shields.io/travis/timkurvers/wowser.svg?style=flat)](https://travis-ci.org/timkurvers/wowser)
 [![Dependency Status](https://img.shields.io/gemnasium/timkurvers/wowser.svg?style=flat)](https://gemnasium.com/timkurvers/wowser)
 [![Code Climate](https://img.shields.io/codeclimate/github/timkurvers/wowser.svg?style=flat)](https://codeclimate.com/github/timkurvers/wowser)
