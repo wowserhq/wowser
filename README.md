@@ -47,6 +47,8 @@ Getting this toolchain up and running, is easy and straight-forward:
 
 5. Run `gulp` which will automatically build the project when source files change.
 
+   When not available, run `./node_modules/.bin/gulp` instead.
+
 6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients.
 
    [Websockify](https://github.com/kanaka/websockify/) can - among other things - act
