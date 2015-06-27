@@ -1,5 +1,6 @@
 Bundle  = require('./bundle')
-clean   = require('gulp-rimraf')
+del     = require('del')
+vpaths  = require('vinyl-paths')
 coffee  = require('gulp-coffee')
 concat  = require('gulp-concat')
 gulp    = require('gulp')
@@ -37,7 +38,7 @@ gulp.task 'clean', ->
     'public/templates/*',
     'public/index.html',
     'spec/*'
-  ]).pipe clean()
+  ]).pipe vpaths(del)
 
 gulp.task 'scripts:compile', ->
   gulp.src config.scripts
