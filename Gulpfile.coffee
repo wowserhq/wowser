@@ -1,6 +1,5 @@
 Bundle  = require('./bundle')
 del     = require('del')
-vpaths  = require('vinyl-paths')
 coffee  = require('gulp-coffee')
 concat  = require('gulp-concat')
 gulp    = require('gulp')
@@ -30,15 +29,15 @@ bundles =
     standalone: 'Wowser.UI'
   )
 
-gulp.task 'clean', ->
-  gulp.src([
+gulp.task 'clean', (cb) -> 
+  del([
     'lib/*',
     'public/scripts/*',
     'public/styles/*',
     'public/templates/*',
     'public/index.html',
     'spec/*'
-  ]).pipe vpaths(del)
+  ], cb)
 
 gulp.task 'scripts:compile', ->
   gulp.src config.scripts
