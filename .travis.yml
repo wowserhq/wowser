@@ -5,6 +5,8 @@ node_js:
   - iojs
 matrix:
   allow_failures:
+    - node_js: 0.12
     - node_js: 0.13
+    - node_js: iojs
   fast_finish: true
 script: npm test --coverage
