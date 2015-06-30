@@ -1,1 +1,0 @@
-Wowser = module.exports = require('./')
