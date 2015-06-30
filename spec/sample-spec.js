@@ -1,7 +1,11 @@
-var expect, sinon, _ref;
+'use strict';
 
-_ref = require('./spec-helper'), expect = _ref.expect, sinon = _ref.sinon;
+var _require = require('./spec-helper');
 
-describe('Wowser', function() {
-  return xit('will have specs (hopefully)');
+var expect = _require.expect;
+var sinon = _require.sinon;
+
+describe('Wowser', function () {
+
+  xit('will have specs (hopefully)');
 });
