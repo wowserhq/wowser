@@ -42,11 +42,11 @@
     "websockify": "^0.6.2"
   },
   "devDependencies": {
+    "babel": "^5.6.14",
     "browserify": "^6.2.0",
-    "coffee-script": "^1.8.0",
     "del": "^1.2.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
-    "gulp-coffee": "^2.2.0",
+    "gulp-babel": "^5.1.0",
     "gulp-concat": "^2.4.1",
     "gulp-jade": "^0.8.0",
     "gulp-mocha": "1.0.0",
