@@ -17,12 +17,12 @@ module.exports = class ADT {
 
     // See: http://www.pxr.dk/wowdev/wiki/index.php?title=ADT#MCVT_sub-chunk
     for(var cy = 0; cy < 16; ++cy) {
-      for(var cx = 0; cx < 16; ++cy) {
+      for(var cx = 0; cx < 16; ++cx) {
         let cindex = cy * 16 + cx
         let chunk = this.data.MCNKs[cindex]
 
         chunk.MCVT.heights.forEach(function(height, index) {
-          let y = index // 17
+          let y = Math.floor(index / 17)
           let x = index % 17
           if(x > 8) {
             y += 0.5
