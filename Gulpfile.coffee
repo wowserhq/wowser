@@ -88,8 +88,8 @@ gulp.task 'watch', ->
         bundles.core.invalidate(jspath)
         bundles.ui.invalidate(jspath)
 
-  gulp.watch config.styles,    'styles'
-  gulp.watch config.templates, 'templates'
+  gulp.watch config.styles,    gulp.series('styles')
+  gulp.watch config.templates, gulp.series('templates')
 
 gulp.task 'default', gulp.series(
   'rebuild', 'spec', 'watch'
