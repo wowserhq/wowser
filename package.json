@@ -29,7 +29,7 @@
     "angular": "~1.2.23",
     "array-find": "^0.1.1",
     "attr-accessor": "^0.2.0",
-    "blizzardry": "git://github.com/timkurvers/blizzardry.git",
+    "blizzardry": "^0.2.0",
     "byte-buffer": "^1.0.3",
     "deep-equal": "^0.2.1",
     "express": "^4.9.3",
