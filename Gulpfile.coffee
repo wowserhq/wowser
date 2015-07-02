@@ -29,7 +29,7 @@ bundles =
     standalone: 'Wowser.UI'
   )
 
-gulp.task 'clean', (cb) -> 
+gulp.task 'clean', (cb) ->
   del([
     'lib/*',
     'public/scripts/*',
