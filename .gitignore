@@ -1,3 +1,5 @@
 coverage/
 data
+lib/
 node_modules/
+spec/
