@@ -14,7 +14,7 @@
     "start": "bin/serve",
     "serve": "bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
-    "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
+    "test": "gulp rebuild && istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
   },
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
@@ -29,7 +29,7 @@
     "angular": "~1.2.23",
     "array-find": "^0.1.1",
     "attr-accessor": "^0.2.0",
-    "blizzardry": "git://github.com/timkurvers/blizzardry.git",
+    "blizzardry": "^0.2.0",
     "byte-buffer": "^1.0.3",
     "deep-equal": "^0.2.1",
     "express": "^4.9.3",
