@@ -1,7 +1,7 @@
 coverage/
 data
 lib/
+node_modules/
 public/scripts/
 public/styles/
-node_modules/
 spec/
