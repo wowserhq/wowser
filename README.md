@@ -64,7 +64,9 @@ Getting this toolchain up and running, is easy and straight-forward:
    websockify 8129 host:8129
    ```
 
-6. Use `npm run serve` to serve Wowser on `localhost:3000`.
+6. Ensure World of Warcraft's data folder (the one containing MPQ archives) is available under `data` either by copying or symlinking, [for now](https://github.com/timkurvers/wowser/issues/30).
+
+7. Use `npm run serve` to serve Wowser on `localhost:3000`.
 
 
 When contributing, please:
