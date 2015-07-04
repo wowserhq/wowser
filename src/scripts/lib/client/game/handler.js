@@ -36,7 +36,7 @@ module.exports = class GameHandler extends Socket {
 
   // Finalizes and sends given packet
   send(packet) {
-    size = packet.bodySize + GamePacket.OPCODE_SIZE_OUTGOING
+    const size = packet.bodySize + GamePacket.OPCODE_SIZE_OUTGOING
 
     packet.front()
     packet.writeShort(size, ByteBuffer.BIG_ENDIAN)
@@ -55,7 +55,7 @@ module.exports = class GameHandler extends Socket {
     if(character) {
       console.info('joining game with', character.toString())
 
-      gp = new GamePacket(GameOpcode.CMSG_PLAYER_LOGIN, GamePacket.HEADER_SIZE_OUTGOING + GUID.LENGTH)
+      const gp = new GamePacket(GameOpcode.CMSG_PLAYER_LOGIN, GamePacket.HEADER_SIZE_OUTGOING + GUID.LENGTH)
       gp.writeGUID(character.guid)
       return this.send(gp)
     }
@@ -85,8 +85,8 @@ module.exports = class GameHandler extends Socket {
       }
 
       if(this.remaining > 0 && this.buffer.available >= this.remaining) {
-        size = GamePacket.OPCODE_SIZE_INCOMING + this.remaining
-        gp = new GamePacket(this.buffer.readUnsignedShort(), this.buffer.seek(-GamePacket.HEADER_SIZE_INCOMING).read(size), false)
+        const size = GamePacket.OPCODE_SIZE_INCOMING + this.remaining
+        const gp = new GamePacket(this.buffer.readUnsignedShort(), this.buffer.seek(-GamePacket.HEADER_SIZE_INCOMING).read(size), false)
 
         this.remaining = false
 
@@ -111,23 +111,23 @@ module.exports = class GameHandler extends Socket {
 
     gp.readUnsignedInt() // (0x01)
 
-    salt = gp.read(4)
+    const salt = gp.read(4)
 
-    seed = BigNum.fromRand(4)
+    const seed = BigNum.fromRand(4)
 
-    hash = new SHA1()
+    const hash = new SHA1()
     hash.feed(this.session.auth.account)
     hash.feed([0, 0, 0, 0])
     hash.feed(seed.toArray())
     hash.feed(salt)
     hash.feed(this.session.auth.key)
 
-    build = this.session.config.build
-    account = this.session.auth.account
+    const build = this.session.config.build
+    const account = this.session.auth.account
 
-    size = GamePacket.HEADER_SIZE_OUTGOING + 8 + this.session.auth.account.length + 1 + 4 + 4 + 20 + 20 + 4
+    const size = GamePacket.HEADER_SIZE_OUTGOING + 8 + this.session.auth.account.length + 1 + 4 + 4 + 20 + 20 + 4
 
-    app = new GamePacket(GameOpcode.CMSG_AUTH_PROOF, size)
+    const app = new GamePacket(GameOpcode.CMSG_AUTH_PROOF, size)
     app.writeUnsignedInt(build) // build
     app.writeUnsignedInt(0)     // (?)
     app.writeCString(account)   // account
@@ -152,7 +152,7 @@ module.exports = class GameHandler extends Socket {
     console.info('handling auth response')
 
     // Handle result byte
-    result = gp.readUnsignedByte()
+    const result = gp.readUnsignedByte()
     if(result == 0x0D) {
       console.warn('server-side auth/realm failure; try again')
       this.emit('reject')

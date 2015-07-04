@@ -23,7 +23,7 @@ module.exports = class RealmsHandler extends EventEmitter {
   refresh() {
     console.info('refreshing realmlist')
 
-    ap = new AuthPacket(AuthOpcode.REALM_LIST)
+    const ap = new AuthPacket(AuthOpcode.REALM_LIST)
 
     return this.session.auth.send(ap)
   }
@@ -33,12 +33,12 @@ module.exports = class RealmsHandler extends EventEmitter {
     ap.readShort()         // packet-size
     ap.readUnsignedInt()   // (?)
 
-    count = ap.readShort() // number of realms
+    const count = ap.readShort() // number of realms
 
     this.list.length = 0
 
     for(var i = 0; i < count; ++i) {
-      realm = new Realm()
+      var realm = new Realm()
 
       realm.icon = ap.readUnsignedByte()
       realm.lock = ap.readUnsignedByte()

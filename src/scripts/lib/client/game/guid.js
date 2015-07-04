@@ -19,8 +19,8 @@ module.exports = class GUID {
 
   // Short string representation of this GUID
   toString() {
-    high = ('0000' + this.high.toString(16)).slice(-4)
-    low = ('0000' + this.low.toString(16)).slice(-4)
+    const high = ('0000' + this.high.toString(16)).slice(-4)
+    const low = ('0000' + this.low.toString(16)).slice(-4)
     return `[GUID; Hex: 0x${high}${low}]`
   }
 

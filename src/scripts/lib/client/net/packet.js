@@ -39,7 +39,7 @@ module.exports = class Packet extends ByteBuffer {
 
   // Short string representation of this packet
   toString() {
-    opcode = ('0000' + this.opcode.toString(16).toUpperCase()).slice(-4)
+    const opcode = ('0000' + this.opcode.toString(16).toUpperCase()).slice(-4)
     return `[${this.constructor.name}; Opcode: ${this.opcodeName || 'UNKNOWN'} (0x${opcode}); Length: ${this.length}; Body: ${this.bodySize}; Index: ${this._index}]`
   }
 

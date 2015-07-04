@@ -66,7 +66,7 @@ module.exports = class BigNum {
 
   // Generates a byte-array from this BigNum (defaults to little-endian)
   toArray(littleEndian = true, unsigned = true) {
-    ba = this._bi.toByteArray()
+    const ba = this._bi.toByteArray()
 
     if(unsigned && this._bi.s === 0 && ba[0] === 0) {
       ba.shift()
@@ -101,7 +101,7 @@ module.exports = class BigNum {
   // Creates a new random BigNum of the given number of bytes
   static fromRand(length) {
     // TODO: This should use a properly seeded, secure RNG
-    bytes = []
+    const bytes = []
     for(var i = 0; i < length; ++i) {
       bytes.push(Math.floor(Math.random() * 128))
     }

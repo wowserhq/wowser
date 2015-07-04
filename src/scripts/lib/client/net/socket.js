@@ -54,7 +54,7 @@ module.exports = class Socket extends EventEmitter {
       }
 
       this.socket.onmessage = (e) => {
-        index = this.buffer.index
+        const index = this.buffer.index
         this.buffer.end().append(e.data.byteLength).write(e.data)
         this.buffer.index = index
 

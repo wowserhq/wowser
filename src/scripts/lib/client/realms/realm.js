@@ -41,7 +41,7 @@ module.exports = class Realm {
   // Sets address for this realm
   set address(address) {
     this._address = address
-    parts = this._address.split(':')
+    const parts = this._address.split(':')
     this._host = parts[0] || null
     this._port = parts[1] || NaN
   }

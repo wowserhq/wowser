@@ -84,14 +84,14 @@ module.exports = class SRP {
 
     // Authentication hash consisting of user's account (I), a colon and user's password (P)
     // auth = H(I : P)
-    auth = new SHA1()
+    const auth = new SHA1()
     auth.feed(I)
     auth.feed(':')
     auth.feed(P).finalize()
 
     // Salted authentication hash consisting of the salt and the authentication hash
     // x = H(s | auth)
-    x = new SHA1()
+    const x = new SHA1()
     x.feed(this._s.toArray())
     x.feed(auth.digest)
     this._x = BigNum.fromArray(x.digest)
@@ -102,29 +102,29 @@ module.exports = class SRP {
 
     // Random scrambling parameter consisting of the public ephemeral values
     // u = H(A | B)
-    u = new SHA1()
+    const u = new SHA1()
     u.feed(this._A.toArray())
     u.feed(this._B.toArray())
     this._u = BigNum.fromArray(u.digest)
 
     // Client-side session key
     // S = (B - (kg^x)) ^ (a + ux)
-    kgx = this._k.multiply(this._g.modPow(this._x, this._N))
-    aux = this._a.add(this._u.multiply(this._x))
+    const kgx = this._k.multiply(this._g.modPow(this._x, this._N))
+    const aux = this._a.add(this._u.multiply(this._x))
     this._S = this._B.subtract(kgx).modPow(aux, this._N)
 
     // Store odd and even bytes in separate byte-arrays
-    S = this._S.toArray()
-    S1 = []
-    S2 = []
+    const S = this._S.toArray()
+    const S1 = []
+    const S2 = []
     for(let i = 0; i < 16; ++i) {
       S1[i] = S[i * 2]
       S2[i] = S[i * 2 + 1]
     }
 
     // Hash these byte-arrays
-    S1h = new SHA1()
-    S2h = new SHA1()
+    const S1h = new SHA1()
+    const S2h = new SHA1()
     S1h.feed(S1).finalize()
     S2h.feed(S2).finalize()
 
@@ -136,17 +136,17 @@ module.exports = class SRP {
     }
 
     // Generate username hash
-    userh = new SHA1()
+    const userh = new SHA1()
     userh.feed(I).finalize()
 
     // Hash both prime and generator
-    Nh = new SHA1()
-    gh = new SHA1()
+    const Nh = new SHA1()
+    const gh = new SHA1()
     Nh.feed(this._N.toArray()).finalize()
     gh.feed(this._g.toArray()).finalize()
 
     // XOR N-prime and generator
-    Ngh = []
+    const Ngh = []
     for(let i = 0; i < 20; ++i) {
       Ngh[i] = Nh.digest[i] ^ gh.digest[i]
     }

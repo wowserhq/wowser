@@ -118,15 +118,15 @@ module.exports = class AuthHandler extends Socket {
       case AuthChallengeOpcode.SUCCESS:
         console.info('received logon challenge')
 
-        B = ap.read(32)              // B
+        const B = ap.read(32)              // B
 
-        glen = ap.readUnsignedByte() // g-length
-        g = ap.read(glen)            // g
+        const glen = ap.readUnsignedByte() // g-length
+        const g = ap.read(glen)            // g
 
-        Nlen = ap.readUnsignedByte() // n-length
-        N = ap.read(Nlen)            // N
+        const Nlen = ap.readUnsignedByte() // n-length
+        const N = ap.read(Nlen)            // N
 
-        salt = ap.read(32)           // salt
+        const salt = ap.read(32)           // salt
 
         ap.read(16)                  // unknown
         ap.readUnsignedByte()        // security flags
@@ -134,7 +134,7 @@ module.exports = class AuthHandler extends Socket {
         this.srp = new SRP(N, g)
         this.srp.feed(salt, B, this.account, this.password)
 
-        lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2)
+        const lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2)
         lpp.write(this.srp.A.toArray())
         lpp.write(this.srp.M1.digest)
         lpp.write(new Array(20)) // CRC hash
@@ -160,7 +160,7 @@ module.exports = class AuthHandler extends Socket {
 
     console.info('received proof response')
 
-    M2 = ap.read(20)
+    const M2 = ap.read(20)
 
     if(this.srp.validate(M2)) {
       this.emit('authenticate')

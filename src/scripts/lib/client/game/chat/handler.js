@@ -24,16 +24,16 @@ module.exports = class ChatHandler extends EventEmitter {
 
   // Message handler (SMSG_MESSAGE_CHAT)
   handleMessage(gp) {
-    type = gp.readUnsignedByte()
-    lang = gp.readUnsignedInt()
-    guid1 = gp.readGUID()
+    const type = gp.readUnsignedByte()
+    const lang = gp.readUnsignedInt()
+    const guid1 = gp.readGUID()
     gp.readUnsignedInt()
-    guid2 = gp.readGUID()
-    len = gp.readUnsignedInt()
-    text = gp.readString(len)
-    flags = gp.readUnsignedByte()
+    const guid2 = gp.readGUID()
+    const len = gp.readUnsignedInt()
+    const text = gp.readString(len)
+    const flags = gp.readUnsignedByte()
 
-    message = new Message()
+    const message = new Message()
     message.text = text
     message.guid = guid1
 
