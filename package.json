@@ -11,8 +11,8 @@
     "README.md"
   ],
   "scripts": {
-    "start": "bin/serve",
-    "serve": "bin/serve",
+    "start": "node bin/serve",
+    "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
     "test": "gulp rebuild && istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
   },
