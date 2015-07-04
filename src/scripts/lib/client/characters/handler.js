@@ -66,7 +66,7 @@ module.exports = class CharacterHandler extends EventEmitter {
       }
 
       character.equipment = []
-      for(var j = 0; j < 24; ++j) {
+      for(var j = 0; j < 23; ++j) {
         const item = {
           model: gp.readUnsignedInt(),
           type: gp.readUnsignedByte(),
