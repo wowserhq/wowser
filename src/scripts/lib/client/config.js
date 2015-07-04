@@ -31,7 +31,7 @@ class Raw {
   }
 
   raw(value) {
-    ("\u0000\u0000\u0000\u0000" + value.split('').reverse().join('')).slice(-4)
+    return ("\u0000\u0000\u0000\u0000" + value.split('').reverse().join('')).slice(-4)
   }
 
   get locale() {
