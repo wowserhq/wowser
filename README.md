@@ -28,7 +28,7 @@ The project is very much a work in progress, but is already capable of successfu
 
 ## Development & Contribution
 
-Wowser is written in [CoffeeScript](http://coffeescript.org/) and developed with [Gulp](http://gulpjs.com/).
+Wowser is written in [ES2015](https://babeljs.io/docs/learn-es2015/), compiled by [Babel](https://babeljs.io/), developed with [Gulp](http://gulpjs.com/) and tested through [Mocha](http://mochajs.org/).
 
 Getting this toolchain up and running, is easy and straight-forward:
 
