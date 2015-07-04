@@ -60,7 +60,7 @@ module.exports = class Socket extends EventEmitter {
 
         this.emit('data:receive', this)
 
-        if(this.buffer.available === 0 && this.buffer.length > BUFFER_CAP) {
+        if(this.buffer.available === 0 && this.buffer.length > this.constructor.BUFFER_CAP) {
           this.buffer.clip()
         }
       }
