@@ -12,12 +12,6 @@ module.exports = class Packet extends ByteBuffer {
     // Whether this packet is outgoing or incoming
     this.outgoing = outgoing
 
-    // Default source to header size if not given
-    if(source !== undefined) {
-      // TODO: This needs to be fixed
-      // source = this.headerSize
-    }
-
     // Seek past opcode to reserve space for it when finalizing
     this.index = this.headerSize
   }

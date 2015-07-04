@@ -13,6 +13,13 @@ module.exports = class GamePacket extends BasePacket {
   static OPCODE_SIZE_INCOMING = 2
   static OPCODE_SIZE_OUTGOING = 4
 
+  constructor(opcode, source, outgoing = true) {
+    if(!source) {
+      source = (outgoing) ? GamePacket.HEADER_SIZE_OUTGOING : GamePacket.HEADER_SIZE_INCOMING
+    }
+    super(opcode, source, outgoing)
+  }
+
   // Retrieves the name of the opcode for this packet (if available)
   get opcodeName() {
     return ObjectUtil.keyByValue(GameOpcode, this.opcode)
