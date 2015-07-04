@@ -14,7 +14,8 @@
     "start": "node bin/serve",
     "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
-    "test": "gulp rebuild && istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
+    "pretest": "gulp rebuild",
+    "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
   },
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
