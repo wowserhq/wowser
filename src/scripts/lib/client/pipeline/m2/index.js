@@ -10,32 +10,28 @@ module.exports = class M2 {
   constructor(data, skin) {
     this.data = data
     this.skin = skin
-    this.geometry = new THREE.Geometry()
+    const geometry = this.geometry = new THREE.Geometry()
 
-    return
+    data.vertices.forEach(function(vertex) {
+      geometry.vertices.push(new THREE.Vector3(...vertex.position))
+    })
 
     const uvs = []
 
-    for(var vertex of this.data.vertices) {
-      this.geometry.vertices.push(new THREE.Vector3(...vertex.position))
-    }
-
-    for(var faceIndex in this.skin.data.triangles) {
-      let triangle = this.skin.data.triangles[faceIndex]
-
-      let indices = triangle.map(function(index) {
-        return this.skin.data.indices[index]
+    skin.data.triangles.forEach(function(triangle, faceIndex) {
+      var indices = triangle.map(function(index) {
+        return skin.data.indices[index]
       })
-      this.geometry.faces.push(new THREE.Face3(...indices))
+      geometry.faces.push(new THREE.Face3(...indices))
 
       uvs[faceIndex] = []
-      for(var index in indices) {
-        let vertex = this.data.vertices[index]
-        uvs[faceIndex].push(new THREE.Vector2(...vertex.textureCoords))
-      }
-    }
+      indices.forEach(function(index) {
+        var vertex = data.vertices[index]
+        uvs[faceIndex].push(new THREE.Vector2(...(vertex.textureCoords)))
+      })
+    })
 
-    this.geometry.faceVertexUvs = [uvs]
+    geometry.faceVertexUvs = [uvs]
   }
 
   set texture(path) {
