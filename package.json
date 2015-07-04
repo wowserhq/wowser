@@ -11,10 +11,12 @@
     "README.md"
   ],
   "scripts": {
-    "start": "bin/serve",
-    "serve": "bin/serve",
+    "gulp": "gulp",
+    "start": "node bin/serve",
+    "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
-    "test": "gulp rebuild && istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
+    "pretest": "gulp rebuild",
+    "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
   },
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
@@ -44,6 +46,7 @@
   "devDependencies": {
     "babel": "^5.6.14",
     "browserify": "^6.2.0",
+    "codeclimate-test-reporter": "^0.1.0",
     "del": "^1.2.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^5.1.0",

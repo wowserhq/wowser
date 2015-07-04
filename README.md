@@ -48,9 +48,7 @@ Getting this toolchain up and running, is easy and straight-forward:
 
 4. Install [StormLib](https://github.com/timkurvers/blizzardry#mpq) and [BLPConverter](https://github.com/timkurvers/blizzardry#blp), which are used to handle Blizzard's game files.
 
-5. Run `gulp` which will automatically build the project when source files change.
-
-   When not available, run `./node_modules/.bin/gulp` instead.
+5. Run `npm run gulp` which will automatically build the project when source files change.
 
 6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients.
 
@@ -64,7 +62,9 @@ Getting this toolchain up and running, is easy and straight-forward:
    websockify 8129 host:8129
    ```
 
-6. Use `npm run serve` to serve Wowser on `localhost:3000`.
+6. Ensure World of Warcraft's data folder (the one containing MPQ archives) is available under `data` either by copying or symlinking, [for now](https://github.com/timkurvers/wowser/issues/30).
+
+7. Use `npm run serve` to serve Wowser on `localhost:3000`.
 
 
 When contributing, please:
