@@ -4,7 +4,7 @@ const AuthPacket = require('./packet')
 const Socket = require('../net/socket')
 const SRP = require('../crypto/srp')
 
-module.exports = class Handler extends Socket {
+module.exports = class AuthHandler extends Socket {
 
   // Default port for the auth-server
   static PORT = 3724

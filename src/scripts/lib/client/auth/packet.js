@@ -2,7 +2,7 @@ const AuthOpcode = require('./opcode')
 const BasePacket = require('../net/packet')
 const ObjectUtil = require('../utils/object-util')
 
-module.exports = class Packet extends BasePacket {
+module.exports = class AuthPacket extends BasePacket {
 
   // Header size in bytes for both incoming and outgoing packets
   static HEADER_SIZE = 1
