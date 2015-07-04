@@ -11,6 +11,7 @@
     "README.md"
   ],
   "scripts": {
+    "gulp": "gulp",
     "start": "node bin/serve",
     "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
