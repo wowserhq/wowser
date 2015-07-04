@@ -4,8 +4,7 @@ module.exports = class ArrayUtil {
   static fromHex(hex) {
     const array = []
     for(var i = 0; i < hex.length; i += 2) {
-      //value = hex[index]
-      array.push(parseInt(hex.slice(index, index + 2), 16))
+      array.push(parseInt(hex.slice(i, i + 2), 16))
     }
     return array
   }
