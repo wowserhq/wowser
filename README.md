@@ -58,8 +58,8 @@ Getting this toolchain up and running, is easy and straight-forward:
    For now, you will want to proxy both port 3724 (auth) and 8129 (world). If your server is on the same machine as your client, use a different set of ports.
 
    ```shell
-   websockify 3724 host:3724
-   websockify 8129 host:8129
+   node_modules/.bin/websockify 3724 host:3724
+   node_modules/.bin/websockify 8129 host:8129
    ```
 
 6. Ensure World of Warcraft's data folder (the one containing MPQ archives) is available under `data` either by copying or symlinking, [for now](https://github.com/timkurvers/wowser/issues/30).
