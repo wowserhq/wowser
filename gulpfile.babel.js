@@ -1,17 +1,28 @@
 const Bundle  = require('./bundle')
+const cfgstr  = require('configstore')
 const babel   = require('gulp-babel')
 const cache   = require('gulp-cached')
 const concat  = require('gulp-concat')
 const del     = require('del')
 const gulp    = require('gulp')
+const inq     = require('inquirer')
 const jade    = require('gulp-jade')
 const mocha   = require('gulp-mocha')
 const nib     = require('nib')
 const path    = require('path')
+const pkg     = require('./package.json')
 const plumber = require('gulp-plumber')
+const replace = require('gulp-replace-task')
+const prompts = require('./setup-prompts')
 const stylus  = require('gulp-stylus')
 
 const config = {
+  db: new cfgstr(
+    pkg.name,
+    {
+      'isFirstRun': true
+    }
+  ),
   scripts:   'src/scripts/**/*.js',
   specs:     'spec/**/*.js',
   styles:    'src/**/*.styl',
@@ -32,6 +43,31 @@ const bundles = {
   )
 }
 
+gulp.task('config', function(cb) {
+  if (config.db.get('isFirstRun')) {
+    process.stdout.write('\n- Initial setup\n\n');
+    config.db.set('isFirstRun', false);
+    return inq.prompt(prompts, function(answers) {
+      Object.keys(answers).map(function(key) {
+        return config.db.set(key, answers[key]);
+      });
+      process.stdout.write('\n- Setup finished!\n\n');
+      return cb();
+    });
+  } else {
+    process.stdout.write(
+      '\n\tSettings stored at ' + config.db.path +
+      '\n\tUse "npm reset" to re-run Gulp with initial setup\n\n'
+    );
+    return cb();
+  }
+});
+
+gulp.task('config:reset', function(cb) {
+  config.db.set('isFirstRun', true);
+  return cb();
+});
+
 gulp.task('clean', function(cb) {
   del([
     'lib/*',
@@ -48,6 +84,11 @@ gulp.task('scripts:compile', function() {
       .pipe(cache('babel'))
       .pipe(plumber())
       .pipe(babel())
+      .pipe(replace({
+        patterns: [{
+          json: config.db.all
+        }]
+      }))
       .pipe(gulp.dest('.'))
 })
 
@@ -107,5 +148,9 @@ gulp.task('watch', function() {
 })
 
 gulp.task('default', gulp.series(
-  'rebuild', 'spec', 'watch'
+  'config', 'rebuild', 'spec', 'watch'
+))
+
+gulp.task('reset', gulp.series(
+  'config:reset', 'default'
 ))
