@@ -19,7 +19,7 @@ const config = {
   db: new cfgstr(
     pkg.name,
     {
-      "isFirstRun": true
+      'isFirstRun': true
     }
   ),
   scripts:   'src/scripts/**/*.js',
