@@ -16,6 +16,7 @@
     "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
     "pretest": "gulp rebuild",
+    "reset": "gulp reset",
     "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
   },
   "repository": "timkurvers/wowser",
