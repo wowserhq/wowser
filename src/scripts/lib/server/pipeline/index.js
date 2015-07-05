@@ -15,7 +15,7 @@ const flatten = function(array) {
 
 module.exports = class Pipeline {
 
-  static DATA_DIR = 'data'
+  static DATA_DIR = '@@clientData'
 
   constructor() {
     this.router = express()
