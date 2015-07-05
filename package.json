@@ -50,6 +50,7 @@
     "del": "^1.2.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^5.1.0",
+    "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.4.1",
     "gulp-jade": "^0.8.0",
     "gulp-mocha": "1.0.0",

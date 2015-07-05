@@ -1,5 +1,6 @@
 const Bundle  = require('./bundle')
 const babel   = require('gulp-babel')
+const cache   = require('gulp-cached')
 const concat  = require('gulp-concat')
 const del     = require('del')
 const gulp    = require('gulp')
@@ -44,6 +45,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('scripts:compile', function() {
   return gulp.src(config.scripts)
+      .pipe(cache('babel'))
       .pipe(plumber())
       .pipe(babel())
       .pipe(gulp.dest('.'))
@@ -63,6 +65,7 @@ gulp.task('scripts', gulp.series(
 
 gulp.task('styles', function() {
   return gulp.src(config.styles)
+      .pipe(cache('stylus'))
       .pipe(plumber())
       .pipe(stylus({
         use: [nib()],
@@ -75,6 +78,7 @@ gulp.task('styles', function() {
 
 gulp.task('templates', function() {
   return gulp.src(config.templates)
+      .pipe(cache('jade'))
       .pipe(plumber())
       .pipe(jade({ pretty: true }))
       .pipe(gulp.dest(config.public))
