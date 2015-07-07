@@ -1,6 +1,7 @@
 const express = require('express')
 const find = require('array-find')
 const Archive = require('./archive')
+const ServerConfig = require('../utils/server-config')
 const BLP = require('blizzardry/lib/blp')
 const {DecodeStream} = require('blizzardry/lib/restructure')
 const DBC = require('blizzardry/lib/dbc/entities')
@@ -15,7 +16,7 @@ const flatten = function(array) {
 
 module.exports = class Pipeline {
 
-  static DATA_DIR = 'data'
+  static DATA_DIR = new ServerConfig().db.get('clientData')
 
   constructor() {
     this.router = express()

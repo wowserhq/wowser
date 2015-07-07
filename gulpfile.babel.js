@@ -1,6 +1,7 @@
 const Bundle  = require('./bundle')
 const babel   = require('gulp-babel')
 const cache   = require('gulp-cached')
+const cfg     = require('configstore')
 const concat  = require('gulp-concat')
 const del     = require('del')
 const gulp    = require('gulp')
@@ -8,10 +9,12 @@ const jade    = require('gulp-jade')
 const mocha   = require('gulp-mocha')
 const nib     = require('nib')
 const path    = require('path')
+const pkg     = require('./package.json')
 const plumber = require('gulp-plumber')
 const stylus  = require('gulp-stylus')
 
 const config = {
+  db:        new cfg( pkg.name ),
   scripts:   'src/scripts/**/*.js',
   specs:     'spec/**/*.js',
   styles:    'src/**/*.styl',
@@ -31,6 +34,11 @@ const bundles = {
     { standalone: 'Wowser.UI' }
   )
 }
+
+gulp.task('reset', function() {
+  config.db.clear()
+  return process.stdout.write(`\n> Settings deleted from ${config.db.path}\n`)
+});
 
 gulp.task('clean', function(cb) {
   del([
