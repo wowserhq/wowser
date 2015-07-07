@@ -5,7 +5,12 @@ const prompts = require('./setup-prompts')
 
 module.exports = class ServerConfig {
 
-  constructor(defaults) {
+  static DEFAULTS = {
+    'isFirstRun': true,
+    'serverPort': '3000'
+  }
+
+  constructor(defaults = this.constructor.DEFAULTS) {
     this.db = new Configstore(pkg.name, defaults)
   }
 

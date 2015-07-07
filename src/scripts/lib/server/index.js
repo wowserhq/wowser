@@ -6,11 +6,7 @@ const ServerConfig = require('./utils/server-config')
 module.exports = class Server {
 
   constructor(root = __dirname) {
-    this.config = new ServerConfig({
-      'isFirstRun': true,
-      'serverPort': '3000'
-    })
-
+    this.config = new ServerConfig()
     this.isFirstRun = this.config.db.get('isFirstRun')
     this.root = root
     this.app = express()
