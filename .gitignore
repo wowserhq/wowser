@@ -1,8 +1,8 @@
-coverage/
-data
+/coverage/
+/data
 /lib/
-node_modules/
-public/scripts/
-public/styles/
-public/templates/
+/node_modules/
+/public/scripts/
+/public/styles/
+/public/templates/
 /spec/
