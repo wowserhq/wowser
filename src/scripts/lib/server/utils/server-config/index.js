@@ -1,11 +1,12 @@
 const Configstore = require('configstore')
 const inq = require('inquirer')
+const pkg = require('../../../../package.json')
 const prompts = require('./setup-prompts')
 
 module.exports = class ServerConfig {
 
   constructor(defaults) {
-    this.db = new Configstore('wowser', defaults)
+    this.db = new Configstore(pkg.name, defaults)
   }
 
   initSetup() {
