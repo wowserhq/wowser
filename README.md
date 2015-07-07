@@ -62,9 +62,11 @@ Getting this toolchain up and running, is easy and straight-forward:
    node_modules/.bin/websockify 8129 host:8129
    ```
 
-6. Ensure World of Warcraft's data folder (the one containing MPQ archives) is available under `data` either by copying or symlinking, [for now](https://github.com/timkurvers/wowser/issues/30).
-
-7. Use `npm run serve` to serve Wowser on `localhost:3000`.
+7. Use `npm run serve` to start Wowser.
+  * **Note:** On first run you will be prompted to specify the following:
+    1. Path to WoW client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
+    2. Server port (default is `3000`)
+  * You can clear settings by running `npm run reset`
 
 
 When contributing, please:

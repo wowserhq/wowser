@@ -16,7 +16,9 @@ const flatten = function(array) {
 
 module.exports = class Pipeline {
 
-  static DATA_DIR = new ServerConfig().db.get('clientData')
+  static get DATA_DIR() {
+    return ServerConfig.db.get('clientData')
+  }
 
   constructor() {
     this.router = express()

@@ -3,7 +3,7 @@ const inq = require('inquirer')
 const pkg = require('../../../../package.json')
 const prompts = require('./setup-prompts')
 
-module.exports = class ServerConfig {
+class ServerConfig {
 
   static DEFAULTS = {
     'isFirstRun': true,
@@ -30,3 +30,5 @@ module.exports = class ServerConfig {
     })
   }
 }
+
+module.exports = new ServerConfig()
