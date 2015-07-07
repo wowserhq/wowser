@@ -9,7 +9,7 @@ module.exports = class ServerConfig {
     this.db = new Configstore(pkg.name, defaults)
   }
 
-  initSetup() {
+  prompt() {
     return new Promise((resolve, reject) => {
       console.log('> Preparing initial setup\n');
 

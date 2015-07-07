@@ -24,7 +24,7 @@ module.exports = class Server {
   init() {
     if(this.isFirstRun) {
       this.config
-        .initSetup()
+        .prompt()
         .then(resultMsg => {
           console.log(resultMsg)
           this.run()
