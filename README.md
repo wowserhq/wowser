@@ -26,6 +26,11 @@ Wowser is both a client as well as a low-level API, allowing one to interact wit
 The project is very much a work in progress, but is already capable of successfully authenticating, logging into a realm and listing chat messages.
 
 
+## Browser Support
+
+Wowser is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
+
+
 ## Development & Contribution
 
 Wowser is written in [ES2015](https://babeljs.io/docs/learn-es2015/), compiled by [Babel](https://babeljs.io/), developed with [Gulp](http://gulpjs.com/) and tested through [Mocha](http://mochajs.org/).
@@ -74,8 +79,3 @@ When contributing, please:
 * Fork the repository
 * Open a pull request (preferably on a separate branch)
 * Do *not* include any distribution files (such as wowser.js or wowser.min.js)
-
-
-## Browser Support
-
-Wowser is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
