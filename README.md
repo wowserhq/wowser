@@ -78,4 +78,3 @@ When contributing, please:
 
 * Fork the repository
 * Open a pull request (preferably on a separate branch)
-* Do *not* include any distribution files (such as wowser.js or wowser.min.js)
