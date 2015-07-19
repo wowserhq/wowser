@@ -1,1 +1,1 @@
-const Wowser = module.exports = require('./')
+const Wowser = module.exports = require('./');

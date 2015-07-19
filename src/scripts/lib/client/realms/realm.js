@@ -4,46 +4,46 @@ module.exports = class Realm {
   constructor() {
 
     // Holds host, port and address
-    this._host = null
-    this._port = NaN
-    this._address = null
+    this._host = null;
+    this._port = NaN;
+    this._address = null;
 
     // Holds realm attributes
-    this.name = null
-    this.id = null
-    this.icon = null
-    this.flags = null
-    this.timezone = null
-    this.population = 0.0
-    this.characters = 0
+    this.name = null;
+    this.id = null;
+    this.icon = null;
+    this.flags = null;
+    this.timezone = null;
+    this.population = 0.0;
+    this.characters = 0;
   }
 
   // Short string representation of this realm
   toString() {
-    return `[Realm; Name: ${this.name}; Address: ${this._address}; Characters: ${this.characters}]`
+    return `[Realm; Name: ${this.name}; Address: ${this._address}; Characters: ${this.characters}]`;
   }
 
   // Retrieves host for this realm
   get host() {
-    return this._host
+    return this._host;
   }
 
   // Retrieves port for this realm
   get port() {
-    return this._port
+    return this._port;
   }
 
   // Retrieves address for this realm
   get address() {
-    return this._address
+    return this._address;
   }
 
   // Sets address for this realm
   set address(address) {
-    this._address = address
-    const parts = this._address.split(':')
-    this._host = parts[0] || null
-    this._port = parts[1] || NaN
+    this._address = address;
+    const parts = this._address.split(':');
+    this._host = parts[0] || null;
+    this._port = parts[1] || NaN;
   }
 
-}
+};

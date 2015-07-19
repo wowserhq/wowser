@@ -1,7 +1,7 @@
-const BasePacket = require('../net/packet')
-const GameOpcode = require('./opcode')
-const GUID = require('./guid')
-const ObjectUtil = require('../utils/object-util')
+const BasePacket = require('../net/packet');
+const GameOpcode = require('./opcode');
+const GUID = require('./guid');
+const ObjectUtil = require('../utils/object-util');
 
 module.exports = class GamePacket extends BasePacket {
 
@@ -15,34 +15,34 @@ module.exports = class GamePacket extends BasePacket {
 
   constructor(opcode, source, outgoing = true) {
     if(!source) {
-      source = (outgoing) ? GamePacket.HEADER_SIZE_OUTGOING : GamePacket.HEADER_SIZE_INCOMING
+      source = (outgoing) ? GamePacket.HEADER_SIZE_OUTGOING : GamePacket.HEADER_SIZE_INCOMING;
     }
-    super(opcode, source, outgoing)
+    super(opcode, source, outgoing);
   }
 
   // Retrieves the name of the opcode for this packet (if available)
   get opcodeName() {
-    return ObjectUtil.keyByValue(GameOpcode, this.opcode)
+    return ObjectUtil.keyByValue(GameOpcode, this.opcode);
   }
 
   // Header size in bytes (dependent on packet origin)
   get headerSize() {
     if(this.outgoing) {
-      return this.constructor.HEADER_SIZE_OUTGOING
+      return this.constructor.HEADER_SIZE_OUTGOING;
     } else {
-      return this.constructor.HEADER_SIZE_INCOMING
+      return this.constructor.HEADER_SIZE_INCOMING;
     }
   }
 
   // Reads GUID from this packet
   readGUID() {
-    return new GUID(this.read(GUID.LENGTH))
+    return new GUID(this.read(GUID.LENGTH));
   }
 
   // Writes given GUID to this packet
   writeGUID(guid) {
-    this.write(guid.raw)
-    return this
+    this.write(guid.raw);
+    return this;
   }
 
   // // Reads packed GUID from this packet
@@ -55,4 +55,4 @@ module.exports = class GamePacket extends BasePacket {
   // writePackedGUID: (guid) ->
   //   return this
 
-}
+};

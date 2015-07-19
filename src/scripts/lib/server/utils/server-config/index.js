@@ -1,7 +1,7 @@
-const Configstore = require('configstore')
-const inq = require('inquirer')
-const pkg = require('../../../../package.json')
-const prompts = require('./setup-prompts')
+const Configstore = require('configstore');
+const inq = require('inquirer');
+const pkg = require('../../../../package.json');
+const prompts = require('./setup-prompts');
 
 class ServerConfig {
 
@@ -11,7 +11,7 @@ class ServerConfig {
   }
 
   constructor(defaults = this.constructor.DEFAULTS) {
-    this.db = new Configstore(pkg.name, defaults)
+    this.db = new Configstore(pkg.name, defaults);
   }
 
   prompt() {
@@ -27,8 +27,8 @@ class ServerConfig {
 
         resolve('\n> Setup finished!\n');
       });
-    })
+    });
   }
 }
 
-module.exports = new ServerConfig()
+module.exports = new ServerConfig();

@@ -1,6 +1,6 @@
-const AuthOpcode = require('./opcode')
-const BasePacket = require('../net/packet')
-const ObjectUtil = require('../utils/object-util')
+const AuthOpcode = require('./opcode');
+const BasePacket = require('../net/packet');
+const ObjectUtil = require('../utils/object-util');
 
 module.exports = class AuthPacket extends BasePacket {
 
@@ -8,18 +8,18 @@ module.exports = class AuthPacket extends BasePacket {
   static HEADER_SIZE = 1
 
   constructor(opcode, source, outgoing = true) {
-    super(opcode, source || AuthPacket.HEADER_SIZE, outgoing)
+    super(opcode, source || AuthPacket.HEADER_SIZE, outgoing);
   }
 
   // Retrieves the name of the opcode for this packet (if available)
   get opcodeName() {
-    return ObjectUtil.keyByValue(AuthOpcode, this.opcode)
+    return ObjectUtil.keyByValue(AuthOpcode, this.opcode);
   }
 
   // Finalizes this packet
   finalize() {
-    this.index = 0
-    this.writeByte(this.opcode)
+    this.index = 0;
+    this.writeByte(this.opcode);
   }
 
-}
+};

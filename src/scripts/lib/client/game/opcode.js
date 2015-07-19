@@ -81,4 +81,4 @@ module.exports = class GameOpcode {
 
   static MSG_SET_RAID_DIFFICULTY            = 0x04EB
 
-}
+};

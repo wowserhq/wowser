@@ -7,21 +7,21 @@ module.exports = class GUID {
   constructor(buffer) {
 
     // Holds raw byte representation
-    this.raw = buffer
+    this.raw = buffer;
 
     // Holds low-part
-    this.low = buffer.readUnsignedInt()
+    this.low = buffer.readUnsignedInt();
 
     // Holds high-part
-    this.high = buffer.readUnsignedInt()
+    this.high = buffer.readUnsignedInt();
 
   }
 
   // Short string representation of this GUID
   toString() {
-    const high = ('0000' + this.high.toString(16)).slice(-4)
-    const low = ('0000' + this.low.toString(16)).slice(-4)
-    return `[GUID; Hex: 0x${high}${low}]`
+    const high = ('0000' + this.high.toString(16)).slice(-4);
+    const low = ('0000' + this.low.toString(16)).slice(-4);
+    return `[GUID; Hex: 0x${high}${low}]`;
   }
 
-}
+};

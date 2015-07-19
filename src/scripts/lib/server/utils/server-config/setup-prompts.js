@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs');
 
 module.exports = [{
   type: 'input',
@@ -6,21 +6,21 @@ module.exports = [{
   message: 'Client data directory',
   default: function() {
     if (process.platform === 'win32') {
-      return 'C:/Program Files (x86)/World of Warcraft/Data'
+      return 'C:/Program Files (x86)/World of Warcraft/Data';
     } else {
-      return '/Applications/World of Warcraft/Data'
+      return '/Applications/World of Warcraft/Data';
     }
   },
   validate: function(value) {
-    let done = this.async()
+    let done = this.async();
 
     fs.lstat(value, function(err, stats) {
       if (err) {
-        done('Invalid path')
+        done('Invalid path');
       } else if (stats.isDirectory()) {
-        done(true)
+        done(true);
       } else {
-        done('Please provide path to a directory')
+        done('Please provide path to a directory');
       }
     });
   }
@@ -29,4 +29,4 @@ module.exports = [{
   name: 'serverPort',
   message: 'Server port',
   default: '3000'
-}]
+}];

@@ -20,4 +20,4 @@ module.exports = class ChallengeOpcode {
   static TRIAL_EXPIRED      = 0x11
   static BATTLE_NET         = 0x12
 
-}
+};

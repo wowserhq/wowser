@@ -15,7 +15,7 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-var THREE = require('three')
+var THREE = require('three');
 
 module.exports = THREE.OrbitControls = function ( object, domElement ) {
 
@@ -367,7 +367,7 @@ module.exports = THREE.OrbitControls = function ( object, domElement ) {
 
   this.getAzimuthalAngle = function () {
 
-    return theta
+    return theta;
 
   };
 
@@ -707,4 +707,4 @@ module.exports = THREE.OrbitControls = function ( object, domElement ) {
 THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
 THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
 
-module.exports = THREE.OrbitControls
+module.exports = THREE.OrbitControls;

@@ -1,5 +1,5 @@
-const glob = require('globby')
-const MPQ = require('blizzardry/lib/mpq')
+const glob = require('globby');
+const MPQ = require('blizzardry/lib/mpq');
 
 module.exports = class Archive {
 
@@ -21,16 +21,16 @@ module.exports = class Archive {
 
   static build(root) {
     const patterns = this.CHAIN.map(function(path) {
-      return `${root}/${path}`
-    })
+      return `${root}/${path}`;
+    });
 
-    const archives = glob.sync(patterns)
+    const archives = glob.sync(patterns);
 
-    const base = MPQ.open(archives.shift(), MPQ.OPEN.READ_ONLY)
+    const base = MPQ.open(archives.shift(), MPQ.OPEN.READ_ONLY);
     archives.forEach(function(archive) {
-      base.patch(archive, '')
-    })
-    return base
+      base.patch(archive, '');
+    });
+    return base;
   }
 
-}
+};
