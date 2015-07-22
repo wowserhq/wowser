@@ -5,25 +5,18 @@
     <title>Wowser</title>
     <link rel="shortcut icon" href="./favicon.png">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="//cdn.jsdelivr.net/g/riot@2.2(riot.min.js+compiler.min.js)"></script>
     <script src="./scripts/wowser.js"></script>
     <script src="./scripts/wowser-ui.js"></script>
-    <link href="./styles/wowser.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Galdeano" rel="stylesheet">
   </head>
   <body>
-    <div data-ng-app data-ng-controller="Wowser.UI" class="wowser">
-      <section class="branding">
-        <header>Wowser</header>
-        <div class="divider"></div>
-        <div class="slogan">World of Warcraft in the browser</div>
-      </section>
-      <select data-ng-model="session.screen" class="screen-selector">
-        <option value="auth">Authentication</option>
-        <option value="realms">Realm Selection</option>
-        <option value="characters">Character Selection</option>
-        <option value="game">Game</option>
-      </select>
-      <div data-ng-include="'templates/' + session.screen + '.html'" class="screen {{session.screen}}"></div>
-    </div>
+    <wowser></wowser>
+
+    <script>
+      riot.mount('*')
+    </script>
+
+    <link href="./styles/wowser.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Galdeano" rel="stylesheet">
   </body>
 </html>

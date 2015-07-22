@@ -1,0 +1,22 @@
+<game>
+
+  <h1>Game</h1>
+
+  <!-- TODO: Actually implement these elements -->
+  <canvas></canvas>
+  <hud></hud>
+
+  <script>
+    this.session = opts.session;
+
+    animate() {
+      requestAnimationFrame(function() {
+        this.animate();
+      }.bind(this));
+    }
+
+    this.on('mount', function() {
+      this.animate();
+    }.bind(this));
+  </script>
+</game>

@@ -1,0 +1,58 @@
+<auth class="panel">
+  <h1>Authentication</h1>
+
+  <div class="divider"></div>
+
+  <p>
+    <strong>Note:</strong> Wowser requires a WebSocket proxy, see the README on GitHub.
+  </p>
+
+  <form onsubmit="{ connect }">
+    <fieldset>
+      <label>Host</label>
+      <input type="text" name="host" />
+
+      <label>Port</label>
+      <input type="text" name="port" />
+    </fieldset>
+
+    <fieldset>
+      <label>Username</label>
+      <input type="text" name="username" autofocus />
+
+      <label>Password</label>
+      <input type="password" name="password" />
+    </fieldset>
+
+    <div class="divider"></div>
+
+    <input type="submit" value="Connect" />
+  </form>
+
+  <script>
+    this.session = opts.session;
+
+    this.host.value = window.location.hostname;
+    this.port.value = this.session.auth.constructor.PORT;
+
+    this.session.auth.on('authenticate', function() {
+      this.parent.navigate('realms');
+    }.bind(this));
+
+    this.session.auth.on('connect', function() {
+      this.authenticate();
+    }.bind(this));
+
+    this.session.auth.on('reject', function() {
+      this.session.auth.disconnect();
+    }.bind(this));
+
+    connect() {
+      this.session.auth.connect(this.host.value, this.port.value);
+    }
+
+    authenticate() {
+      this.session.auth.authenticate(this.username.value, this.password.value);
+    }
+  </script>
+</auth>

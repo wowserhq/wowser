@@ -1,0 +1,46 @@
+<realms class="panel">
+  <h1>Realm Selection</h1>
+
+  <div class="divider"></div>
+
+  <form onsubmit="{ connect }">
+    <fieldset>
+      <select name="selected">
+        <option each="{ realm, i in session.realms.list }" value="{ i }">
+          { realm.name }
+        </option>
+      </select>
+    </fieldset>
+
+    <div class="divider"></div>
+
+    <input type="submit" value="Connect" autofocus />
+    <input type="button" value="Refresh" onclick="{ refresh }" />
+  </form>
+
+  <script>
+    this.session = opts.session;
+
+    this.session.realms.on('refresh', function() {
+      this.update();
+    }.bind(this));
+
+    this.session.game.on('authenticate', function() {
+      this.parent.screen.value = 'characters';
+      this.parent.update();
+    }.bind(this));
+
+    refresh() {
+      this.session.realms.refresh();
+    }
+
+    connect() {
+      var realm = this.session.realms.list[this.selected.value];
+      this.session.game.connect('localhost', realm.port);
+    }
+
+    this.on('mount', function() {
+      this.refresh();
+    }.bind(this));
+  </script>
+</realms>

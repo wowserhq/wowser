@@ -12,6 +12,7 @@ const path     = require('path');
 const pkg      = require('./package.json');
 const plumber  = require('gulp-plumber');
 const remember = require('gulp-remember');
+const riot     = require('gulp-riot');
 const stylus   = require('gulp-stylus');
 
 const config = {
@@ -19,20 +20,15 @@ const config = {
   scripts:   'src/scripts/**/*.js',
   specs:     'spec/**/*.js',
   styles:    'src/**/*.styl',
-  templates: 'src/**/*.jade',
+  ui:        'src/**/*.html',
   public:    './public'
 };
 
 const bundles = {
-  core: new Bundle(
+  client: new Bundle(
     'lib/client/bundle.js',
     'public/scripts/wowser.js',
     { standalone: 'Wowser' }
-  ),
-  ui: new Bundle(
-    'lib/client/ui/bundle.js',
-    'public/scripts/wowser-ui.js',
-    { standalone: 'Wowser.UI' }
   )
 };
 
@@ -46,8 +42,7 @@ gulp.task('clean', function(cb) {
     'lib/*',
     'public/scripts/*',
     'public/styles/*',
-    'public/templates/*',
-    'public/index.html',
+    'public/ui/*',
     'spec/*'
   ], cb);
 });
@@ -60,16 +55,12 @@ gulp.task('scripts:compile', function() {
       .pipe(gulp.dest('.'));
 });
 
-gulp.task('scripts:bundle:core', function() {
-  return bundles.core.bundle();
-});
-
-gulp.task('scripts:bundle:ui', function() {
-  return bundles.ui.bundle();
+gulp.task('scripts:bundle:client', function() {
+  return bundles.client.bundle();
 });
 
 gulp.task('scripts', gulp.series(
-  'scripts:compile', 'scripts:bundle:core', 'scripts:bundle:ui'
+  'scripts:compile', 'scripts:bundle:client'
 ));
 
 gulp.task('styles', function() {
@@ -86,11 +77,13 @@ gulp.task('styles', function() {
       .pipe(gulp.dest(config.public));
 });
 
-gulp.task('templates', function() {
-  return gulp.src(config.templates)
-      .pipe(cache('jade'))
+gulp.task('ui', function() {
+  return gulp.src(config.ui)
+      .pipe(cache('riot'))
       .pipe(plumber())
-      .pipe(jade({ pretty: true }))
+      .pipe(riot())
+      .pipe(remember('riot'))
+      .pipe(concat('scripts/wowser-ui.js'))
       .pipe(gulp.dest(config.public));
 });
 
@@ -101,19 +94,18 @@ gulp.task('spec', function() {
 });
 
 gulp.task('rebuild', gulp.series(
-  'clean', 'scripts', 'styles', 'templates'
+  'clean', 'scripts', 'styles', 'ui'
 ));
 
 gulp.task('watch', function() {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
       .on('change', function(event) {
         const jspath = event.path.replace('src/scripts/', '');
-        bundles.core.invalidate(jspath);
-        bundles.ui.invalidate(jspath);
+        bundles.client.invalidate(jspath);
       });
 
   gulp.watch(config.styles, gulp.series('styles'));
-  gulp.watch(config.templates, gulp.series('templates'));
+  gulp.watch(config.ui, gulp.series('ui'));
 });
 
 gulp.task('default', gulp.series(
