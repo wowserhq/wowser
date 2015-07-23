@@ -10,6 +10,7 @@
     <option value="realms">Realm Selection</option>
     <option value="characters">Character Selection</option>
     <option value="game">Game</option>
+    <option value="kit">UI Kit</option>
   </select>
 
   <div class="screen">
@@ -17,6 +18,7 @@
     <realms session="{ session }" if="{ screen.value == 'realms' }" />
     <characters session="{ session }" if="{ screen.value == 'characters' }" />
     <game session="{ session }" if="{ screen.value == 'game' }" />
+    <kit session="{ session }" if="{ screen.value == 'kit' }" />
   </div>
 
   <script>
