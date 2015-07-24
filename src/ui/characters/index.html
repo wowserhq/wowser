@@ -30,8 +30,7 @@
     }.bind(this));
 
     this.session.game.on('join', function() {
-      this.parent.screen.value = 'game';
-      this.parent.update();
+      this.parent.navigate('game');
     }.bind(this));
 
     refresh() {
