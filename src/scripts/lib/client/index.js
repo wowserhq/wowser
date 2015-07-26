@@ -3,6 +3,7 @@ const CharactersHandler = require('./characters/handler');
 const ChatHandler = require('./game/chat/handler');
 const Config = require('./config');
 const GameHandler = require('./game/handler');
+const Player = require('./game/player');
 const RealmsHandler = require('./realms/handler');
 
 module.exports = class Client {
@@ -14,6 +15,7 @@ module.exports = class Client {
     this.game = new GameHandler(this);
     this.characters = new CharactersHandler(this);
     this.chat = new ChatHandler(this);
+    this.player = new Player();
   }
 
 };
