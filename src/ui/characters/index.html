@@ -1,26 +1,28 @@
-<characters class="panel">
-  <h1>Character Selection</h1>
-
-  <div class="divider"></div>
-
-  <p>
-    At some point this screen will allow managing characters. Soon™
-  </p>
-
-  <form onsubmit="{ join }">
-    <fieldset>
-      <select name="selected">
-        <option each="{ character, i in session.characters.list }" value="{ i }">
-          { character.name }
-        </option>
-      </select>
-    </fieldset>
+<characters class="screen">
+  <div class="panel">
+    <h1>Character Selection</h1>
 
     <div class="divider"></div>
 
-    <input type="submit" value="Join world" autofocus />
-    <input type="button" value="Refresh" onclick="{ refresh }" />
-  </form>
+    <p>
+      At some point this screen will allow managing characters. Soon™
+    </p>
+
+    <form onsubmit="{ join }">
+      <fieldset>
+        <select name="selected">
+          <option each="{ character, i in session.characters.list }" value="{ i }">
+            { character.name }
+          </option>
+        </select>
+      </fieldset>
+
+      <div class="divider"></div>
+
+      <input type="submit" value="Join world" autofocus />
+      <input type="button" value="Refresh" onclick="{ refresh }" />
+    </form>
+  </div>
 
   <script>
     this.session = opts.session;

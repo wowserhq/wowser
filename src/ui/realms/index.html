@@ -1,22 +1,24 @@
-<realms class="panel">
-  <h1>Realm Selection</h1>
-
-  <div class="divider"></div>
-
-  <form onsubmit="{ connect }">
-    <fieldset>
-      <select name="selected">
-        <option each="{ realm, i in session.realms.list }" value="{ i }">
-          { realm.name }
-        </option>
-      </select>
-    </fieldset>
+<realms class="screen">
+  <div class="panel">
+    <h1>Realm Selection</h1>
 
     <div class="divider"></div>
 
-    <input type="submit" value="Connect" autofocus />
-    <input type="button" value="Refresh" onclick="{ refresh }" />
-  </form>
+    <form onsubmit="{ connect }">
+      <fieldset>
+        <select name="selected">
+          <option each="{ realm, i in session.realms.list }" value="{ i }">
+            { realm.name }
+          </option>
+        </select>
+      </fieldset>
+
+      <div class="divider"></div>
+
+      <input type="submit" value="Connect" autofocus />
+      <input type="button" value="Refresh" onclick="{ refresh }" />
+    </form>
+  </div>
 
   <script>
     this.session = opts.session;

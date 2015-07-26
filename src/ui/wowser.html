@@ -1,4 +1,4 @@
-<wowser class="wowser">
+<wowser>
   <div class="branding">
     <header>Wowser</header>
     <div class="divider"></div>
@@ -13,13 +13,11 @@
     <option value="kit">UI Kit</option>
   </select>
 
-  <div class="screen">
-    <auth session="{ session }" if="{ screen.value == 'auth' }" />
-    <realms session="{ session }" if="{ screen.value == 'realms' }" />
-    <characters session="{ session }" if="{ screen.value == 'characters' }" />
-    <game session="{ session }" if="{ screen.value == 'game' }" />
-    <kit session="{ session }" if="{ screen.value == 'kit' }" />
-  </div>
+  <auth session="{ session }" if="{ screen.value == 'auth' }" />
+  <realms session="{ session }" if="{ screen.value == 'realms' }" />
+  <characters session="{ session }" if="{ screen.value == 'characters' }" />
+  <game session="{ session }" if="{ screen.value == 'game' }" />
+  <kit session="{ session }" if="{ screen.value == 'kit' }" />
 
   <script>
     this.session = new Wowser();
