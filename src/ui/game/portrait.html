@@ -1,0 +1,30 @@
+<portrait>
+  <div class="icon portrait"></div>
+
+  <header class="name">{ name }</header>
+  <aside class="level">{ level }</aside>
+
+  <div class="divider"></div>
+
+  <div class="health">{ hp } / { maxHp }</div>
+  <div class="mana">{ mp } / { maxMp }</div>
+
+  <script>
+    this.on('update', function() {
+      this.unit = this.opts.unit;
+
+      if(!this.unit) {
+        return;
+      }
+
+      this.name = this.unit.name;
+      this.level = this.unit.level;
+
+      this.maxHp = this.unit.maxHp;
+      this.hp    = this.unit.hp;
+
+      this.maxMp = this.unit.maxMp;
+      this.mp    = this.unit.mp;
+    });
+  </script>
+</portrait>

@@ -1,4 +1,6 @@
-.wowser section.portrait
+wowser portrait
+  display: block
+  position: relative
   width: 178px
   height: 60px
   background: url('/images/portrait.png') no-repeat
@@ -20,7 +22,7 @@
     absolute: top 20px right 3px
     width: 113px
 
-  .health, .energy
+  .health, .mana
     width: 115px
     border-radius: 4px
     font-size: 12px
@@ -33,7 +35,18 @@
     background-image: linear-gradient(180deg, #330000 0%, #990000 100%)
     box-shadow: -1px -1px 0px #660000, 1px 1px 0px #E50202
 
-  .energy
+  .mana
     absolute: bottom 7px right 20px
     background-image: linear-gradient(180deg, #021D39 0%, #0B4C93 100%)
     box-shadow: -1px -1px 0px #063467, 1px 1px 0px #146CD0
+
+  &[self]
+    absolute: top 12px left 12px
+
+  &[target]
+    absolute: top 12px left 210px
+
+wowser .icon.portrait
+  width: 66px
+  height: 66px
+  background: url('/images/icon-portrait.png') no-repeat
