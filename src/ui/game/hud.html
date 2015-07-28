@@ -2,9 +2,11 @@
   <portrait self unit="{ player }" />
   <portrait target unit="{ player.target }" if="{ player.target }" />
 
+  <chat handler="{ session.chat }" />
   <quests />
 
   <script>
-    this.player = this.parent.session.player;
+    this.session = this.parent.session;
+    this.player = this.session.player;
   </script>
 </hud>
