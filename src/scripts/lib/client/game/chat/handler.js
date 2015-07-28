@@ -17,6 +17,11 @@ module.exports = class ChatHandler extends EventEmitter {
     this.session.game.on('packet:receive:SMSG_MESSAGE_CHAT', this.handleMessage.bind(this));
   }
 
+  // Creates chat message
+  create() {
+    return new Message();
+  }
+
   // Sends given message
   send(message) {
     throw new Error('sending chat messages is not yet implemented');
