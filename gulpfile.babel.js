@@ -5,7 +5,6 @@ const cfg      = require('configstore');
 const concat   = require('gulp-concat');
 const del      = require('del');
 const gulp     = require('gulp');
-const jade     = require('gulp-jade');
 const mocha    = require('gulp-mocha');
 const nib      = require('nib');
 const path     = require('path');

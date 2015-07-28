@@ -54,7 +54,6 @@
     "gulp-babel": "^5.1.0",
     "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.4.1",
-    "gulp-jade": "^0.8.0",
     "gulp-mocha": "1.0.0",
     "gulp-plumber": "^0.6.6",
     "gulp-remember": "^0.3.0",
