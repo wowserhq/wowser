@@ -19,8 +19,8 @@ const config = {
   db:        new cfg( pkg.name ),
   scripts:   'src/scripts/**/*.js',
   specs:     'spec/**/*.js',
-  styles:    'src/**/*.styl',
-  ui:        'src/**/*.html',
+  styles:    ['src/styles/ui/**/*.styl', 'src/styles/**/*.styl'],
+  ui:        'src/ui/**/*.html',
   public:    './public'
 };
 
