@@ -66,5 +66,8 @@
     "sinon-chai": "^2.6.0",
     "stylus-normalize": "^3.0.3",
     "vinyl-source-stream": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "promise": "^7.0.3"
   }
 }

@@ -1,4 +1,5 @@
 const Configstore = require('configstore');
+const Promise = require('promise');
 const inq = require('inquirer');
 const pkg = require('../../../../package.json');
 const prompts = require('./setup-prompts');
