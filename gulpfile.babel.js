@@ -15,7 +15,7 @@ const riot     = require('gulp-riot');
 const stylus   = require('gulp-stylus');
 
 const config = {
-  db:        new cfg( pkg.name ),
+  db:        new cfg(pkg.name),
   scripts:   'src/scripts/**/*.js',
   specs:     'spec/**/*.js',
   styles:    ['src/styles/ui/**/*.styl', 'src/styles/**/*.styl'],
