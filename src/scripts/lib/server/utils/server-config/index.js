@@ -19,12 +19,12 @@ class ServerConfig {
     return new Promise((resolve, reject) => {
       console.log('> Preparing initial setup\n');
 
-      this.db.set('isFirstRun', false);
-
       inquirer.prompt(prompts, answers => {
         Object.keys(answers).map(key => {
           return this.db.set(key, answers[key]);
         });
+
+        this.db.set('isFirstRun', false);
 
         resolve('\n> Setup finished!\n');
       });
