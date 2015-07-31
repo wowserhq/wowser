@@ -26,7 +26,7 @@ module.exports = class Server {
         });
     } else {
       console.log(`> Settings loaded from ${ServerConfig.db.path}\n` +
-                  '> Use "npm reset" to clear settings\n');
+                  "> Use 'npm run reset' to clear settings\n");
       this.run();
     }
   }
