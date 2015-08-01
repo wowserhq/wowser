@@ -15,17 +15,22 @@ const riot     = require('gulp-riot');
 const stylus   = require('gulp-stylus');
 
 const config = {
-  db:        new cfg(pkg.name),
-  scripts:   'src/scripts/**/*.js',
-  specs:     'spec/**/*.js',
-  styles:    ['src/styles/ui/**/*.styl', 'src/styles/**/*.styl'],
-  ui:        'src/ui/**/*.html',
-  public:    './public'
+  db:      new cfg(pkg.name),
+  scripts: 'src/**/*.js',
+  specs:   'spec/**/*.js',
+  public:  './public',
+  ui: {
+    styles: [
+      'src/ui/styles/ui/**/*.styl',
+      'src/ui/styles/**/*.styl'
+    ],
+    templates: 'src/ui/templates/**/*.html'
+  }
 };
 
 const bundles = {
   client: new Bundle(
-    'lib/client/bundle.js',
+    'lib/index.js',
     'public/scripts/wowser.js',
     { standalone: 'Wowser' }
   )
@@ -54,16 +59,16 @@ gulp.task('scripts:compile', function() {
       .pipe(gulp.dest('.'));
 });
 
-gulp.task('scripts:bundle:client', function() {
+gulp.task('scripts:bundle', function() {
   return bundles.client.bundle();
 });
 
 gulp.task('scripts', gulp.series(
-  'scripts:compile', 'scripts:bundle:client'
+  'scripts:compile', 'scripts:bundle'
 ));
 
-gulp.task('styles', function() {
-  return gulp.src(config.styles)
+gulp.task('ui:styles', function() {
+  return gulp.src(config.ui.styles)
       .pipe(cache('stylus'))
       .pipe(plumber())
       .pipe(stylus({
@@ -76,8 +81,8 @@ gulp.task('styles', function() {
       .pipe(gulp.dest(config.public));
 });
 
-gulp.task('ui', function() {
-  return gulp.src(config.ui)
+gulp.task('ui:templates', function() {
+  return gulp.src(config.ui.templates)
       .pipe(cache('riot'))
       .pipe(plumber())
       .pipe(riot())
@@ -86,6 +91,8 @@ gulp.task('ui', function() {
       .pipe(gulp.dest(config.public));
 });
 
+gulp.task('ui', gulp.series('ui:styles', 'ui:templates'));
+
 gulp.task('spec', function() {
   return gulp.src(config.specs, { read: false })
       .pipe(plumber())
@@ -93,18 +100,18 @@ gulp.task('spec', function() {
 });
 
 gulp.task('rebuild', gulp.series(
-  'clean', 'scripts', 'styles', 'ui'
+  'clean', 'scripts', 'ui'
 ));
 
 gulp.task('watch', function() {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
       .on('change', function(event) {
-        const jspath = event.path.replace('src/scripts/', '');
+        const jspath = event.path.replace('src/', '');
         bundles.client.invalidate(jspath);
       });
 
-  gulp.watch(config.styles, gulp.series('styles'));
-  gulp.watch(config.ui, gulp.series('ui'));
+  gulp.watch(config.ui.styles, gulp.series('ui:styles'));
+  gulp.watch(config.ui.templates, gulp.series('ui:templates'));
 });
 
 gulp.task('default', gulp.series(
