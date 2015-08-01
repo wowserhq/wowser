@@ -8,6 +8,8 @@ const RealmsHandler = require('./realms/handler');
 
 module.exports = class Client {
 
+  static dependencies = require('./dependencies');
+
   constructor(config) {
     this.config = config || new Config();
     this.auth = new AuthHandler(this);
