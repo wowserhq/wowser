@@ -59,13 +59,18 @@ gulp.task('scripts:compile', function() {
       .pipe(gulp.dest('.'));
 });
 
-gulp.task('scripts:bundle', function() {
-  return bundles.client.bundle();
-});
+const scripts = [];
 
-gulp.task('scripts', gulp.series(
-  'scripts:compile', 'scripts:bundle'
-));
+for(let name in bundles) {
+  let task = `scripts:bundle:${name}`;
+  scripts.push(task);
+
+  gulp.task(task, function() {
+    return bundles[name].bundle();
+  });
+}
+
+gulp.task('scripts', gulp.series('scripts:compile', ...scripts));
 
 gulp.task('ui:styles', function() {
   return gulp.src(config.ui.styles)
@@ -107,7 +112,9 @@ gulp.task('watch', function() {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
       .on('change', function(event) {
         const jspath = event.path.replace('src/', '');
-        bundles.client.invalidate(jspath);
+        for(let name in bundles) {
+          bundles[name].invalidate(jspath);
+        }
       });
 
   gulp.watch(config.ui.styles, gulp.series('ui:styles'));
