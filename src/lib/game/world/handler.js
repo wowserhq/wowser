@@ -1,3 +1,4 @@
+const ADT = require('../../pipeline/adt');
 const EventEmitter = require('events');
 const M2 = require('../../pipeline/m2');
 const THREE = require('three');
@@ -42,13 +43,13 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(model);
     });
 
-    // ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt', (adt) => {
-    //   const model = adt.mesh;
-    //   model.position.x = -266.667;
-    //   model.position.y = -266.667;
-    //   model.position.z = -67;
-    //   this.scene.add(model);
-    // });
+    ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt', (adt) => {
+      const model = adt.mesh;
+      model.position.x = -266.667;
+      model.position.y = -266.667;
+      model.position.z = -67;
+      this.scene.add(model);
+    });
   }
 
 };
