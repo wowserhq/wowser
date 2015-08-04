@@ -14,6 +14,8 @@ module.exports = class Unit {
 
     this.maxMp = 0;
     this.mp = 0;
+
+    this.displayID = 0;
   }
 
 };
