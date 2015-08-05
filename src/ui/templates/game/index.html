@@ -10,7 +10,11 @@
 
     this.scene = this.session.world.scene;
 
-    this.camera = new THREE.PerspectiveCamera(60, this.aspectRatio, 1, 1000);
+    aspectRatio() {
+      return window.innerWidth / window.innerHeight;
+    }
+
+    this.camera = new THREE.PerspectiveCamera(60, this.aspectRatio(), 1, 1000);
     this.camera.up.set(0, 0, 1);
     this.camera.position.z = 20;
 
@@ -19,12 +23,10 @@
       canvas: this.canvas
     });
 
-    aspectRatio() {
-      return window.innerWidth / window.innerHeight;
-    }
-
     resize() {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = this.aspectRatio();
+      this.camera.updateProjectionMatrix();
     }
 
     animate() {
