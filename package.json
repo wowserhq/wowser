@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "gulp": "gulp",
+    "lint": "eslint src *.js",
     "start": "node bin/serve",
     "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
@@ -46,9 +47,11 @@
   },
   "devDependencies": {
     "babel-core": "^5.8.20",
+    "babel-eslint": "^4.0.5",
     "browserify": "^6.2.0",
     "codeclimate-test-reporter": "^0.1.0",
     "del": "^1.2.0",
+    "eslint": "^1.0.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^5.1.0",
     "gulp-cached": "^1.1.0",
