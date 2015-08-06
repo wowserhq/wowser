@@ -14,7 +14,7 @@ Licensed under the **MIT** license, see LICENSE for more information.
 
 ## Features
 
-Wowser is both a low-level API as well as a graphical client, allowing one to interact with a World of Warcraft server, behaving as an official client would.
+Wowser is both a low-level API as well as a graphical client, interacting with a World of Warcraft server like an official client would.
 
 **Note:** Only Wrath of the Lich King is currently supported.
 
@@ -25,7 +25,7 @@ At present, Wowser is capable of:
 * Connecting to a realm.
 * Listing characters available on a realm.
 * Joining the game world with a character.
-* Logging game world packets, such as when a creature moves in the vicinity or a new spell is acquired.
+* Logging game world packets, such as when a creature moves in the vicinity.
 
 In addition, there's good progress on getting terrain and models rendered visually.
 
