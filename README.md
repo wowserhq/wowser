@@ -14,16 +14,20 @@ Licensed under the **MIT** license, see LICENSE for more information.
 
 ## Features
 
- * Lightweight in-browser client without reliance on external plugins.
- * Currently targeting Wrath of the Lich King.
- * A low-level interface for developing bots/tools and debugging servers.
+Wowser is both a low-level API as well as a graphical client, allowing one to interact with a World of Warcraft server, behaving as an official client would.
 
+**Note:** Only Wrath of the Lich King is currently supported.
 
-## Usage & API
+At present, Wowser is capable of:
 
-Wowser is both a client as well as a low-level API, allowing one to interact with a World of Warcraft server, behaving exactly as an official client would.
+* Authenticating by username / password.
+* Listing available realms.
+* Connecting to a realm.
+* Listing characters available on a realm.
+* Joining the game world with a character.
+* Logging game world packets, such as when a creature moves in the vicinity or a new spell is acquired.
 
-The project is very much a work in progress, but is already capable of successfully authenticating, logging into a realm and listing chat messages.
+In addition, there's good progress on getting terrain and models rendered visually.
 
 
 ## Browser Support
