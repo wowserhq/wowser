@@ -1,0 +1,153 @@
+<controls>
+  <script>
+    var THREE = Wowser.dependencies.THREE;
+
+    // Based on THREE's OrbitControls
+    // See: http://threejs.org/examples/js/controls/OrbitControls.js
+
+    var element = document.body;
+    var unit = this.opts.for;
+    var camera = this.opts.camera;
+
+    var rotateStart = new THREE.Vector2();
+    var rotateEnd = new THREE.Vector2();
+    var rotateDelta = new THREE.Vector2();
+
+    var rotating = false;
+    var rotateSpeed = 1.0;
+
+    var offset = new THREE.Vector3();
+    var target = new THREE.Vector3();
+
+    var phi, phiDelta = 0;
+    var theta, thetaDelta = 0;
+
+    var scale = 1;
+    var zoomSpeed = 1.0;
+    var zoomScale = Math.pow(0.95, zoomSpeed);
+
+    // Zoom distance limits
+    var minDistance = 6;
+    var maxDistance = 150;
+
+    // Vertical orbit limits
+    var minPhi = 0;
+    var maxPhi = Math.PI * 0.45;
+
+    var quat = new THREE.Quaternion().setFromUnitVectors(
+      camera.up, new THREE.Vector3(0, 1, 0)
+    );
+    var quatInverse = quat.clone().inverse();
+
+    var EPS = 0.000001;
+
+    apply() {
+      var position = camera.position;
+
+      offset.copy(position).sub(target);
+
+      // Rotate offset to "y-axis-is-up" space
+      offset.applyQuaternion(quat);
+
+      // Angle from z-axis around y-axis
+      theta = Math.atan2(offset.x, offset.z);
+
+      // Angle from y-axis
+      phi = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
+
+      theta += thetaDelta;
+      phi += phiDelta;
+
+      // Limit vertical orbit
+      phi = Math.max(minPhi, Math.min(maxPhi, phi));
+      phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
+
+      var radius = offset.length() * scale;
+
+      // Limit zoom distance
+      radius = Math.max(minDistance, Math.min(maxDistance, radius));
+
+      offset.x = radius * Math.sin(phi) * Math.sin(theta);
+      offset.y = radius * Math.cos(phi);
+      offset.z = radius * Math.sin(phi) * Math.cos(theta);
+
+      // Rotate offset back to "camera-up-vector-is-up" space
+      offset.applyQuaternion(quatInverse);
+
+      position.copy(target).add(offset);
+
+      camera.lookAt(target);
+
+      thetaDelta = 0;
+      phiDelta = 0;
+      scale = 1;
+    }
+
+    rotateHorizontally(angle) {
+      thetaDelta -= angle;
+    }
+
+    rotateVertically(angle) {
+      phiDelta -= angle;
+    }
+
+    zoomOut() {
+      scale /= zoomScale;
+    }
+
+    zoomIn() {
+      scale *= zoomScale;
+    }
+
+    mouseDown(event) {
+      rotating = true;
+      rotateStart.set(event.clientX, event.clientY);
+    }
+
+    mouseUp(event) {
+      rotating = false;
+    }
+
+    mouseMove(event) {
+      if(rotating) {
+        event.preventDefault();
+
+        rotateEnd.set(event.clientX, event.clientY);
+        rotateDelta.subVectors(rotateEnd, rotateStart);
+
+        this.rotateHorizontally(
+          2 * Math.PI * rotateDelta.x / element.clientWidth * rotateSpeed
+        );
+
+        this.rotateVertically(
+          2 * Math.PI * rotateDelta.y / element.clientHeight * rotateSpeed
+        );
+
+        rotateStart.copy(rotateEnd);
+
+        this.apply();
+      }
+    }
+
+    mouseWheel(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      var delta = event.wheelDelta || -event.detail;
+      if(delta > 0) {
+        this.zoomIn();
+      } else if(delta < 0) {
+        this.zoomOut();
+      }
+
+      this.apply();
+    }
+
+    this.apply();
+
+    element.addEventListener('mousedown', this.mouseDown);
+    element.addEventListener('mouseup', this.mouseUp);
+    element.addEventListener('mousemove', this.mouseMove);
+    element.addEventListener('mousewheel', this.mouseWheel);
+  </script>
+</controls>
