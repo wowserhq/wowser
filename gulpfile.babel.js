@@ -33,6 +33,10 @@ const bundles = {
     'lib/index.js',
     'public/scripts/wowser.js',
     { standalone: 'Wowser' }
+  ),
+  pipeline: new Bundle(
+    'lib/pipeline/worker.js',
+    'public/scripts/workers/pipeline.js'
   )
 };
 
