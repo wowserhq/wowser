@@ -11,7 +11,7 @@ module.exports = class WorldHandler extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
-    M2.load('Creature\\Rabbit\\Rabbit.m2', (m2) => {
+    M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {
       m2.texture = 'Creature\\Rabbit\\RabbitSkin.blp.png';
       const model = m2.mesh;
       model.position.x = 2;
@@ -19,14 +19,14 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(model);
     });
 
-    M2.load('Creature\\Illidan\\Illidan.m2', (m2) => {
+    M2.load('Creature\\Illidan\\Illidan.m2').then((m2) => {
       m2.texture = 'Creature\\Illidan\\Illidan.blp.png';
       const model = m2.mesh;
       this.character = model;
       this.scene.add(model);
     });
 
-    M2.load('Creature\\RAGNAROS\\RAGNAROS.m2', (m2) => {
+    M2.load('Creature\\RAGNAROS\\RAGNAROS.m2').then((m2) => {
       m2.texture = 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png';
       const model = m2.mesh;
       model.position.x = -5;
@@ -35,7 +35,7 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(model);
     });
 
-    M2.load('Creature\\MurlocCostume\\murloccostume_whiteflag.M2', (m2) => {
+    M2.load('Creature\\MurlocCostume\\murloccostume_whiteflag.M2').then((m2) => {
       m2.texture = 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png';
       const model = m2.mesh;
       model.position.x = 2;
@@ -43,7 +43,7 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(model);
     });
 
-    ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt', (adt) => {
+    ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt').then((adt) => {
       const model = adt.mesh;
       model.position.x = -266.667;
       model.position.y = -266.667;

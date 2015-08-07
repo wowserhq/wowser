@@ -1,14 +1,15 @@
-const ArrayUtil = require('../../utils/array-util');
-const Decoder = require('blizzardry/lib/adt');
-const {DecodeStream} = require('blizzardry/lib/restructure');
-const Loader = require('../../net/loader');
+const Promise = require('promise');
 const THREE = require('three');
 
 module.exports = class ADT {
 
+  static cache = {};
+
   constructor(data) {
-    this.data = data;
     this.geometry = new THREE.Geometry();
+
+    // TODO: Potentially move these calculations and mesh generation to worker
+
     const faces = this.geometry.faces = [];
     const vertices = this.geometry.vertices = [];
 
@@ -19,7 +20,7 @@ module.exports = class ADT {
     for(var cy = 0; cy < 16; ++cy) {
       for(var cx = 0; cx < 16; ++cx) {
         let cindex = cy * 16 + cx;
-        let chunk = this.data.MCNKs[cindex];
+        let chunk = data.MCNKs[cindex];
 
         chunk.MCVT.heights.forEach(function(height, index) {
           let y = Math.floor(index / 17);
@@ -53,13 +54,20 @@ module.exports = class ADT {
     return new THREE.Mesh(this.geometry, material);
   }
 
-  static load(path, callback) {
-    this.loader = this.loader || new Loader();
-    this.loader.load(path, (raw) => {
-      const stream = new DecodeStream(ArrayUtil.toBuffer(raw));
-      const data = Decoder.decode(stream);
-      callback(new this(data));
-    });
+  static load(path) {
+    if(!(path in this.cache)) {
+      this.cache[path] = new Promise((resolve, reject) => {
+        const worker = new Worker('/scripts/workers/pipeline.js');
+
+        worker.addEventListener('message', (event) => {
+          const data = event.data;
+          resolve(new this(data))
+        });
+
+        worker.postMessage(['ADT', path]);
+      });
+    }
+    return this.cache[path];
   }
 
 };

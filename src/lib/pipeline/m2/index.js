@@ -1,16 +1,15 @@
-const ArrayUtil = require('../../utils/array-util');
-const Decoder = require('blizzardry/lib/m2');
-const {DecodeStream} = require('blizzardry/lib/restructure');
-const Loader = require('../../net/loader');
+const Promise = require('promise');
 const Skin = require('./skin');
 const THREE = require('three');
 
 module.exports = class M2 {
 
+  static cache = {};
+
   constructor(data, skin) {
-    this.data = data;
-    this.skin = skin;
     const geometry = this.geometry = new THREE.Geometry();
+
+    // TODO: Potentially move these calculations and mesh generation to worker
 
     data.vertices.forEach(function(vertex) {
       geometry.vertices.push(new THREE.Vector3(...vertex.position));
@@ -49,20 +48,20 @@ module.exports = class M2 {
     return new THREE.Mesh(this.geometry, material);
   }
 
-  static load(path, callback) {
-    this.loader = this.loader || new Loader();
-    this.loader.load(path, (raw) => {
-      const stream = new DecodeStream(ArrayUtil.toBuffer(raw));
-      const data = Decoder.decode(stream);
+  static load(path) {
+    if(!(path in this.cache)) {
+      this.cache[path] = new Promise((resolve, reject) => {
+        const worker = new Worker('/scripts/workers/pipeline.js');
 
-      // TODO: Allow configuring quality
-      const quality = data.viewCount - 1;
-      const skinPath = path.replace(/\.m2/i, `0${quality}.skin`);
+        worker.addEventListener('message', (event) => {
+          const [data, skinData] = event.data;
+          resolve(new this(data, new Skin(skinData)));
+        });
 
-      Skin.load(skinPath, (skin) => {
-        callback(new this(data, skin));
+        worker.postMessage(['M2', path]);
       });
-    });
+    }
+    return this.cache[path];
   }
 
 };
