@@ -2,6 +2,7 @@ const worker = self;
 
 const loaders = {
   ADT: require('./adt/loader'),
+  DBC: require('./dbc/loader'),
   M2: require('./m2/loader')
 };
 
