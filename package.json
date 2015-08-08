@@ -49,6 +49,7 @@
   "devDependencies": {
     "babel-core": "^5.8.20",
     "babel-eslint": "^4.0.5",
+    "blizzardry": "^0.2.1",
     "browserify": "^6.2.0",
     "codeclimate-test-reporter": "^0.1.0",
     "del": "^1.2.0",
