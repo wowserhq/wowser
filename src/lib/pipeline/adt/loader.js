@@ -5,10 +5,10 @@ const Loader = require('../../net/loader');
 
 const loader = new Loader();
 
-module.exports = function(resolve, path) {
-  loader.load(path).then((raw) => {
+module.exports = function(path) {
+  return loader.load(path).then((raw) => {
     const stream = new DecodeStream(ArrayUtil.toBuffer(raw));
     const data = ADT.decode(stream);
-    resolve(data);
+    return data;
   });
 };

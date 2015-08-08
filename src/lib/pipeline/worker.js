@@ -1,10 +1,5 @@
 const worker = self;
 
-const resolve = function(result) {
-  worker.postMessage(result);
-  worker.close();
-}
-
 const loaders = {
   ADT: require('./adt/loader'),
   M2: require('./m2/loader')
@@ -13,7 +8,10 @@ const loaders = {
 worker.addEventListener('message', (event) => {
   const [loader, ...args] = event.data;
   if(loader in loaders) {
-    loaders[loader](resolve, ...args)
+    loaders[loader](...args).then(function(result) {
+      worker.postMessage(result);
+      worker.close();
+    });
   } else {
     worker.close();
   }
