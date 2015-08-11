@@ -1,3 +1,5 @@
+const THREE = require('three');
+
 module.exports = class Unit {
 
   constructor() {
@@ -5,9 +7,7 @@ module.exports = class Unit {
     this.level = '?';
     this.target = null;
 
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
+    this.position = new THREE.Vector3();
 
     this.maxHp = 0;
     this.hp = 0;
