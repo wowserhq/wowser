@@ -19,6 +19,7 @@ module.exports = class Unit extends Entity {
     this.mp = 0;
 
     this.displayID = 0;
+    this.model = null;
   }
 
 };
