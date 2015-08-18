@@ -2,11 +2,13 @@ const Promise = require('promise');
 const Skin = require('./skin');
 const THREE = require('three');
 
-module.exports = class M2 {
+module.exports = class M2 extends THREE.Mesh {
 
   static cache = {};
 
   constructor(data, skin) {
+    super();
+
     const geometry = this.geometry = new THREE.Geometry();
 
     // TODO: Potentially move these calculations and mesh generation to worker
@@ -31,21 +33,21 @@ module.exports = class M2 {
     });
 
     geometry.faceVertexUvs = [uvs];
+
+    this.material = new THREE.MeshBasicMaterial({ wireframe: true });
   }
 
   set texture(path) {
-    this._texture = THREE.ImageUtils.loadTexture(`pipeline/${path}`);
-    this._texture.flipY = false;
-  }
-
-  get mesh() {
-    var material;
-    if(this._texture) {
-      material = new THREE.MeshBasicMaterial({ map: this._texture });
-    } else {
-      material = new THREE.MeshBasicMaterial({ wireframe: true });
-    }
-    return new THREE.Mesh(this.geometry, material);
+    const texture = THREE.ImageUtils.loadTexture(
+      encodeURI(`pipeline/${path}`),
+      undefined,
+      () => {
+        texture.flipY = false;
+        this.material.wireframe = false;
+        this.material.map = texture;
+        this.material.needsUpdate = true;
+      }
+    );
   }
 
   static load(path) {
