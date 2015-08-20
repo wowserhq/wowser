@@ -67,6 +67,7 @@
     "istanbul": "^0.3.16",
     "mocha": "^1.21.5",
     "nib": "^1.0.4",
+    "riotify": "^0.1.2",
     "sinon-chai": "^2.6.0",
     "stylus-normalize": "^3.0.3",
     "vinyl-source-stream": "^1.0.0"
