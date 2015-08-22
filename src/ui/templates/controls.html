@@ -1,7 +1,10 @@
 <controls>
   <script>
+    var key = require('keymaster');
+
     // To avoid instanceof issues with THREE
     var THREE = Wowser.dependencies.THREE;
+    var clock = new THREE.Clock();
 
     // Based on THREE's OrbitControls
     // See: http://threejs.org/examples/js/controls/OrbitControls.js
@@ -43,6 +46,38 @@
     var EPS = 0.000001;
 
     apply() {
+      var delta = clock.getDelta();
+      var distance = 20 * delta;
+      var angle = Math.PI / 2 * delta;
+
+      if(unit.model) {
+        if(key.isPressed('up') || key.isPressed('w')) {
+          unit.model.translateX(distance);
+        }
+
+        if(key.isPressed('down') || key.isPressed('s')) {
+          unit.model.translateX(-distance);
+        }
+
+        if(key.isPressed('space')) {
+          unit.model.translateZ(distance);
+        }
+
+        if(key.isPressed('x')) {
+          unit.model.translateZ(-distance);
+        }
+
+        if(key.isPressed('left') || key.isPressed('a')) {
+          unit.model.rotateZ(angle);
+        }
+
+        if(key.isPressed('right') || key.isPressed('d')) {
+          unit.model.rotateZ(-angle);
+        }
+
+        target = unit.model.position;
+      }
+
       var position = camera.position;
 
       offset.copy(position).sub(target);

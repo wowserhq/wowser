@@ -33,6 +33,7 @@
 
     animate() {
       requestAnimationFrame(function() {
+        this.tags.controls.apply();
         this.renderer.render(this.scene, this.camera);
         this.animate();
       }.bind(this));
