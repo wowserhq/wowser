@@ -80,8 +80,6 @@
 
       var position = camera.position;
 
-      offset.copy(position).sub(target);
-
       // Rotate offset to "y-axis-is-up" space
       offset.applyQuaternion(quat);
 
