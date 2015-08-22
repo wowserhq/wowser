@@ -4,6 +4,7 @@ const cache    = require('gulp-cached');
 const cfg      = require('configstore');
 const concat   = require('gulp-concat');
 const del      = require('del');
+const globify  = require('require-globify');
 const gulp     = require('gulp');
 const mocha    = require('gulp-mocha');
 const nib      = require('nib');
@@ -11,7 +12,7 @@ const path     = require('path');
 const pkg      = require('./package.json');
 const plumber  = require('gulp-plumber');
 const remember = require('gulp-remember');
-const riot     = require('gulp-riot');
+const riotify  = require('riotify');
 const stylus   = require('gulp-stylus');
 
 const config = {
@@ -37,6 +38,14 @@ const bundles = {
   pipeline: new Bundle(
     'lib/pipeline/worker.js',
     'public/scripts/workers/pipeline.js'
+  ),
+  ui: new Bundle(
+    'lib/ui/index.js',
+    'public/scripts/wowser-ui.js',
+    {}, function(bundler) {
+      bundler.transform(riotify, { ext: 'html' });
+      bundler.transform(globify);
+    }
   )
 };
 
@@ -50,7 +59,6 @@ gulp.task('clean', function(cb) {
     'lib/*',
     'public/scripts/*',
     'public/styles/*',
-    'public/ui/*',
     'spec/*'
   ], cb);
 });
@@ -90,17 +98,7 @@ gulp.task('ui:styles', function() {
       .pipe(gulp.dest(config.public));
 });
 
-gulp.task('ui:templates', function() {
-  return gulp.src(config.ui.templates)
-      .pipe(cache('riot'))
-      .pipe(plumber())
-      .pipe(riot())
-      .pipe(remember('riot'))
-      .pipe(concat('scripts/wowser-ui.js'))
-      .pipe(gulp.dest(config.public));
-});
-
-gulp.task('ui', gulp.series('ui:styles', 'ui:templates'));
+gulp.task('ui', gulp.series('ui:styles'));
 
 gulp.task('spec', function() {
   return gulp.src(config.specs, { read: false })
@@ -112,17 +110,19 @@ gulp.task('rebuild', gulp.series(
   'clean', 'scripts', 'ui'
 ));
 
+const invalidate = function(event) {
+  for(let name in bundles) {
+    bundles[name].invalidate(event.path);
+    bundles[name].invalidate(event.path.replace('src/', ''));
+  }
+}
+
 gulp.task('watch', function() {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
-      .on('change', function(event) {
-        const jspath = event.path.replace('src/', '');
-        for(let name in bundles) {
-          bundles[name].invalidate(jspath);
-        }
-      });
-
+      .on('change', invalidate);
   gulp.watch(config.ui.styles, gulp.series('ui:styles'));
-  gulp.watch(config.ui.templates, gulp.series('ui:templates'));
+  gulp.watch(config.ui.templates, gulp.series('scripts:bundle:ui'))
+      .on('change', invalidate);
 });
 
 gulp.task('default', gulp.series(
