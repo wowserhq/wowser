@@ -9,7 +9,7 @@ module.exports = class M2 extends THREE.Mesh {
   constructor(data, skin) {
     super();
 
-    const geometry = this.geometry = new THREE.Geometry();
+    const geometry = this.geometry;
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
