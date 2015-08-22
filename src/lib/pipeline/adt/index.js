@@ -1,17 +1,19 @@
 const Promise = require('promise');
 const THREE = require('three');
 
-module.exports = class ADT {
+module.exports = class ADT extends THREE.Mesh {
 
   static cache = {};
 
   constructor(data) {
-    this.geometry = new THREE.Geometry();
+    super();
+
+    const geometry = this.geometry;
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
-    const faces = this.geometry.faces = [];
-    const vertices = this.geometry.vertices = [];
+    const faces = geometry.faces = [];
+    const vertices = geometry.vertices = [];
 
     const size = 33.333333;
     const step = size / 8;
@@ -47,11 +49,8 @@ module.exports = class ADT {
         }
       }
     }
-  }
 
-  get mesh() {
-    const material = new THREE.MeshBasicMaterial({ wireframe: true });
-    return new THREE.Mesh(this.geometry, material);
+    this.material = new THREE.MeshBasicMaterial({ wireframe: true });
   }
 
   static load(path) {
