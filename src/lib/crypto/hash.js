@@ -17,7 +17,7 @@ module.exports = class Hash {
 
   // Retrieves digest (finalizes this hash if needed)
   get digest() {
-    if(!this._digest) {
+    if (!this._digest) {
       this.finalize();
     }
     return this._digest;
@@ -32,11 +32,11 @@ module.exports = class Hash {
 
   // Feeds hash given value
   feed(value) {
-    if(this._digest) {
+    if (this._digest) {
       return this;
     }
 
-    if(value.constructor == String) {
+    if (value.constructor === String) {
       this._data.writeString(value);
     } else {
       this._data.write(value);

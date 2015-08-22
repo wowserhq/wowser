@@ -8,11 +8,11 @@ module.exports = class BigNum {
 
   // Creates a new BigNum
   constructor(value, radix) {
-    if(typeof value == 'number') {
+    if (typeof value === 'number') {
       this._bi = BigInteger.fromInt(value);
-    } else if(value.constructor == BigInteger) {
+    } else if (value.constructor === BigInteger) {
       this._bi = value;
-    } else if(value.constructor == BigNum) {
+    } else if (value.constructor === BigNum) {
       this._bi = value.bi;
     } else {
       this._bi = new BigInteger(value, radix);
@@ -68,11 +68,11 @@ module.exports = class BigNum {
   toArray(littleEndian = true, unsigned = true) {
     const ba = this._bi.toByteArray();
 
-    if(unsigned && this._bi.s === 0 && ba[0] === 0) {
+    if (unsigned && this._bi.s === 0 && ba[0] === 0) {
       ba.shift();
     }
 
-    if(littleEndian) {
+    if (littleEndian) {
       return ba.reverse();
     }
 
@@ -81,17 +81,17 @@ module.exports = class BigNum {
 
   // Creates a new BigNum from given byte-array
   static fromArray(bytes, littleEndian = true, unsigned = true) {
-    if(typeof bytes.toArray != 'undefined') {
+    if (typeof bytes.toArray !== 'undefined') {
       bytes = bytes.toArray();
     } else {
       bytes = bytes.slice(0);
     }
 
-    if(littleEndian) {
+    if (littleEndian) {
       bytes = bytes.reverse();
     }
 
-    if(unsigned && bytes[0] & 0x80) {
+    if (unsigned && bytes[0] & 0x80) {
       bytes.unshift(0);
     }
 
@@ -102,7 +102,7 @@ module.exports = class BigNum {
   static fromRand(length) {
     // TODO: This should use a properly seeded, secure RNG
     const bytes = [];
-    for(var i = 0; i < length; ++i) {
+    for (let i = 0; i < length; ++i) {
       bytes.push(Math.floor(Math.random() * 128));
     }
     return new BigNum(bytes);

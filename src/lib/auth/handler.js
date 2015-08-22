@@ -38,7 +38,7 @@ module.exports = class AuthHandler extends Socket {
 
   // Connects to given host through given port
   connect(host, port = NaN) {
-    if(!this.connected) {
+    if (!this.connected) {
       super.connect(host, port || this.constructor.PORT);
       console.info('connecting to auth-server @', this.host, ':', this.port);
     }
@@ -47,7 +47,7 @@ module.exports = class AuthHandler extends Socket {
 
   // Sends authentication request to connected host
   authenticate(account, password) {
-    if(!this.connected) {
+    if (!this.connected) {
       return false;
     }
 
@@ -91,19 +91,19 @@ module.exports = class AuthHandler extends Socket {
 
   // Data received handler
   dataReceived(socket) {
-    while(true) {
-      if(!this.connected || this.buffer.available < AuthPacket.HEADER_SIZE) {
+    while (true) {
+      if (!this.connected || this.buffer.available < AuthPacket.HEADER_SIZE) {
         return;
       }
 
       const ap = new AuthPacket(this.buffer.readByte(), this.buffer.seek(-AuthPacket.HEADER_SIZE).read(), false);
 
       console.log('⟹', ap.toString());
-      //console.debug ap.toHex()
-      //console.debug ap.toASCII()
+      // console.debug ap.toHex()
+      // console.debug ap.toASCII()
 
       this.emit('packet:receive', ap);
-      if(ap.opcodeName) {
+      if (ap.opcodeName) {
         this.emit(`packet:receive:${ap.opcodeName}`, ap);
       }
     }
@@ -114,42 +114,42 @@ module.exports = class AuthHandler extends Socket {
     ap.readUnsignedByte();
     const status = ap.readUnsignedByte();
 
-    switch(status) {
-      case AuthChallengeOpcode.SUCCESS:
-        console.info('received logon challenge');
+    switch (status) {
+    case AuthChallengeOpcode.SUCCESS:
+      console.info('received logon challenge');
 
-        const B = ap.read(32);              // B
+      const B = ap.read(32);              // B
 
-        const glen = ap.readUnsignedByte(); // g-length
-        const g = ap.read(glen);            // g
+      const glen = ap.readUnsignedByte(); // g-length
+      const g = ap.read(glen);            // g
 
-        const Nlen = ap.readUnsignedByte(); // n-length
-        const N = ap.read(Nlen);            // N
+      const Nlen = ap.readUnsignedByte(); // n-length
+      const N = ap.read(Nlen);            // N
 
-        const salt = ap.read(32);           // salt
+      const salt = ap.read(32);           // salt
 
-        ap.read(16);                  // unknown
-        ap.readUnsignedByte();        // security flags
+      ap.read(16);                  // unknown
+      ap.readUnsignedByte();        // security flags
 
-        this.srp = new SRP(N, g);
-        this.srp.feed(salt, B, this.account, this.password);
+      this.srp = new SRP(N, g);
+      this.srp.feed(salt, B, this.account, this.password);
 
-        const lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2);
-        lpp.write(this.srp.A.toArray());
-        lpp.write(this.srp.M1.digest);
-        lpp.write(new Array(20)); // CRC hash
-        lpp.writeByte(0x00);      // number of keys
-        lpp.writeByte(0x00);      // security flags
+      const lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2);
+      lpp.write(this.srp.A.toArray());
+      lpp.write(this.srp.M1.digest);
+      lpp.write(new Array(20)); // CRC hash
+      lpp.writeByte(0x00);      // number of keys
+      lpp.writeByte(0x00);      // security flags
 
-        this.send(lpp);
+      this.send(lpp);
       break;
-      case AuthChallengeOpcode.ACCOUNT_INVALID:
-        console.warn('account invalid');
-        this.emit('reject');
+    case AuthChallengeOpcode.ACCOUNT_INVALID:
+      console.warn('account invalid');
+      this.emit('reject');
       break;
-      case AuthChallengeOpcode.BUILD_INVALID:
-        console.warn('build invalid');
-        this.emit('reject');
+    case AuthChallengeOpcode.BUILD_INVALID:
+      console.warn('build invalid');
+      this.emit('reject');
       break;
     }
   }
@@ -162,7 +162,7 @@ module.exports = class AuthHandler extends Socket {
 
     const M2 = ap.read(20);
 
-    if(this.srp.validate(M2)) {
+    if (this.srp.validate(M2)) {
       this.emit('authenticate');
     } else {
       this.emit('reject');

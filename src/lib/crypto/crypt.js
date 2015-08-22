@@ -15,7 +15,7 @@ module.exports = class Crypt {
 
   // Encrypts given data through RC4
   encrypt(data) {
-    if(this._encrypt) {
+    if (this._encrypt) {
       this._encrypt.encrypt(data);
     }
     return this;
@@ -23,7 +23,7 @@ module.exports = class Crypt {
 
   // Decrypts given data through RC4
   decrypt(data) {
-    if(this._decrypt) {
+    if (this._decrypt) {
       this._decrypt.decrypt(data);
     }
     return this;
@@ -50,7 +50,7 @@ module.exports = class Crypt {
     this._decrypt.init(dechash);
 
     // Ensure the buffer is synchronized
-    for(var i = 0; i < 1024; ++i) {
+    for (let i = 0; i < 1024; ++i) {
       this._encrypt.next();
       this._decrypt.next();
     }

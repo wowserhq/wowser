@@ -20,14 +20,14 @@ module.exports = class M2 extends THREE.Mesh {
     const uvs = [];
 
     skin.data.triangles.forEach(function(triangle, faceIndex) {
-      var indices = triangle.map(function(index) {
+      const indices = triangle.map(function(index) {
         return skin.data.indices[index];
       });
       geometry.faces.push(new THREE.Face3(...indices));
 
       uvs[faceIndex] = [];
       indices.forEach(function(index) {
-        var vertex = data.vertices[index];
+        const vertex = data.vertices[index];
         uvs[faceIndex].push(new THREE.Vector2(...(vertex.textureCoords)));
       });
     });
@@ -51,7 +51,7 @@ module.exports = class M2 extends THREE.Mesh {
   }
 
   static load(path) {
-    if(!(path in this.cache)) {
+    if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
         const worker = new Worker('/scripts/workers/pipeline.js');
 

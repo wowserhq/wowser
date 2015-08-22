@@ -17,15 +17,15 @@ module.exports = class ADT {
     const step = size / 8;
 
     // See: http://www.pxr.dk/wowdev/wiki/index.php?title=ADT#MCVT_sub-chunk
-    for(var cy = 0; cy < 16; ++cy) {
-      for(var cx = 0; cx < 16; ++cx) {
-        let cindex = cy * 16 + cx;
-        let chunk = data.MCNKs[cindex];
+    for (let cy = 0; cy < 16; ++cy) {
+      for (let cx = 0; cx < 16; ++cx) {
+        const cindex = cy * 16 + cx;
+        const chunk = data.MCNKs[cindex];
 
         chunk.MCVT.heights.forEach(function(height, index) {
           let y = Math.floor(index / 17);
           let x = index % 17;
-          if(x > 8) {
+          if (x > 8) {
             y += 0.5;
             x -= 8.5;
           }
@@ -33,10 +33,10 @@ module.exports = class ADT {
           vertices.push(vertex);
         });
 
-        let coffset = cindex * 145;
+        const coffset = cindex * 145;
         let index = coffset + 9;
-        for(var y = 0; y < 8; ++y) {
-          for(var x = 0; x < 8; ++x) {
+        for (let y = 0; y < 8; ++y) {
+          for (let x = 0; x < 8; ++x) {
             faces.push(new THREE.Face3(index, index - 9, index - 8));
             faces.push(new THREE.Face3(index, index - 8, index + 9));
             faces.push(new THREE.Face3(index, index + 9, index + 8));
@@ -55,13 +55,13 @@ module.exports = class ADT {
   }
 
   static load(path) {
-    if(!(path in this.cache)) {
+    if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
         const worker = new Worker('/scripts/workers/pipeline.js');
 
         worker.addEventListener('message', (event) => {
           const data = event.data;
-          resolve(new this(data))
+          resolve(new this(data));
         });
 
         worker.postMessage(['ADT', path]);

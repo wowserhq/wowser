@@ -34,7 +34,7 @@ module.exports = class CharacterHandler extends EventEmitter {
 
     this.list.length = 0;
 
-    for(var i = 0; i < count; ++i) {
+    for (let i = 0; i < count; ++i) {
       const character = new Character();
 
       character.guid = gp.readGUID();
@@ -61,12 +61,12 @@ module.exports = class CharacterHandler extends EventEmitter {
         level: gp.readUnsignedInt(),
         family: gp.readUnsignedInt()
       };
-      if(pet.model) {
+      if (pet.model) {
         character.pet = pet;
       }
 
       character.equipment = [];
-      for(var j = 0; j < 23; ++j) {
+      for (let j = 0; j < 23; ++j) {
         const item = {
           model: gp.readUnsignedInt(),
           type: gp.readUnsignedByte(),

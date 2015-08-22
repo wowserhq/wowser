@@ -7,12 +7,11 @@ module.exports = [{
   default: function() {
     if (process.platform === 'win32') {
       return 'C:/Program Files (x86)/World of Warcraft/Data';
-    } else {
-      return '/Applications/World of Warcraft/Data';
     }
+    return '/Applications/World of Warcraft/Data';
   },
   validate: function(value) {
-    let done = this.async();
+    const done = this.async();
 
     fs.lstat(value, function(err, stats) {
       if (err) {

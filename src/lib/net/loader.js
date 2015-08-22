@@ -16,7 +16,7 @@ module.exports = class Loader {
 
       xhr.onload = function(e) {
         // TODO: Handle failure
-        if(this.status >= 200 && this.status < 400) {
+        if (this.status >= 200 && this.status < 400) {
           resolve(this.response);
         }
       };

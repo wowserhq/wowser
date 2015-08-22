@@ -29,12 +29,12 @@ module.exports = class Socket extends EventEmitter {
 
   // Whether this socket is currently connected
   get connected() {
-    return this.socket && this.socket.readyState == WebSocket.OPEN;
+    return this.socket && this.socket.readyState === WebSocket.OPEN;
   }
 
   // Connects to given host through given port (if any; default port is implementation specific)
   connect(host, port = NaN) {
-    if(!this.connected) {
+    if (!this.connected) {
       this.host = host;
       this.port = port;
       this.uri = 'ws://' + this.host + ':' + this.port;
@@ -60,7 +60,7 @@ module.exports = class Socket extends EventEmitter {
 
         this.emit('data:receive', this);
 
-        if(this.buffer.available === 0 && this.buffer.length > this.constructor.BUFFER_CAP) {
+        if (this.buffer.available === 0 && this.buffer.length > this.constructor.BUFFER_CAP) {
           this.buffer.clip();
         }
       };
@@ -75,7 +75,7 @@ module.exports = class Socket extends EventEmitter {
 
   // Attempts to reconnect to cached host and port
   reconnect() {
-    if(!this.connected && this.host && this.port) {
+    if (!this.connected && this.host && this.port) {
       this.connect(this.host, this.port);
     }
     return this;
@@ -83,7 +83,7 @@ module.exports = class Socket extends EventEmitter {
 
   // Disconnects this socket
   disconnect() {
-    if(this.connected) {
+    if (this.connected) {
       this.socket.close();
     }
     return this;
@@ -91,13 +91,13 @@ module.exports = class Socket extends EventEmitter {
 
   // Finalizes and sends given packet
   send(packet) {
-    if(this.connected) {
+    if (this.connected) {
 
       packet.finalize();
 
       console.log('⟸', packet.toString());
-      //console.debug packet.toHex()
-      //console.debug packet.toASCII()
+      // console.debug packet.toHex()
+      // console.debug packet.toASCII()
 
       this.socket.send(packet.buffer);
 

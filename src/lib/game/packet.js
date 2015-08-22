@@ -14,7 +14,7 @@ module.exports = class GamePacket extends BasePacket {
   static OPCODE_SIZE_OUTGOING = 4
 
   constructor(opcode, source, outgoing = true) {
-    if(!source) {
+    if (!source) {
       source = (outgoing) ? GamePacket.HEADER_SIZE_OUTGOING : GamePacket.HEADER_SIZE_INCOMING;
     }
     super(opcode, source, outgoing);
@@ -27,11 +27,10 @@ module.exports = class GamePacket extends BasePacket {
 
   // Header size in bytes (dependent on packet origin)
   get headerSize() {
-    if(this.outgoing) {
+    if (this.outgoing) {
       return this.constructor.HEADER_SIZE_OUTGOING;
-    } else {
-      return this.constructor.HEADER_SIZE_INCOMING;
     }
+    return this.constructor.HEADER_SIZE_INCOMING;
   }
 
   // Reads GUID from this packet

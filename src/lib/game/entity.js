@@ -4,4 +4,4 @@ module.exports = class Entity {
     this.guid = Math.random() * 1000000 | 0;
   }
 
-}
+};

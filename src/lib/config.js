@@ -1,3 +1,26 @@
+class Raw {
+  constructor(config) {
+    this.config = config;
+  }
+
+  raw(value) {
+    return ('\u0000\u0000\u0000\u0000' + value.split('').reverse().join('')).slice(-4);
+  }
+
+  get locale() {
+    return this.raw(this.config.locale);
+  }
+
+  get os() {
+    return this.raw(this.config.os);
+  }
+
+  get platform() {
+    return this.raw(this.config.platform);
+  }
+
+}
+
 module.exports = class Config {
 
   constructor() {
@@ -24,26 +47,3 @@ module.exports = class Config {
   }
 
 };
-
-class Raw {
-  constructor(config) {
-    this.config = config;
-  }
-
-  raw(value) {
-    return ("\u0000\u0000\u0000\u0000" + value.split('').reverse().join('')).slice(-4);
-  }
-
-  get locale() {
-    return this.raw(this.config.locale);
-  }
-
-  get os() {
-    return this.raw(this.config.os);
-  }
-
-  get platform() {
-    return this.raw(this.config.platform);
-  }
-
-}

@@ -8,7 +8,7 @@ const loader = new Loader();
 
 module.exports = function(path) {
   return loader.load(path).then((raw) => {
-    var stream = new DecodeStream(ArrayUtil.toBuffer(raw));
+    let stream = new DecodeStream(ArrayUtil.toBuffer(raw));
     const data = M2.decode(stream);
 
     // TODO: Allow configuring quality

@@ -45,7 +45,7 @@ module.exports = class SRP {
     // Expected server proof hash
     this._M2 = null;
 
-    while(true) {
+    while (true) {
 
       // Client's private ephemeral value (random)
       this._a = BigNum.fromRand(19);
@@ -54,7 +54,7 @@ module.exports = class SRP {
       // A = g ^ a mod N
       this._A = this._g.modPow(this._a, this._N);
 
-      if(!this._A.mod(this._N).equals(BigNum.ZERO)) {
+      if (!this._A.mod(this._N).equals(BigNum.ZERO)) {
         break;
       }
     }
@@ -117,7 +117,7 @@ module.exports = class SRP {
     const S = this._S.toArray();
     const S1 = [];
     const S2 = [];
-    for(let i = 0; i < 16; ++i) {
+    for (let i = 0; i < 16; ++i) {
       S1[i] = S[i * 2];
       S2[i] = S[i * 2 + 1];
     }
@@ -130,7 +130,7 @@ module.exports = class SRP {
 
     // Shared session key generation by interleaving the previously generated hashes
     this._K = [];
-    for(let i = 0; i < 20; ++i) {
+    for (let i = 0; i < 20; ++i) {
       this._K[i * 2] = S1h.digest[i];
       this._K[i * 2 + 1] = S2h.digest[i];
     }
@@ -147,7 +147,7 @@ module.exports = class SRP {
 
     // XOR N-prime and generator
     const Ngh = [];
-    for(let i = 0; i < 20; ++i) {
+    for (let i = 0; i < 20; ++i) {
       Ngh[i] = Nh.digest[i] ^ gh.digest[i];
     }
 
@@ -173,7 +173,7 @@ module.exports = class SRP {
 
   // Validates given M2 with expected M2
   validate(M2) {
-    if(!this._M2) {
+    if (!this._M2) {
       return false;
     }
     return equal(M2.toArray(), this._M2.digest);

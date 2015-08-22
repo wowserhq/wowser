@@ -37,8 +37,8 @@ module.exports = class RealmsHandler extends EventEmitter {
 
     this.list.length = 0;
 
-    for(var i = 0; i < count; ++i) {
-      var realm = new Realm();
+    for (let i = 0; i < count; ++i) {
+      const realm = new Realm();
 
       realm.icon = ap.readUnsignedByte();
       realm.lock = ap.readUnsignedByte();

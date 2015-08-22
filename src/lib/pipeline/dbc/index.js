@@ -12,7 +12,7 @@ module.exports = class DBC {
 
   index() {
     this.records.forEach(function(record) {
-      if(record.id === undefined) {
+      if (record.id === undefined) {
         return;
       }
       this[record.id] = record;
@@ -20,7 +20,7 @@ module.exports = class DBC {
   }
 
   static load(name, id) {
-    if(!(name in this.cache)) {
+    if (!(name in this.cache)) {
       this.cache[name] = new Promise((resolve, reject) => {
         const worker = new Worker('/scripts/workers/pipeline.js');
 
@@ -33,7 +33,7 @@ module.exports = class DBC {
       });
     }
 
-    if(id !== undefined) {
+    if (id !== undefined) {
       return this.cache[name].then(function(dbc) {
         return dbc[id];
       });

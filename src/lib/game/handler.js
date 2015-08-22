@@ -27,7 +27,7 @@ module.exports = class GameHandler extends Socket {
 
   // Connects to given host through given port
   connect(host, port) {
-    if(!this.connected) {
+    if (!this.connected) {
       super.connect(host, port);
       console.info('connecting to game-server @', this.host, ':', this.port);
     }
@@ -43,7 +43,7 @@ module.exports = class GameHandler extends Socket {
     packet.writeUnsignedInt(packet.opcode);
 
     // Encrypt header if needed
-    if(this._crypt) {
+    if (this._crypt) {
       this._crypt.encrypt(new Uint8Array(packet.buffer, 0, GamePacket.HEADER_SIZE_OUTGOING));
     }
 
@@ -52,7 +52,7 @@ module.exports = class GameHandler extends Socket {
 
   // Attempts to join game with given character
   join(character) {
-    if(character) {
+    if (character) {
       console.info('joining game with', character.toString());
 
       const gp = new GamePacket(GameOpcode.CMSG_PLAYER_LOGIN, GamePacket.HEADER_SIZE_OUTGOING + GUID.LENGTH);
@@ -65,41 +65,41 @@ module.exports = class GameHandler extends Socket {
 
   // Data received handler
   dataReceived(socket) {
-    while(true) {
-      if(!this.connected) {
+    while (true) {
+      if (!this.connected) {
         return;
       }
 
-      if(this.remaining === false) {
+      if (this.remaining === false) {
 
-        if(this.buffer.available < GamePacket.HEADER_SIZE_INCOMING) {
+        if (this.buffer.available < GamePacket.HEADER_SIZE_INCOMING) {
           return;
         }
 
         // Decrypt header if needed
-        if(this._crypt) {
+        if (this._crypt) {
           this._crypt.decrypt(new Uint8Array(this.buffer.buffer, this.buffer.index, GamePacket.HEADER_SIZE_INCOMING));
         }
 
         this.remaining = this.buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN);
       }
 
-      if(this.remaining > 0 && this.buffer.available >= this.remaining) {
+      if (this.remaining > 0 && this.buffer.available >= this.remaining) {
         const size = GamePacket.OPCODE_SIZE_INCOMING + this.remaining;
         const gp = new GamePacket(this.buffer.readUnsignedShort(), this.buffer.seek(-GamePacket.HEADER_SIZE_INCOMING).read(size), false);
 
         this.remaining = false;
 
         console.log('⟹', gp.toString());
-        //console.debug gp.toHex()
-        //console.debug gp.toASCII()
+        // console.debug gp.toHex()
+        // console.debug gp.toASCII()
 
         this.emit('packet:receive', gp);
-        if(gp.opcodeName) {
+        if (gp.opcodeName) {
           this.emit(`packet:receive:${gp.opcodeName}`, gp);
         }
 
-      } else if(this.remaining !== 0) {
+      } else if (this.remaining !== 0) {
         return;
       }
     }
@@ -153,13 +153,13 @@ module.exports = class GameHandler extends Socket {
 
     // Handle result byte
     const result = gp.readUnsignedByte();
-    if(result == 0x0D) {
+    if (result === 0x0D) {
       console.warn('server-side auth/realm failure; try again');
       this.emit('reject');
       return;
     }
 
-    if(result == 0x15) {
+    if (result === 0x15) {
       console.warn('account in use/invalid; aborting');
       this.emit('reject');
       return;

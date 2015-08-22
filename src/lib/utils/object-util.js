@@ -2,11 +2,11 @@ module.exports = class ObjectUtil {
 
   // Retrieves key for given value (if any) in object
   static keyByValue(object, target) {
-    if(!('lookup' in object)) {
+    if (!('lookup' in object)) {
       const lookup = {};
-      for(var key in object) {
-        if(object.hasOwnProperty(key)) {
-          var value = object[key];
+      for (const key in object) {
+        if (object.hasOwnProperty(key)) {
+          const value = object[key];
           lookup[value] = key;
         }
       }

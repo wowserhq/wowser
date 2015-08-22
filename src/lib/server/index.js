@@ -17,7 +17,7 @@ module.exports = class Server {
   }
 
   init() {
-    if(this.isFirstRun) {
+    if (this.isFirstRun) {
       ServerConfig
         .prompt()
         .then(resultMsg => {

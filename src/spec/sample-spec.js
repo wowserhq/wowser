@@ -1,4 +1,4 @@
-const {expect, sinon} = require('./spec-helper');
+const {} = require('./spec-helper');
 
 describe('Wowser', function() {
 

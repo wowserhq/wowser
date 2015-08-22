@@ -8,7 +8,7 @@ const loaders = {
 
 worker.addEventListener('message', (event) => {
   const [loader, ...args] = event.data;
-  if(loader in loaders) {
+  if (loader in loaders) {
     loaders[loader](...args).then(function(result) {
       worker.postMessage(result);
       worker.close();

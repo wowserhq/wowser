@@ -7,13 +7,6 @@ const {DecodeStream} = require('blizzardry/lib/restructure');
 const DBC = require('blizzardry/lib/dbc/entities');
 const {PNG} = require('pngjs');
 
-// TODO: Find a module for this
-const flatten = function(array) {
-  return array.reduce(function(a, b) {
-    return a.concat(b);
-  });
-};
-
 module.exports = class Pipeline {
 
   static get DATA_DIR() {
@@ -36,7 +29,7 @@ module.exports = class Pipeline {
 
   resource(req, res, next, path) {
     req.resourcePath = path;
-    if(req.resource = this.archive.files.get(path)) {
+    if (req.resource = this.archive.files.get(path)) {
       next();
     } else {
       const err = new Error('resource not found');
@@ -58,14 +51,14 @@ module.exports = class Pipeline {
   }
 
   dbc(req, res) {
-    name = req.resourcePath.match(/(\w+)\.dbc/)[1];
-    if(definition = DBC[name]) {
+    const name = req.resourcePath.match(/(\w+)\.dbc/)[1];
+    if (definition = DBC[name]) {
       dbc = definition.dbc.decode(new DecodeStream(req.resource.data));
-      if(id = req.params[0]) {
+      if (id = req.params[0]) {
         entity = find(dbc.records, function(entity) {
-          return String(entity.id) == id;
+          return String(entity.id) === id;
         });
-        if(entity) {
+        if (entity) {
           res.send(entity);
         } else {
           err = new Error('entity not found');

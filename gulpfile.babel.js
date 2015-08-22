@@ -8,7 +8,6 @@ const globify  = require('require-globify');
 const gulp     = require('gulp');
 const mocha    = require('gulp-mocha');
 const nib      = require('nib');
-const path     = require('path');
 const pkg      = require('./package.json');
 const plumber  = require('gulp-plumber');
 const remember = require('gulp-remember');
@@ -73,8 +72,8 @@ gulp.task('scripts:compile', function() {
 
 const scripts = [];
 
-for(let name in bundles) {
-  let task = `scripts:bundle:${name}`;
+for (const name in bundles) {
+  const task = `scripts:bundle:${name}`;
   scripts.push(task);
 
   gulp.task(task, function() {
@@ -111,11 +110,11 @@ gulp.task('rebuild', gulp.series(
 ));
 
 const invalidate = function(event) {
-  for(let name in bundles) {
+  for (const name in bundles) {
     bundles[name].invalidate(event.path);
     bundles[name].invalidate(event.path.replace('src/', ''));
   }
-}
+};
 
 gulp.task('watch', function() {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))

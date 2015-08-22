@@ -2,7 +2,6 @@ const browserify = require('browserify');
 const gulp       = require('gulp');
 const gutil      = require('gulp-util');
 const path       = require('path');
-const plumber    = require('gulp-plumber');
 const source     = require('vinyl-source-stream');
 
 module.exports = class Bundle {
@@ -20,11 +19,11 @@ module.exports = class Bundle {
     this.options.fullPaths = true;
     this.options.transforms = this.options.transforms || [];
 
-    this.hook = hook
+    this.hook = hook;
   }
 
   get bundler() {
-    if(!this._bundler) {
+    if (!this._bundler) {
       this._bundler = browserify(this.src, this.options);
       this._bundler.on('dep', this.cache.bind(this));
       this.hook && this.hook(this._bundler);
@@ -35,7 +34,7 @@ module.exports = class Bundle {
   bundle() {
     return this.bundler.bundle()
             .on('error', function(error) {
-              gutil.log(gutil.colors.red("Bundling error:\n"), error.stack);
+              gutil.log(gutil.colors.red('Bundling error:\n'), error.stack);
               this.emit('end');
             })
             .pipe(source(this.target.name))
