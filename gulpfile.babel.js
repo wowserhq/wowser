@@ -29,7 +29,7 @@ const config = {
 };
 
 const bundles = {
-  client: new Bundle(
+  lib: new Bundle(
     'lib/index.js',
     'public/scripts/wowser.js',
     { standalone: 'Wowser' }
