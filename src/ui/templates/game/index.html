@@ -5,6 +5,7 @@
   <controls for="{ session.player }" camera="{ camera }" />
 
   <script>
+    // To avoid instanceof issues with THREE
     var THREE = Wowser.dependencies.THREE;
 
     this.session = opts.session;
