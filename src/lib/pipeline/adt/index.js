@@ -8,6 +8,8 @@ module.exports = class ADT extends THREE.Mesh {
   constructor(data) {
     super();
 
+    this.data = data;
+
     const geometry = this.geometry;
 
     // TODO: Potentially move these calculations and mesh generation to worker
