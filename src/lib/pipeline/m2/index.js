@@ -1,16 +1,15 @@
 const Promise = require('promise');
-const Skin = require('./skin');
 const THREE = require('three');
 
 module.exports = class M2 extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data, skin) {
+  constructor(data, skinData) {
     super();
 
     this.data = data;
-    this.skin = skin;
+    this.skinData = skinData;
 
     const geometry = this.geometry;
 
@@ -22,9 +21,9 @@ module.exports = class M2 extends THREE.Mesh {
 
     const uvs = [];
 
-    skin.data.triangles.forEach(function(triangle, faceIndex) {
+    skinData.triangles.forEach(function(triangle, faceIndex) {
       const indices = triangle.map(function(index) {
-        return skin.data.indices[index];
+        return skinData.indices[index];
       });
       geometry.faces.push(new THREE.Face3(...indices));
 
@@ -60,7 +59,7 @@ module.exports = class M2 extends THREE.Mesh {
 
         worker.addEventListener('message', (event) => {
           const [data, skinData] = event.data;
-          resolve(new this(data, new Skin(skinData)));
+          resolve(new this(data, skinData));
         });
 
         worker.postMessage(['M2', path]);
