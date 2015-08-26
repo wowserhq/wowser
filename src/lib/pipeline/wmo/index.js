@@ -6,15 +6,18 @@ module.exports = class WMO extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data, groupsData) {
+  constructor(path, data) {
     super();
 
+    this.path = path;
     this.data = data;
 
-    groupsData.forEach((groupData) => {
-      // TODO: Positioning
-      this.add(new Group(groupData));
-    });
+    for (let i = 0; i < data.MOHD.groupCount; ++i) {
+      Group.loadWithID(path, i).then((group) => {
+        // TODO: Positioning
+        this.add(group);
+      });
+    }
   }
 
   static load(path) {
@@ -23,8 +26,8 @@ module.exports = class WMO extends THREE.Mesh {
         const worker = new Worker('/scripts/workers/pipeline.js');
 
         worker.addEventListener('message', (event) => {
-          const [data, groups] = event.data;
-          resolve(new this(data, groups));
+          const data = event.data;
+          resolve(new this(path, data));
         });
 
         worker.postMessage(['WMO', path]);

@@ -2,6 +2,8 @@ const THREE = require('three');
 
 module.exports = class WMOGroup extends THREE.Mesh {
 
+  static cache = {};
+
   constructor(data) {
     super();
 
@@ -25,6 +27,28 @@ module.exports = class WMOGroup extends THREE.Mesh {
     // TODO: UVs
 
     this.material = new THREE.MeshBasicMaterial({ wireframe: true });
+  }
+
+  static loadWithID(path, id) {
+    const suffix = `000${id}`.slice(-3);
+    const group = path.replace(/\.wmo/i, `_${suffix}.wmo`);
+    return this.load(group);
+  }
+
+  static load(path) {
+    if (!(path in this.cache)) {
+      this.cache[path] = new Promise((resolve, reject) => {
+        const worker = new Worker('/scripts/workers/pipeline.js');
+
+        worker.addEventListener('message', (event) => {
+          const data = event.data;
+          resolve(new this(data));
+        });
+
+        worker.postMessage(['WMOGroup', path]);
+      });
+    }
+    return this.cache[path];
   }
 
 };
