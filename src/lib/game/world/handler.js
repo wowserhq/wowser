@@ -2,6 +2,7 @@ const ADT = require('../../pipeline/adt');
 const EventEmitter = require('events');
 const M2 = require('../../pipeline/m2');
 const THREE = require('three');
+const WMO = require('../../pipeline/wmo');
 
 module.exports = class WorldHandler extends EventEmitter {
 
@@ -36,6 +37,10 @@ module.exports = class WorldHandler extends EventEmitter {
       m2.position.x = 2;
       m2.position.y = 1.5;
       this.scene.add(m2);
+    });
+
+    WMO.load('WORLD\\WMO\\AZEROTH\\COLLIDABLE DOODADS\\ELWYNN\\ABBEYGATE\\ABBEYGATE01.WMO').then((wmo) => {
+      this.scene.add(wmo);
     });
 
     ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt').then((adt) => {
