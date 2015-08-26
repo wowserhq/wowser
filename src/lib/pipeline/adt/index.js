@@ -33,7 +33,11 @@ module.exports = class ADT extends THREE.Mesh {
             y += 0.5;
             x -= 8.5;
           }
-          const vertex = new THREE.Vector3(cx * size + x * step, cy * size + y * step, chunk.position.z + height);
+          const vertex = new THREE.Vector3(
+            cx * size + x * step,
+            cy * size + y * step,
+            chunk.position.z + height
+          );
           vertices.push(vertex);
         });
 
