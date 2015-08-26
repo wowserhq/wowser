@@ -15,24 +15,38 @@ module.exports = class M2 extends THREE.Mesh {
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
-    data.vertices.forEach(function(vertex) {
-      geometry.vertices.push(new THREE.Vector3(...vertex.position));
+    const vertices = data.vertices;
+
+    vertices.forEach(function(vertex) {
+      const {position} = vertex;
+      geometry.vertices.push(
+        new THREE.Vector3(position[0], position[1], position[2])
+      );
     });
 
     const uvs = [];
 
-    skinData.triangles.forEach(function(triangle, faceIndex) {
-      const indices = triangle.map(function(index) {
-        return skinData.indices[index];
-      });
-      geometry.faces.push(new THREE.Face3(...indices));
+    const {triangles, indices} = skinData;
 
-      uvs[faceIndex] = [];
-      indices.forEach(function(index) {
-        const vertex = data.vertices[index];
-        uvs[faceIndex].push(new THREE.Vector2(...(vertex.textureCoords)));
+    for (let i = 0, face = 0; i < triangles.length; i += 3, ++face) {
+      const vindices = [
+        indices[triangles[i]],
+        indices[triangles[i + 1]],
+        indices[triangles[i + 2]]
+      ];
+
+      geometry.faces.push(new THREE.Face3(
+        vindices[0],
+        vindices[1],
+        vindices[2]
+      ));
+
+      uvs[face] = [];
+      vindices.forEach(function(index) {
+        const {textureCoords} = vertices[index];
+        uvs[face].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
       });
-    });
+    }
 
     geometry.faceVertexUvs = [uvs];
 
