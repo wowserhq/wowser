@@ -39,11 +39,10 @@ module.exports = class WorldHandler extends EventEmitter {
     });
 
     ADT.load('World\\Maps\\Azeroth\\Azeroth_31_49.adt').then((adt) => {
-      const model = adt.mesh;
-      model.position.x = -266.667;
-      model.position.y = -266.667;
-      model.position.z = -67;
-      this.scene.add(model);
+      adt.position.x = -266.667;
+      adt.position.y = -266.667;
+      adt.position.z = -67;
+      this.scene.add(adt);
     });
   }
 
