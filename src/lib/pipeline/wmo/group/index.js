@@ -17,6 +17,7 @@ module.exports = class WMOGroup extends THREE.Mesh {
       );
     });
 
+    const uvs = [];
     const triangles = data.MOVI.triangles;
 
     for (let i = 0, faceIndex = 0; i < triangles.length; i += 3, ++faceIndex) {
@@ -32,9 +33,15 @@ module.exports = class WMOGroup extends THREE.Mesh {
         face.materialIndex = data.MOPY.triangles[faceIndex].materialID;
       }
       geometry.faces.push(face);
+
+      uvs[faceIndex] = [];
+      vindices.forEach(function(index) {
+        const textureCoords = data.MOTV.textureCoords[index];
+        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+      });
     }
 
-    // TODO: UVs
+    geometry.faceVertexUvs = [uvs];
 
     this.material = materials;
   }
