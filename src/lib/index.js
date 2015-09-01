@@ -18,8 +18,8 @@ module.exports = class Client {
     this.game = new GameHandler(this);
     this.characters = new CharactersHandler(this);
     this.chat = new ChatHandler(this);
-    this.world = new WorldHandler(this);
     this.player = new Player();
+    this.world = new WorldHandler(this);
   }
 
 };

@@ -11,6 +11,8 @@ module.exports = class Player extends Unit {
 
     this.target = new Unit();
     this.target.name = 'Illidan';
+
+    this.displayID = 1000;
   }
 
 };

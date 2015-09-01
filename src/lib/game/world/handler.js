@@ -12,6 +12,15 @@ module.exports = class WorldHandler extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
+    // TODO: Use this handler for all entities, not just the player
+    this.session.player.on('change:model', (oldModel, newModel) => {
+      if (oldModel) {
+        this.scene.remove(oldModel);
+      }
+
+      this.scene.add(newModel);
+    });
+
     M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {
       m2.texture = 'Creature\\Rabbit\\RabbitSkin.blp';
       m2.position.x = 2;
