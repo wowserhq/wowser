@@ -25,26 +25,22 @@ module.exports = class M2 extends THREE.Mesh {
     });
 
     const uvs = [];
-
     const {triangles, indices} = skinData;
 
-    for (let i = 0, face = 0; i < triangles.length; i += 3, ++face) {
+    for (let i = 0, faceIndex = 0; i < triangles.length; i += 3, ++faceIndex) {
       const vindices = [
         indices[triangles[i]],
         indices[triangles[i + 1]],
         indices[triangles[i + 2]]
       ];
 
-      geometry.faces.push(new THREE.Face3(
-        vindices[0],
-        vindices[1],
-        vindices[2]
-      ));
+      const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
+      geometry.faces.push(face);
 
-      uvs[face] = [];
+      uvs[faceIndex] = [];
       vindices.forEach(function(index) {
         const {textureCoords} = vertices[index];
-        uvs[face].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
       });
     }
 
