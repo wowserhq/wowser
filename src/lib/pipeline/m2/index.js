@@ -1,3 +1,4 @@
+const Material = require('../material');
 const Promise = require('promise');
 const THREE = require('three');
 
@@ -46,20 +47,11 @@ module.exports = class M2 extends THREE.Mesh {
 
     geometry.faceVertexUvs = [uvs];
 
-    this.material = new THREE.MeshBasicMaterial({ wireframe: true });
+    this.material = new Material();
   }
 
   set texture(path) {
-    const texture = THREE.ImageUtils.loadTexture(
-      encodeURI(`pipeline/${path}`),
-      undefined,
-      () => {
-        texture.flipY = false;
-        this.material.wireframe = false;
-        this.material.map = texture;
-        this.material.needsUpdate = true;
-      }
-    );
+    this.material.texture = path;
   }
 
   static load(path) {

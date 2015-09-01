@@ -13,19 +13,19 @@ module.exports = class WorldHandler extends EventEmitter {
     this.scene = new THREE.Scene();
 
     M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {
-      m2.texture = 'Creature\\Rabbit\\RabbitSkin.blp.png';
+      m2.texture = 'Creature\\Rabbit\\RabbitSkin.blp';
       m2.position.x = 2;
       m2.position.y = -1;
       this.scene.add(m2);
     });
 
     M2.load('Creature\\Illidan\\Illidan.m2').then((m2) => {
-      m2.texture = 'Creature\\Illidan\\Illidan.blp.png';
+      m2.texture = 'Creature\\Illidan\\Illidan.blp';
       this.scene.add(m2);
     });
 
     M2.load('Creature\\RAGNAROS\\RAGNAROS.m2').then((m2) => {
-      m2.texture = 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp.png';
+      m2.texture = 'Creature\\RAGNAROS\\RAGNAROSSKIN.blp';
       m2.position.x = -5;
       m2.position.y = 5.5;
       m2.scale.set(0.3, 0.3, 0.3);
@@ -33,7 +33,7 @@ module.exports = class WorldHandler extends EventEmitter {
     });
 
     M2.load('Creature\\MurlocCostume\\murloccostume_whiteflag.M2').then((m2) => {
-      m2.texture = 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp.png';
+      m2.texture = 'Creature\\MurlocCostume\\MURLOCCOSTUME.blp';
       m2.position.x = 2;
       m2.position.y = 1.5;
       this.scene.add(m2);
