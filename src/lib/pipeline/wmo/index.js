@@ -25,7 +25,7 @@ module.exports = class WMO extends THREE.Mesh {
     this.materials = new THREE.MeshFaceMaterial(mats);
 
     for (let i = 0; i < data.MOHD.groupCount; ++i) {
-      Group.loadWithID(path, i).then((group) => {
+      Group.loadWithID(path, i, this.materials).then((group) => {
         // TODO: Positioning
         this.add(group);
       });
