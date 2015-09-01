@@ -1,4 +1,5 @@
 const Group = require('./group');
+const Material = require('../material');
 const Promise = require('promise');
 const THREE = require('three');
 
@@ -11,6 +12,17 @@ module.exports = class WMO extends THREE.Mesh {
 
     this.path = path;
     this.data = data;
+
+    const textures = this.data.MOTX.filenames;
+    const mats = [];
+
+    this.data.MOMT.materials.forEach(function(mat) {
+      const material = new Material();
+      material.texture = textures[mat.textures[0].offset];
+      mats.push(material);
+    });
+
+    this.materials = new THREE.MeshFaceMaterial(mats);
 
     for (let i = 0; i < data.MOHD.groupCount; ++i) {
       Group.loadWithID(path, i).then((group) => {
