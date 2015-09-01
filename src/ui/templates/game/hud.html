@@ -3,7 +3,7 @@
   <portrait target unit="{ player.target }" if="{ player.target }" />
 
   <chat handler="{ session.chat }" />
-  <quests />
+  <quests if="{ false }" />
 
   <script>
     this.session = this.parent.session;
