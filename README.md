@@ -19,8 +19,8 @@ Wowser is both a low-level API as well as a graphical client, interacting with a
 
 **Note:** Only Wrath of the Lich King is currently supported.
 
-**Warning:** Do not attempt to use this client towards official/retail servers
-as your account may get banned.
+**Warning:** Do not attempt to use this client on official/retail servers as
+your account may get banned.
 
 At present, Wowser is capable of:
 
