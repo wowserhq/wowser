@@ -10,7 +10,7 @@ module.exports = class Player extends Unit {
     this.mp = this.mp;
 
     this.target = new Unit();
-    this.target.name = 'Illidan';
+    this.target.name = 'Target';
 
     this.displayID = 24978;
   }
