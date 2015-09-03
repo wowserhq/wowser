@@ -19,27 +19,32 @@ module.exports = class WMOGroup extends THREE.Mesh {
 
     const uvs = [];
     const triangles = data.MOVI.triangles;
+    const batches = data.MOBA.batches;
 
-    for (let i = 0, faceIndex = 0; i < triangles.length; i += 3, ++faceIndex) {
-      const vindices = [
-        triangles[i],
-        triangles[i + 1],
-        triangles[i + 2]
-      ];
+    let faceIndex = 0;
+    batches.forEach(function(batch) {
+      const lastIndex = batch.firstIndex + batch.indexCount;
+      for (let i = batch.firstIndex; i < lastIndex; i += 3, ++faceIndex) {
 
-      const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
-      const materialID = data.MOPY.triangles[faceIndex].materialID;
-      if (materialID > 0) {
-        face.materialIndex = data.MOPY.triangles[faceIndex].materialID;
+        const vindices = [
+          triangles[i],
+          triangles[i + 1],
+          triangles[i + 2]
+        ];
+
+        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
+        if (batch.materialID > 0) {
+          face.materialIndex = batch.materialID;
+        }
+        geometry.faces.push(face);
+
+        uvs[faceIndex] = [];
+        vindices.forEach(function(index) {
+          const textureCoords = data.MOTV.textureCoords[index];
+          uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+        });
       }
-      geometry.faces.push(face);
-
-      uvs[faceIndex] = [];
-      vindices.forEach(function(index) {
-        const textureCoords = data.MOTV.textureCoords[index];
-        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
-      });
-    }
+    });
 
     geometry.faceVertexUvs = [uvs];
 
