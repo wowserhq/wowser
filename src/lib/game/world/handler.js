@@ -30,6 +30,8 @@ module.exports = class WorldHandler extends EventEmitter {
 
     M2.load('Creature\\Illidan\\Illidan.m2').then((m2) => {
       m2.texture = 'Creature\\Illidan\\Illidan.blp';
+      m2.position.x = -3;
+      m2.position.y = -1.5;
       this.scene.add(m2);
     });
 
