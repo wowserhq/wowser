@@ -3,6 +3,10 @@ const THREE = require('three');
 
 module.exports = class ADT extends THREE.Mesh {
 
+  static GRID_SIZE = 64;
+  static SIZE = 533.33333;
+  static CHUNK_SIZE = 33.333333;
+
   static cache = {};
 
   constructor(path, data) {
@@ -18,7 +22,7 @@ module.exports = class ADT extends THREE.Mesh {
     const faces = geometry.faces = [];
     const vertices = geometry.vertices = [];
 
-    const size = 33.333333;
+    const size = this.constructor.CHUNK_SIZE;
     const step = size / 8;
 
     // See: http://www.pxr.dk/wowdev/wiki/index.php?title=ADT#MCVT_sub-chunk
