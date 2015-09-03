@@ -5,9 +5,10 @@ module.exports = class ADT extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data) {
+  constructor(path, data) {
     super();
 
+    this.path = path;
     this.data = data;
 
     const geometry = this.geometry;
@@ -66,7 +67,7 @@ module.exports = class ADT extends THREE.Mesh {
 
         worker.addEventListener('message', (event) => {
           const data = event.data;
-          resolve(new this(data));
+          resolve(new this(path, data));
         });
 
         worker.postMessage(['ADT', path]);
