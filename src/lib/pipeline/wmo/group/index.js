@@ -25,7 +25,6 @@ module.exports = class WMOGroup extends THREE.Mesh {
     batches.forEach(function(batch) {
       const lastIndex = batch.firstIndex + batch.indexCount;
       for (let i = batch.firstIndex; i < lastIndex; i += 3, ++faceIndex) {
-
         const vindices = [
           triangles[i],
           triangles[i + 1],
@@ -47,24 +46,22 @@ module.exports = class WMOGroup extends THREE.Mesh {
     });
 
     geometry.faceVertexUvs = [uvs];
-
-    this.material = materials;
   }
 
-  static loadWithID(path, id, materials) {
+  static loadWithID(path, id) {
     const suffix = `000${id}`.slice(-3);
     const group = path.replace(/\.wmo/i, `_${suffix}.wmo`);
-    return this.load(group, materials);
+    return this.load(group);
   }
 
-  static load(path, materials) {
+  static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
         const worker = new Worker('/scripts/workers/pipeline.js');
 
         worker.addEventListener('message', (event) => {
           const data = event.data;
-          resolve(new this(data, materials));
+          resolve(new this(data));
         });
 
         worker.postMessage(['WMOGroup', path]);
