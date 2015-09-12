@@ -9,7 +9,7 @@ module.exports = class SRP {
   // Creates new SRP instance with given constant prime and generator
   constructor(N, g) {
 
-    // Constant prime (B)
+    // Constant prime (N)
     this._N = BigNum.fromArray(N);
 
     // Generator (g)
