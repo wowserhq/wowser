@@ -1,4 +1,3 @@
-const ArrayUtil = require('../../utils/array-util');
 const {DecodeStream} = require('blizzardry/lib/restructure');
 const Loader = require('../../net/loader');
 const M2 = require('blizzardry/lib/m2');
@@ -8,7 +7,8 @@ const loader = new Loader();
 
 module.exports = function(path) {
   return loader.load(path).then((raw) => {
-    let stream = new DecodeStream(ArrayUtil.toBuffer(raw));
+    let buffer = new Buffer(new Uint8Array(raw));
+    let stream = new DecodeStream(buffer);
     const data = M2.decode(stream);
 
     // TODO: Allow configuring quality
@@ -16,7 +16,8 @@ module.exports = function(path) {
     const skinPath = path.replace(/\.m2/i, `0${quality}.skin`);
 
     return loader.load(skinPath).then((rawSkin) => {
-      stream = new DecodeStream(ArrayUtil.toBuffer(rawSkin));
+      buffer = new Buffer(new Uint8Array(rawSkin));
+      stream = new DecodeStream(buffer);
       const skinData = Skin.decode(stream);
       return [data, skinData];
     });

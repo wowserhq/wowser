@@ -9,14 +9,4 @@ module.exports = class ArrayUtil {
     return array;
   }
 
-  // Converts given data to buffer
-  static toBuffer(data) {
-    const buffer = new Buffer(data.byteLength || data.length);
-    const view = new Uint8Array(data);
-    for (const i in view) {
-      buffer[i] = view[i];
-    }
-    return buffer;
-  }
-
 };

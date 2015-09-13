@@ -1,4 +1,3 @@
-const ArrayUtil = require('../../utils/array-util');
 const DBC = require('blizzardry/lib/dbc/entities');
 const {DecodeStream} = require('blizzardry/lib/restructure');
 const Loader = require('../../net/loader');
@@ -10,7 +9,8 @@ module.exports = function(name) {
   const entity = DBC[name];
 
   return loader.load(path).then((raw) => {
-    const stream = new DecodeStream(ArrayUtil.toBuffer(raw));
+    const buffer = new Buffer(new Uint8Array(raw));
+    const stream = new DecodeStream(buffer);
     const data = entity.dbc.decode(stream);
 
     // TODO: This property breaks web worker communication for some reason!
