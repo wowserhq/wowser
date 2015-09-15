@@ -72,6 +72,12 @@ module.exports = class ADT extends THREE.Mesh {
     return 32 + (position / this.SIZE) | 0;
   }
 
+  static loadAtCoords(map, x, y) {
+    const tx = this.tileFor(x);
+    const ty = this.tileFor(y);
+    return ADT.load(`World\\Maps\\${map}\\${map}_${tx}_${ty}.adt`);
+  }
+
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
