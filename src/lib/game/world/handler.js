@@ -12,13 +12,21 @@ module.exports = class WorldHandler extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
+    const player = this.session.player;
+
     // TODO: Use this handler for all entities, not just the player
-    this.session.player.on('change:model', (oldModel, newModel) => {
+    player.on('change:model', (oldModel, newModel) => {
       if (oldModel) {
         this.scene.remove(oldModel);
       }
 
       this.scene.add(newModel);
+    });
+
+    player.position.set(5100, 740, 0);
+
+    ADT.loadAtCoords('Kalimdor', 5100, 740).then((adt) => {
+      this.scene.add(adt);
     });
 
     M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {

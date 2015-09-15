@@ -47,6 +47,9 @@ module.exports = class Unit extends Entity {
           this.emit('change:model', this.model, m2);
           this.model = m2;
           this.model.texture = this.texturePath;
+
+          // TODO: Unit should become a THREE.Group at some point
+          this.model.position.copy(this.position);
         });
       });
     });
