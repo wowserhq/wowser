@@ -15,6 +15,10 @@ module.exports = class ADT extends THREE.Mesh {
     this.path = path;
     this.data = data;
 
+    const txy = this.path.match(/(\d+)_(\d+)\.adt$/);
+    this.position.x = this.constructor.positionFor(txy[1]);
+    this.position.y = this.constructor.positionFor(txy[2]);
+
     const geometry = this.geometry;
 
     // TODO: Potentially move these calculations and mesh generation to worker
