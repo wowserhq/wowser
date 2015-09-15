@@ -64,6 +64,14 @@ module.exports = class ADT extends THREE.Mesh {
     this.material = new THREE.MeshBasicMaterial({ wireframe: true });
   }
 
+  static positionFor(tile) {
+    return (tile - 32) * this.SIZE;
+  }
+
+  static tileFor(position) {
+    return 32 + (position / this.SIZE) | 0;
+  }
+
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
