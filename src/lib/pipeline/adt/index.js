@@ -45,8 +45,8 @@ module.exports = class ADT extends THREE.Mesh {
             x -= 8.5;
           }
           const vertex = new THREE.Vector3(
-            cx * size + x * step,
-            cy * size + y * step,
+            -(cy * size + y * step),
+            -(cx * size + x * step),
             chunk.position.z + height
           );
           vertices.push(vertex);
