@@ -3,7 +3,7 @@ const Material = require('../material');
 const Promise = require('promise');
 const THREE = require('three');
 
-module.exports = class WMO extends THREE.Mesh {
+module.exports = class WMO extends THREE.Group {
 
   static cache = {};
 
