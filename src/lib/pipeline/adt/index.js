@@ -71,17 +71,21 @@ module.exports = class ADT extends THREE.Mesh {
   }
 
   static positionFor(tile) {
-    return (tile - 32) * this.SIZE;
+    return (32 - tile) * this.SIZE | 0;
   }
 
   static tileFor(position) {
-    return 32 + (position / this.SIZE) | 0;
+    return 32 - (position / this.SIZE) | 0;
+  }
+
+  static loadTile(map, tileX, tileY) {
+    return ADT.load(`World\\Maps\\${map}\\${map}_${tileY}_${tileX}.adt`);
   }
 
   static loadAtCoords(map, x, y) {
-    const tx = this.tileFor(x);
-    const ty = this.tileFor(y);
-    return ADT.load(`World\\Maps\\${map}\\${map}_${tx}_${ty}.adt`);
+    const tileX = this.tileFor(x);
+    const tileY = this.tileFor(y);
+    return this.loadTile(map, tileX, tileY);
   }
 
   static load(path) {
