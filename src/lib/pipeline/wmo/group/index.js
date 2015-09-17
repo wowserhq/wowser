@@ -4,7 +4,7 @@ module.exports = class WMOGroup extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data, materials) {
+  constructor(data) {
     super();
 
     this.data = data;
