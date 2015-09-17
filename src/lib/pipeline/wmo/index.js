@@ -1,6 +1,6 @@
 const Group = require('./group');
 const Material = require('../material');
-const Promise = require('promise');
+const Promise = require('bluebird');
 const THREE = require('three');
 
 module.exports = class WMO extends THREE.Group {

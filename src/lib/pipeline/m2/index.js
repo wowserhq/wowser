@@ -1,5 +1,5 @@
 const Material = require('../material');
-const Promise = require('promise');
+const Promise = require('bluebird');
 const THREE = require('three');
 
 module.exports = class M2 extends THREE.Mesh {

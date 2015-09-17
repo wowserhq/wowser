@@ -1,4 +1,4 @@
-const Promise = require('promise');
+const Promise = require('bluebird');
 const THREE = require('three');
 
 module.exports = class ADT extends THREE.Mesh {

@@ -1,5 +1,5 @@
 const Configstore = require('configstore');
-const Promise = require('promise');
+const Promise = require('bluebird');
 const inquirer = require('inquirer');
 const pkg = require('../../../../package.json');
 const prompts = require('./setup-prompts');
