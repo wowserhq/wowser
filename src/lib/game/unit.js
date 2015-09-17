@@ -33,6 +33,10 @@ module.exports = class Unit extends Entity {
   }
 
   set displayID(displayID) {
+    if (!displayID) {
+      return;
+    }
+
     DBC.load('CreatureDisplayInfo', displayID).then((displayInfo) => {
       this.displayInfo = displayInfo;
       const {modelID} = displayInfo;
