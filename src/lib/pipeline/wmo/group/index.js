@@ -48,6 +48,10 @@ module.exports = class WMOGroup extends THREE.Mesh {
     geometry.faceVertexUvs = [uvs];
   }
 
+  clone() {
+    return new this.constructor(this.data);
+  }
+
   static loadWithID(path, id) {
     const suffix = `000${id}`.slice(-3);
     const group = path.replace(/\.wmo/i, `_${suffix}.wmo`);
@@ -67,7 +71,9 @@ module.exports = class WMOGroup extends THREE.Mesh {
         worker.postMessage(['WMOGroup', path]);
       });
     }
-    return this.cache[path];
+    return this.cache[path].then((wmoGroup) => {
+      return wmoGroup.clone();
+    });
   }
 
 };

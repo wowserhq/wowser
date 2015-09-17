@@ -30,6 +30,10 @@ module.exports = class WMO extends THREE.Group {
     }
   }
 
+  clone() {
+    return new this.constructor(this.path, this.data);
+  }
+
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
@@ -43,7 +47,9 @@ module.exports = class WMO extends THREE.Group {
         worker.postMessage(['WMO', path]);
       });
     }
-    return this.cache[path];
+    return this.cache[path].then((wmo) => {
+      return wmo.clone();
+    });
   }
 
 };
