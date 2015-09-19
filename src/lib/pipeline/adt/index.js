@@ -70,6 +70,10 @@ module.exports = class ADT extends THREE.Mesh {
     this.material = new THREE.MeshBasicMaterial({ wireframe: true });
   }
 
+  get wmos() {
+    return this.data.MODF.entries;
+  }
+
   static positionFor(tile) {
     return (32 - tile) * this.TILE_SIZE | 0;
   }
