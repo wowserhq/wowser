@@ -4,7 +4,7 @@ const THREE = require('three');
 module.exports = class ADT extends THREE.Mesh {
 
   static GRID_SIZE = 64;
-  static SIZE = 533.33333;
+  static TILE_SIZE = 533.33333;
   static CHUNK_SIZE = 33.333333;
 
   static cache = {};
@@ -71,11 +71,11 @@ module.exports = class ADT extends THREE.Mesh {
   }
 
   static positionFor(tile) {
-    return (32 - tile) * this.SIZE | 0;
+    return (32 - tile) * this.TILE_SIZE | 0;
   }
 
   static tileFor(position) {
-    return 32 - (position / this.SIZE) | 0;
+    return 32 - (position / this.TILE_SIZE) | 0;
   }
 
   static loadTile(map, tileX, tileY) {
