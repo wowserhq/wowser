@@ -8,10 +8,10 @@ module.exports = class Material extends THREE.MeshBasicMaterial {
   }
 
   set texture(path) {
-    const texture = THREE.ImageUtils.loadTexture(
+    THREE.ImageUtils.loadTexture(
       encodeURI(`pipeline/${path}.png`),
       undefined,
-      () => {
+      (texture) => {
         texture.flipY = false;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
