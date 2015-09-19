@@ -1,8 +1,6 @@
-const ADT = require('../../pipeline/adt');
 const EventEmitter = require('events');
-const M2 = require('../../pipeline/m2');
+const Map = require('./map');
 const THREE = require('three');
-const WMO = require('../../pipeline/wmo');
 
 module.exports = class WorldHandler extends EventEmitter {
 
@@ -22,19 +20,29 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(newModel);
     });
 
+    this.map = null;
+
     // Darkshire
-    this.worldport('Azeroth', -10559, -1189, 28);
+    this.worldport(0, -10559, -1189, 28);
 
     // Darnassus (Kalimdor)
-    // this.worldport('Kalimdor', 9947, 2557, 1316);
+    // this.worldport(1, 9947, 2557, 1316);
   }
 
-  worldport(map, x, y, z) {
-    this.player.position.set(x, y, z);
+  worldport(mapID, x, y, z) {
+    if (!this.map || this.map.id !== mapID) {
+      Map.load(mapID).then((map) => {
+        if (this.map) {
+          this.scene.remove(this.map);
+        }
 
-    ADT.loadAtCoords(map, x, y).then((adt) => {
-      this.scene.add(adt);
-    });
+        this.map = map;
+        this.map.render(x, y);
+        this.scene.add(this.map);
+
+        this.player.position.set(x, y, z);
+      });
+    }
   }
 
   // M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {
