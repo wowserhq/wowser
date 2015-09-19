@@ -46,7 +46,7 @@ module.exports = class WorldHandler extends EventEmitter {
 
   // M2.load('Creature\\RAGNAROS\\RAGNAROS.m2').then((m2) => {
   // M2.load('Creature\\Illidan\\Illidan.m2').then((m2) => {
-  // // M2.load('Creature\\NorthrendPenguin\\NorthrendPenguin.m2').then((m2) => {
+  // M2.load('Creature\\NorthrendPenguin\\NorthrendPenguin.m2').then((m2) => {
   //   m2.texture = 'Creature\\Illidan\\Illidan.blp';
 
   //   const helper = new THREE.SkeletonHelper(m2);
