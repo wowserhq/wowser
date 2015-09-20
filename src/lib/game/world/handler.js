@@ -22,7 +22,7 @@ module.exports = class WorldHandler extends EventEmitter {
 
     this.map = null;
 
-    // Darkshire
+    // Darkshire (Eastern Kingdoms)
     this.worldport(0, -10559, -1189, 28);
 
     // Darnassus (Kalimdor)
