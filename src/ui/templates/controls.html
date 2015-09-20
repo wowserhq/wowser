@@ -50,28 +50,28 @@
       var distance = 30 * delta;
       var angle = Math.PI / 2 * delta;
 
-      if(unit.model) {
-        if(key.isPressed('up') || key.isPressed('w')) {
+      if (unit.model) {
+        if (key.isPressed('up') || key.isPressed('w')) {
           unit.model.translateX(distance);
         }
 
-        if(key.isPressed('down') || key.isPressed('s')) {
+        if (key.isPressed('down') || key.isPressed('s')) {
           unit.model.translateX(-distance);
         }
 
-        if(key.isPressed('space')) {
+        if (key.isPressed('space')) {
           unit.model.translateZ(distance);
         }
 
-        if(key.isPressed('x')) {
+        if (key.isPressed('x')) {
           unit.model.translateZ(-distance);
         }
 
-        if(key.isPressed('left') || key.isPressed('a')) {
+        if (key.isPressed('left') || key.isPressed('a')) {
           unit.model.rotateZ(angle);
         }
 
-        if(key.isPressed('right') || key.isPressed('d')) {
+        if (key.isPressed('right') || key.isPressed('d')) {
           unit.model.rotateZ(-angle);
         }
 
@@ -143,7 +143,7 @@
     }
 
     mouseMove(event) {
-      if(rotating) {
+      if (rotating) {
         event.preventDefault();
 
         rotateEnd.set(event.clientX, event.clientY);
@@ -168,7 +168,7 @@
       event.stopPropagation();
 
       var delta = event.wheelDelta || -event.detail;
-      if(delta > 0) {
+      if (delta > 0) {
         this.zoomIn();
       } else if(delta < 0) {
         this.zoomOut();
