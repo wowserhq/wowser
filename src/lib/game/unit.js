@@ -39,7 +39,7 @@ module.exports = class Unit extends Entity {
 
     DBC.load('CreatureDisplayInfo', displayID).then((displayInfo) => {
       this.displayInfo = displayInfo;
-      const {modelID} = displayInfo;
+      const { modelID } = displayInfo;
 
       DBC.load('CreatureModelData', modelID).then((modelData) => {
         this.modelData = modelData;

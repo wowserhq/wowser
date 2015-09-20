@@ -1,7 +1,7 @@
 const Bundle   = require('./bundle');
 const babel    = require('gulp-babel');
 const cache    = require('gulp-cached');
-const cfg      = require('configstore');
+const Config   = require('configstore');
 const concat   = require('gulp-concat');
 const del      = require('del');
 const globify  = require('require-globify');
@@ -15,10 +15,10 @@ const riotify  = require('riotify');
 const stylus   = require('gulp-stylus');
 
 const config = {
-  db:      new cfg(pkg.name),
+  db: new Config(pkg.name),
   scripts: 'src/**/*.js',
-  specs:   'spec/**/*.js',
-  public:  './public',
+  specs: 'spec/**/*.js',
+  public: './public',
   ui: {
     styles: [
       'src/ui/styles/ui/**/*.styl',

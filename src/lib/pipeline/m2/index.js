@@ -19,14 +19,14 @@ module.exports = class M2 extends THREE.Mesh {
     const vertices = data.vertices;
 
     vertices.forEach(function(vertex) {
-      const {position} = vertex;
+      const { position } = vertex;
       geometry.vertices.push(
         new THREE.Vector3(position[0], position[1], position[2])
       );
     });
 
     const uvs = [];
-    const {triangles, indices} = skinData;
+    const { triangles, indices } = skinData;
 
     for (let i = 0, faceIndex = 0; i < triangles.length; i += 3, ++faceIndex) {
       const vindices = [
@@ -40,7 +40,7 @@ module.exports = class M2 extends THREE.Mesh {
 
       uvs[faceIndex] = [];
       vindices.forEach(function(index) {
-        const {textureCoords} = vertices[index];
+        const { textureCoords } = vertices[index];
         uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
       });
     }

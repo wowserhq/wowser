@@ -1,5 +1,5 @@
 const DBC = require('blizzardry/lib/dbc/entities');
-const {DecodeStream} = require('blizzardry/lib/restructure');
+const { DecodeStream } = require('blizzardry/lib/restructure');
 const Loader = require('../../net/loader');
 
 const loader = new Loader();

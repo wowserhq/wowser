@@ -1,5 +1,5 @@
 const ArrayUtil = require('../utils/array-util');
-const {HMAC} = require('jsbn/lib/sha1');
+const { HMAC } = require('jsbn/lib/sha1');
 const RC4 = require('jsbn/lib/rc4');
 
 module.exports = class Crypt {

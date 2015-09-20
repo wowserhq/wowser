@@ -1,4 +1,4 @@
-const {DecodeStream} = require('blizzardry/lib/restructure');
+const { DecodeStream } = require('blizzardry/lib/restructure');
 const Loader = require('../../net/loader');
 const WDT = require('blizzardry/lib/wdt');
 

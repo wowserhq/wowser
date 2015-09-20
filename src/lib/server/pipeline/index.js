@@ -3,9 +3,9 @@ const find = require('array-find');
 const Archive = require('./archive');
 const ServerConfig = require('../utils/server-config');
 const BLP = require('blizzardry/lib/blp');
-const {DecodeStream} = require('blizzardry/lib/restructure');
+const { DecodeStream } = require('blizzardry/lib/restructure');
 const DBC = require('blizzardry/lib/dbc/entities');
-const {PNG} = require('pngjs');
+const { PNG } = require('pngjs');
 
 module.exports = class Pipeline {
 
