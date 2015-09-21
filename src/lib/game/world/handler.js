@@ -25,8 +25,32 @@ module.exports = class WorldHandler extends EventEmitter {
     // Darkshire (Eastern Kingdoms)
     this.worldport(0, -10559, -1189, 28);
 
+    // Booty Bay (Eastern Kingdoms)
+    // this.worldport(0, -14354, 518, 22);
+
+    // Stonewrought Dam (Eastern Kingdoms)
+    // this.worldport(0, -4651, -3316, 296);
+
     // Darnassus (Kalimdor)
     // this.worldport(1, 9947, 2557, 1316);
+
+    // Astranaar (Kalimdor)
+    // this.worldport(1, 2752, -348, 107);
+
+    // Moonglade (Kalimdor)
+    // this.worldport(1, 7827, -2425, 489);
+
+    // Un'Goro Crater (Kalimdor)
+    // this.worldport(1, -7183, -1394, -183);
+
+    // The Exodar (Expansion 01)
+    // this.worldport(530, -4013, -11894, -2);
+
+    // Daggercap Bay (Northrend)
+    // this.worldport(571, 1031, -5192, 180);
+
+    // Dalaran (Northrend)
+    // this.worldport(571, 5797, 629, 647);
   }
 
   worldport(mapID, x, y, z) {
