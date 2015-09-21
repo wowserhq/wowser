@@ -14,6 +14,8 @@ module.exports = class Map extends THREE.Group {
     this.data = data;
     this.wdt = wdt;
 
+    this.mapID = this.data.id;
+
     // TODO: Track ADTs in some sort of fashion
     this.wmos = {};
     this.m2s = {};

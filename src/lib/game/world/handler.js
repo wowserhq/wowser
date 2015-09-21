@@ -54,18 +54,27 @@ module.exports = class WorldHandler extends EventEmitter {
   }
 
   worldport(mapID, x, y, z) {
-    if (!this.map || this.map.id !== mapID) {
+    const port = () => {
+      this.map.render(x, y);
+      this.player.position.set(x, y, z);
+
+      // TODO: Shouldn't be necessary
+      if (this.player.model) {
+        this.player.model.position.set(x, y, z);
+      }
+    };
+
+    if (!this.map || this.map.mapID !== mapID) {
       Map.load(mapID).then((map) => {
         if (this.map) {
           this.scene.remove(this.map);
         }
-
         this.map = map;
-        this.map.render(x, y);
         this.scene.add(this.map);
-
-        this.player.position.set(x, y, z);
+        port();
       });
+    } else {
+      port();
     }
   }
 
