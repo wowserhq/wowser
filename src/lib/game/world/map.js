@@ -38,13 +38,20 @@ module.exports = class Map extends THREE.Group {
   renderWMOs(entries) {
     entries.forEach((entry) => {
       if (!this.wmos[entry.id]) {
-        WMO.load(entry.filename).then((wmo) => {
+        this.wmos[entry.id] = WMO.load(entry.filename).then((wmo) => {
           wmo.position.set(
             -(entry.position.z - this.constructor.ZEROPOINT),
             -(entry.position.x - this.constructor.ZEROPOINT),
             entry.position.y
           );
-          // TODO: Correct WMO rotation
+
+          // Provided as (X, Z, -Y)
+          wmo.rotation.set(
+            entry.rotation.x * Math.PI / 180,
+            -entry.rotation.z * Math.PI / 180,
+            entry.rotation.y * Math.PI / 180
+          );
+
           this.add(wmo);
         });
       }
