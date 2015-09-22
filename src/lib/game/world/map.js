@@ -1,5 +1,6 @@
 const ADT = require('../../pipeline/adt');
 const DBC = require('../../pipeline/dbc');
+const M2 = require('../../pipeline/m2');
 const THREE = require('three');
 const WDT = require('../../pipeline/wdt');
 const WMO = require('../../pipeline/wmo');
@@ -18,7 +19,7 @@ module.exports = class Map extends THREE.Group {
 
     // TODO: Track ADTs in some sort of fashion
     this.wmos = {};
-    this.m2s = {};
+    this.doodads = {};
   }
 
   get internalName() {
@@ -31,7 +32,7 @@ module.exports = class Map extends THREE.Group {
     ADT.loadAtCoords(this.internalName, x, y).then((adt) => {
       this.add(adt);
       this.renderWMOs(adt.wmos);
-      // TODO: Load M2s
+      this.renderDoodads(adt.doodads);
     });
   }
 
@@ -53,6 +54,33 @@ module.exports = class Map extends THREE.Group {
           );
 
           this.add(wmo);
+        });
+      }
+    });
+  }
+
+  renderDoodads(entries) {
+    entries.forEach((entry) => {
+      if (!this.doodads[entry.id]) {
+        this.doodads[entry.id] = M2.load(entry.filename).then((m2) => {
+          m2.position.set(
+            -(entry.position.z - this.constructor.ZEROPOINT),
+            -(entry.position.x - this.constructor.ZEROPOINT),
+            entry.position.y
+          );
+
+          m2.rotation.set(
+            entry.rotation.x * Math.PI / 180,
+            -entry.rotation.z * Math.PI / 180,
+            entry.rotation.y * Math.PI / 180
+          );
+
+          if (entry.scale !== 1024) {
+            const scale = entry.scale / 1024;
+            m2.scale.set(scale, scale, scale);
+          }
+
+          this.add(m2);
         });
       }
     });
