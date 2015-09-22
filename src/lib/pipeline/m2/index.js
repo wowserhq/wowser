@@ -6,9 +6,10 @@ module.exports = class M2 extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data, skinData) {
+  constructor(path, data, skinData) {
     super();
 
+    this.path = path;
     this.data = data;
     this.skinData = skinData;
 
@@ -61,7 +62,7 @@ module.exports = class M2 extends THREE.Mesh {
 
         worker.addEventListener('message', (event) => {
           const [data, skinData] = event.data;
-          resolve(new this(data, skinData));
+          resolve(new this(path, data, skinData));
         });
 
         worker.postMessage(['M2', path]);
