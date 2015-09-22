@@ -22,9 +22,16 @@ module.exports = class M2 extends THREE.Mesh {
     vertices.forEach(function(vertex) {
       const { position } = vertex;
       geometry.vertices.push(
-        new THREE.Vector3(position[0], position[1], position[2])
+        // Provided as (X, Z, -Y)
+        new THREE.Vector3(position[0], position[2], -position[1])
       );
     });
+
+    // Mirror geometry over X and Y axes and rotate
+    const matrix = new THREE.Matrix4();
+    matrix.makeScale(-1, -1, 1);
+    geometry.applyMatrix(matrix);
+    geometry.rotateX(-Math.PI / 2);
 
     const uvs = [];
     const { triangles, indices } = skinData;

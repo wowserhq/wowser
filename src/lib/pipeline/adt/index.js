@@ -44,6 +44,8 @@ module.exports = class ADT extends THREE.Mesh {
             y += 0.5;
             x -= 8.5;
           }
+
+          // Mirror geometry over X and Y axes
           const vertex = new THREE.Vector3(
             -(cy * size + y * step),
             -(cx * size + x * step),

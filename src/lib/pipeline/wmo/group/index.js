@@ -12,10 +12,16 @@ module.exports = class WMOGroup extends THREE.Mesh {
     const geometry = this.geometry;
 
     data.MOVT.vertices.forEach(function(vertex) {
-      geometry.vertices.push(
-        new THREE.Vector3(vertex[0], vertex[1], vertex[2])
-      );
+      // Provided as (X, Z, -Y)
+      const vector = new THREE.Vector3(vertex[0], vertex[2], -vertex[1]);
+      geometry.vertices.push(vector);
     });
+
+    // Mirror geometry over X and Y axes and rotate
+    const matrix = new THREE.Matrix4();
+    matrix.makeScale(-1, -1, 1);
+    geometry.applyMatrix(matrix);
+    geometry.rotateX(-Math.PI / 2);
 
     const uvs = [];
     const triangles = data.MOVI.triangles;
