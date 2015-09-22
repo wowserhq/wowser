@@ -55,6 +55,10 @@ module.exports = class M2 extends THREE.Mesh {
     this.material.texture = path;
   }
 
+  clone() {
+    return new this.constructor(this.path, this.data, this.skinData);
+  }
+
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
@@ -68,7 +72,9 @@ module.exports = class M2 extends THREE.Mesh {
         worker.postMessage(['M2', path]);
       });
     }
-    return this.cache[path];
+    return this.cache[path].then((m2) => {
+      return m2.clone();
+    });
   }
 
 };
