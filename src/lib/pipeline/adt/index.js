@@ -74,6 +74,10 @@ module.exports = class ADT extends THREE.Mesh {
     return this.data.MODF.entries;
   }
 
+  get doodads() {
+    return this.data.MDDF.entries;
+  }
+
   static positionFor(tile) {
     return (32 - tile) * this.TILE_SIZE | 0;
   }
