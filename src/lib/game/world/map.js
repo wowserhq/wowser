@@ -7,7 +7,8 @@ const WMO = require('../../pipeline/wmo');
 
 module.exports = class Map extends THREE.Group {
 
-  static ZEROPOINT = ADT.TILE_SIZE * ADT.GRID_SIZE / 2;
+  static TILES = 64;
+  static ZEROPOINT = ADT.TILE_SIZE * 32;
 
   constructor(data, wdt) {
     super();

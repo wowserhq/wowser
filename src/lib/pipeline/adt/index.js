@@ -3,7 +3,6 @@ const THREE = require('three');
 
 module.exports = class ADT extends THREE.Mesh {
 
-  static GRID_SIZE = 64;
   static TILE_SIZE = 533.33333;
   static CHUNK_SIZE = 33.333333;
 
