@@ -20,6 +20,13 @@ module.exports = class WorldHandler extends EventEmitter {
       this.scene.add(newModel);
     });
 
+    this.player.on('change:position', (unit) => {
+      if (this.map) {
+        // TODO: This should be decoupled from the unit's model
+        this.map.render(unit.model.position.x, unit.model.position.y);
+      }
+    });
+
     this.map = null;
 
     // Darkshire (Eastern Kingdoms)
