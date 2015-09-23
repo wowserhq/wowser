@@ -49,38 +49,52 @@
       var delta = clock.getDelta();
       var distance = 30 * delta;
       var angle = Math.PI / 2 * delta;
+      var moved = false;
 
       if (unit.model) {
         if (key.isPressed('up') || key.isPressed('w')) {
           unit.model.translateX(distance);
+          moved = true;
         }
 
         if (key.isPressed('down') || key.isPressed('s')) {
           unit.model.translateX(-distance);
+          moved = true;
         }
 
         if (key.isPressed('q')) {
           unit.model.translateY(distance);
+          moved = true;
         }
 
         if (key.isPressed('e')) {
           unit.model.translateY(-distance);
+          moved = true;
         }
 
         if (key.isPressed('space')) {
           unit.model.translateZ(distance);
+          moved = true;
         }
 
         if (key.isPressed('x')) {
           unit.model.translateZ(-distance);
+          moved = true;
         }
 
         if (key.isPressed('left') || key.isPressed('a')) {
           unit.model.rotateZ(angle);
+          moved = true;
         }
 
         if (key.isPressed('right') || key.isPressed('d')) {
           unit.model.rotateZ(-angle);
+          moved = true;
+        }
+
+        // TODO: This should be decoupled from the unit's model
+        if (moved) {
+          unit.emit('change:position', unit);
         }
 
         target = unit.model.position;
