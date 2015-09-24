@@ -1,8 +1,8 @@
-const Material = require('../material');
 const Promise = require('bluebird');
+const Submesh = require('./submesh');
 const THREE = require('three');
 
-module.exports = class M2 extends THREE.Mesh {
+module.exports = class M2 extends THREE.Group {
 
   static cache = {};
 
@@ -13,7 +13,7 @@ module.exports = class M2 extends THREE.Mesh {
     this.data = data;
     this.skinData = skinData;
 
-    const geometry = this.geometry;
+    const sharedGeometry = new THREE.Geometry();
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
@@ -21,7 +21,7 @@ module.exports = class M2 extends THREE.Mesh {
 
     vertices.forEach(function(vertex) {
       const { position } = vertex;
-      geometry.vertices.push(
+      sharedGeometry.vertices.push(
         // Provided as (X, Z, -Y)
         new THREE.Vector3(position[0], position[2], -position[1])
       );
@@ -30,36 +30,48 @@ module.exports = class M2 extends THREE.Mesh {
     // Mirror geometry over X and Y axes and rotate
     const matrix = new THREE.Matrix4();
     matrix.makeScale(-1, -1, 1);
-    geometry.applyMatrix(matrix);
-    geometry.rotateX(-Math.PI / 2);
+    sharedGeometry.applyMatrix(matrix);
+    sharedGeometry.rotateX(-Math.PI / 2);
 
-    const uvs = [];
-    const { triangles, indices } = skinData;
+    const { textures } = data;
+    const { indices, textureUnits, triangles } = skinData;
 
-    for (let i = 0, faceIndex = 0; i < triangles.length; i += 3, ++faceIndex) {
-      const vindices = [
-        indices[triangles[i]],
-        indices[triangles[i + 1]],
-        indices[triangles[i + 2]]
-      ];
+    // TODO: Look up colors, render flags and what not
+    textureUnits.forEach(function(textureUnit) {
+      textureUnit.texture = textures[textureUnit.textureIndex];
+    });
 
-      const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
-      geometry.faces.push(face);
+    this.skinData.submeshes.forEach((submesh, id) => {
+      const geometry = sharedGeometry.clone();
+      const uvs = [];
 
-      uvs[faceIndex] = [];
-      vindices.forEach(function(index) {
-        const { textureCoords } = vertices[index];
-        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
-      });
-    }
+      const { startTriangle: start, triangleCount: count } = submesh;
+      for (let i = start, faceIndex = 0; i < start + count; i += 3, ++faceIndex) {
+        const vindices = [
+          indices[triangles[i]],
+          indices[triangles[i + 1]],
+          indices[triangles[i + 2]]
+        ];
 
-    geometry.faceVertexUvs = [uvs];
+        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
+        geometry.faces.push(face);
 
-    this.material = new Material();
+        uvs[faceIndex] = [];
+        vindices.forEach(function(index) {
+          const { textureCoords } = vertices[index];
+          uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+        });
+      }
+
+      geometry.faceVertexUvs = [uvs];
+
+      const mesh = new Submesh(id, geometry, textureUnits);
+      this.add(mesh);
+    });
   }
 
   set texture(path) {
-    this.material.texture = path;
+    // TODO: This needs to be refactored into accepting multiple skins
   }
 
   clone() {
