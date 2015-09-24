@@ -30,6 +30,7 @@ module.exports = class Map extends THREE.Group {
   render(x, y) {
     // TODO: Load ADTs in a radius
     // TODO: Unloading unused ADTs outside of radius
+    // TODO: Prevent this from loading the current ADT over and over again
     ADT.loadAtCoords(this.internalName, x, y).then((adt) => {
       this.add(adt);
       this.renderWMOs(adt.wmos);
