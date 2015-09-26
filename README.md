@@ -76,10 +76,13 @@ Getting this toolchain up and running, is easy and straight-forward:
    ```
 
 7. Use `npm run serve` to start Wowser.
-  * **Note:** On first run you will be prompted to specify the following:
-    1. Path to WoW client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
+
+  * On first run you will be prompted to specify the following:
+    1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
     2. Server port (default is `3000`)
-  * You can clear settings by running `npm run reset`
+  * You can clear these settings by running `npm run reset`
+
+  **Disclaimer:** Wowser serves up resources to the browser over HTTP. Depending on your network configuration these may be available to others. Respect laws and do not distribute game data you do not own.
 
 
 When contributing, please:
