@@ -13,9 +13,14 @@ Licensed under the **MIT** license, see LICENSE for more information.
 
 ![Wowser](http://office.moonsphere.net/wowser.png)
 
+## Background
+
+Wowser is a proof-of-concept of getting a tripple A game to run in a webbrowser, attempting to tackle a wide variety of challenges: data retrieval, socket connections, cryptography, 3d graphics, binary data handling, background workers and audio, to name a few.
+
+
 ## Features
 
-Wowser is both a low-level API as well as a graphical client, interacting with a World of Warcraft server like an official client would.
+Wowser is aiming to be both a low-level API as well as a graphical client, interacting with a World of Warcraft server like an official client would.
 
 **Note:** Only Wrath of the Lich King is currently supported.
 
