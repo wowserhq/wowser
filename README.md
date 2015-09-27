@@ -11,7 +11,7 @@ World of Warcraft in the browser using JavaScript and WebGL.
 
 Licensed under the **MIT** license, see LICENSE for more information.
 
-![Wowser](http://office.moonsphere.net/wowser.png)
+[![See Wowser tech demo](http://office.moonsphere.net/wowser-tech-demo.jpg)](https://www.youtube.com/watch?v=8QFY_3uM1iw)
 
 ## Background
 
