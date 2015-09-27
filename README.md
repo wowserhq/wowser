@@ -15,7 +15,7 @@ Licensed under the **MIT** license, see LICENSE for more information.
 
 ## Background
 
-Wowser is a proof-of-concept of getting a tripple A game to run in a webbrowser, attempting to tackle a wide variety of challenges: data retrieval, socket connections, cryptography, 3d graphics, binary data handling, background workers and audio, to name a few.
+Wowser is a proof-of-concept of getting a triple-A game to run in a webbrowser, attempting to tackle a wide variety of challenges: data retrieval, socket connections, cryptography, 3d graphics, binary data handling, background workers and audio, to name a few.
 
 
 ## Features
