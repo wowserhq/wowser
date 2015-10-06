@@ -116,12 +116,13 @@ const invalidate = function(event) {
   }
 };
 
-gulp.task('watch', function() {
+gulp.task('watch', function(done) {
   gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
       .on('change', invalidate);
   gulp.watch(config.ui.styles, gulp.series('ui:styles'));
   gulp.watch(config.ui.templates, gulp.series('scripts:bundle:ui'))
       .on('change', invalidate);
+  done();
 });
 
 gulp.task('default', gulp.series(
