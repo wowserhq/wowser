@@ -70,8 +70,10 @@ module.exports = class M2 extends THREE.Group {
     });
   }
 
-  set texture(path) {
-    // TODO: This needs to be refactored into accepting multiple skins
+  set displayInfo(displayInfo) {
+    this.children.forEach(function(submesh) {
+      submesh.displayInfo = displayInfo;
+    });
   }
 
   clone() {
