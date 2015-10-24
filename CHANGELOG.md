@@ -4,7 +4,6 @@
 
 - Initial release.
 
-
 ### v0.0.0 - November 1, 2014
 
 - Placeholder release.
