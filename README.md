@@ -15,12 +15,15 @@ Licensed under the **MIT** license, see LICENSE for more information.
 
 ## Background
 
-Wowser is a proof-of-concept of getting a triple-A game to run in a webbrowser, attempting to tackle a wide variety of challenges: data retrieval, socket connections, cryptography, 3d graphics, binary data handling, background workers and audio, to name a few.
-
+Wowser is a proof-of-concept of getting a triple-A game to run in a webbrowser,
+attempting to tackle a wide variety of challenges: data retrieval, socket
+connections, cryptography, 3d graphics, binary data handling, background workers
+and audio, to name a few.
 
 ## Features
 
-Wowser is aiming to be both a low-level API as well as a graphical client, interacting with a World of Warcraft server like an official client would.
+Wowser is aiming to be both a low-level API as well as a graphical client,
+interacting with a World of Warcraft server like an official client would.
 
 **Note:** Only Wrath of the Lich King is currently supported.
 
@@ -29,24 +32,24 @@ your account may get banned.
 
 At present, Wowser is capable of:
 
-* Authenticating by username / password.
-* Listing available realms.
-* Connecting to a realm.
-* Listing characters available on a realm.
-* Joining the game world with a character.
-* Logging game world packets, such as when a creature moves in the vicinity.
+- Authenticating by username / password.
+- Listing available realms.
+- Connecting to a realm.
+- Listing characters available on a realm.
+- Joining the game world with a character.
+- Logging game world packets, such as when a creature moves in the vicinity.
 
-In addition, there's good progress on getting terrain and models rendered visually.
-
+In addition, there's good progress on getting terrain and models rendered.
 
 ## Browser Support
 
-Wowser is presumed to be working on any browser supporting [JavaScript's typed arrays](http://caniuse.com/#search=typed%20arrays) and at the very least a binary version of the WebSocket protocol.
-
+Wowser is presumed to be working on any browser supporting [JavaScript's typed
+arrays] and at the very least a binary version of the WebSocket protocol.
 
 ## Development & Contribution
 
-Wowser is written in [ES2015](https://babeljs.io/docs/learn-es2015/), compiled by [Babel](https://babeljs.io/), developed with [Gulp](http://gulpjs.com/) and tested through [Mocha](http://mochajs.org/).
+Wowser is written in [ES2015], compiled by [Babel], developed with [Gulp] and
+tested through [Mocha].
 
 Getting this toolchain up and running, is easy and straight-forward:
 
@@ -56,7 +59,7 @@ Getting this toolchain up and running, is easy and straight-forward:
    git clone git://github.com/timkurvers/wowser.git
    ```
 
-2. Download and install [Node.js](http://nodejs.org/#download) (includes npm) for your platform.
+2. Download and install [Node.js] – including `npm` – for your platform.
 
 3. Install dependencies:
 
@@ -64,16 +67,19 @@ Getting this toolchain up and running, is easy and straight-forward:
    npm install
    ```
 
-4. Install [StormLib](https://github.com/timkurvers/blizzardry#mpq) and [BLPConverter](https://github.com/timkurvers/blizzardry#blp), which are used to handle Blizzard's game files.
+4. Install [StormLib] and [BLPConverter], which are used to handle Blizzard's
+   game files.
 
-5. Run `npm run gulp` which will automatically build the project when source files change.
+5. Run `npm run gulp` which will automatically build the project when source
+   files change.
 
-6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript clients.
+6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript
+   clients.
 
-   [Websockify](https://github.com/kanaka/websockify/) can - among other things - act
-   as a proxy for raw TCP sockets.
+   [Websockify] can - among other things - act as a proxy for raw TCP sockets.
 
-   For now, you will want to proxy both port 3724 (auth) and 8129 (world). If your server is on the same machine as your client, use a different set of ports.
+   For now, you will want to proxy both port 3724 (auth) and 8129 (world). Use a
+   different set of ports if your server is on the same machine as your client.
 
    ```shell
    node_modules/.bin/websockify 3724 host:3724
@@ -82,15 +88,27 @@ Getting this toolchain up and running, is easy and straight-forward:
 
 7. Use `npm run serve` to start Wowser.
 
-  * On first run you will be prompted to specify the following:
-    1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
-    2. Server port (default is `3000`)
-  * You can clear these settings by running `npm run reset`
+   - On first run you will be prompted to specify the following:
+     1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
+     2. Server port (default is `3000`)
 
-  **Disclaimer:** Wowser serves up resources to the browser over HTTP. Depending on your network configuration these may be available to others. Respect laws and do not distribute game data you do not own.
+   - You can clear these settings by running `npm run reset`
 
+   **Disclaimer:** Wowser serves up resources to the browser over HTTP. Depending
+   on your network configuration these may be available to others. Respect laws
+   and do not distribute game data you do not own.
 
 When contributing, please:
 
-* Fork the repository
-* Open a pull request (preferably on a separate branch)
+- Fork the repository
+- Open a pull request (preferably on a separate branch)
+
+[Babel]: https://babeljs.io/
+[BLPConverter]: https://github.com/timkurvers/blizzardry#blp
+[ES2015]: https://babeljs.io/docs/learn-es2015/
+[Gulp]: http://gulpjs.com/
+[JavaScript's typed arrays]: http://caniuse.com/#search=typed%20arrays
+[Mocha]: http://mochajs.org/
+[Node.js]: http://nodejs.org/#download
+[StormLib]: https://github.com/timkurvers/blizzardry#mpq
+[Websockify]: https://github.com/kanaka/websockify/
