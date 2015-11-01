@@ -1,18 +1,11 @@
-const Bundle   = require('./bundle');
 const babel    = require('gulp-babel');
 const cache    = require('gulp-cached');
 const Config   = require('configstore');
-const concat   = require('gulp-concat');
 const del      = require('del');
-const globify  = require('require-globify');
 const gulp     = require('gulp');
 const mocha    = require('gulp-mocha');
-const nib      = require('nib');
 const pkg      = require('./package.json');
 const plumber  = require('gulp-plumber');
-const remember = require('gulp-remember');
-const riotify  = require('riotify');
-const stylus   = require('gulp-stylus');
 
 const config = {
   db: new Config(pkg.name),
@@ -26,26 +19,6 @@ const config = {
     ],
     templates: 'src/ui/templates/**/*.html'
   }
-};
-
-const bundles = {
-  lib: new Bundle(
-    'lib/index.js',
-    'public/scripts/wowser.js',
-    { standalone: 'Wowser' }
-  ),
-  pipeline: new Bundle(
-    'lib/pipeline/worker.js',
-    'public/scripts/workers/pipeline.js'
-  ),
-  ui: new Bundle(
-    'lib/ui/index.js',
-    'public/scripts/wowser-ui.js',
-    {}, function(bundler) {
-      bundler.transform(riotify, { ext: 'html' });
-      bundler.transform(globify);
-    }
-  )
 };
 
 gulp.task('reset', function() {
@@ -62,42 +35,13 @@ gulp.task('clean', function(cb) {
   ], cb);
 });
 
-gulp.task('scripts:compile', function() {
+gulp.task('scripts', function() {
   return gulp.src(config.scripts)
       .pipe(cache('babel'))
       .pipe(plumber())
       .pipe(babel())
       .pipe(gulp.dest('.'));
 });
-
-const scripts = [];
-
-for (const name in bundles) {
-  const task = `scripts:bundle:${name}`;
-  scripts.push(task);
-
-  gulp.task(task, function() {
-    return bundles[name].bundle();
-  });
-}
-
-gulp.task('scripts', gulp.series('scripts:compile', ...scripts));
-
-gulp.task('ui:styles', function() {
-  return gulp.src(config.ui.styles)
-      .pipe(cache('stylus'))
-      .pipe(plumber())
-      .pipe(stylus({
-        use: [nib()],
-        import: 'nib',
-        paths: ['node_modules']
-      }))
-      .pipe(remember('stylus'))
-      .pipe(concat('styles/wowser.css'))
-      .pipe(gulp.dest(config.public));
-});
-
-gulp.task('ui', gulp.series('ui:styles'));
 
 gulp.task('spec', function() {
   return gulp.src(config.specs, { read: false })
@@ -106,22 +50,11 @@ gulp.task('spec', function() {
 });
 
 gulp.task('rebuild', gulp.series(
-  'clean', 'scripts', 'ui'
+  'clean', 'scripts'
 ));
 
-const invalidate = function(path) {
-  for (const name in bundles) {
-    bundles[name].invalidate(path);
-    bundles[name].invalidate(path.replace('src/', ''));
-  }
-};
-
 gulp.task('watch', function(done) {
-  gulp.watch(config.scripts, gulp.series('scripts', 'spec'))
-      .on('change', invalidate);
-  gulp.watch(config.ui.styles, gulp.series('ui:styles'));
-  gulp.watch(config.ui.templates, gulp.series('scripts:bundle:ui'))
-      .on('change', invalidate);
+  gulp.watch(config.scripts, gulp.series('scripts', 'spec'));
   done();
 });
 
