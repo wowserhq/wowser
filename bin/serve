@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-Server = require('../lib/server');
+const Server = require('../lib/server');
 
 (new Server(__dirname + '/..')).init();
