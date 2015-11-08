@@ -25,7 +25,8 @@ and audio, to name a few.
 Wowser is aiming to be both a low-level API as well as a graphical client,
 interacting with a World of Warcraft server like an official client would.
 
-**Note:** Only Wrath of the Lich King is currently supported.
+**Note:** Only Wrath of the Lich King (3.3.5a) is currently supported. A copy of
+the official client is required.
 
 **Warning:** Do not attempt to use this client on official/retail servers as
 your account may get banned.
