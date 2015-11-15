@@ -109,10 +109,10 @@ gulp.task('rebuild', gulp.series(
   'clean', 'scripts', 'ui'
 ));
 
-const invalidate = function(event) {
+const invalidate = function(path) {
   for (const name in bundles) {
-    bundles[name].invalidate(event.path);
-    bundles[name].invalidate(event.path.replace('src/', ''));
+    bundles[name].invalidate(path);
+    bundles[name].invalidate(path.replace('src/', ''));
   }
 };
 
