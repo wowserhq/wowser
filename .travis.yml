@@ -7,5 +7,13 @@ node_js:
   - '5'
 matrix:
   fast_finish: true
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+env:
+  - CXX=g++-4.8
 script: npm test --coverage
 after_script: codeclimate-test-reporter < coverage/lcov.info
