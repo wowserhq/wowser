@@ -18,7 +18,8 @@
     "serve-dev": "nodemon bin/serve -w lib/server",
     "pretest": "gulp rebuild",
     "reset": "gulp reset",
-    "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive"
+    "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive",
+    "webpack": "webpack-dev-server"
   },
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
@@ -67,6 +68,8 @@
     "nib": "^1.0.4",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.6.0",
-    "stylus-normalize": "^3.0.3"
+    "stylus-normalize": "^3.0.3",
+    "webpack": "^1.12.6",
+    "webpack-dev-server": "^1.12.1"
   }
 }
