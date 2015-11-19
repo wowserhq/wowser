@@ -1,6 +1,3 @@
 {
-  "extends": "timkurvers",
-  "env": {
-    "mocha": true
-  }
+  "extends": "timkurvers"
 }
