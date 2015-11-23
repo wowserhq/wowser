@@ -18,8 +18,7 @@ module.exports = {
       },
       {
         test: /\.styl$/,
-        loader: 'style-loader!css-loader!stylus-loader',
-        exclude: /node_modules/
+        loader: 'style-loader!css-loader!stylus-loader?resolve url',
       },
       {
         test: /\.jsx?$/,
