@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const nib = require('nib');
 
 module.exports = {
   context: __dirname + '/src',
