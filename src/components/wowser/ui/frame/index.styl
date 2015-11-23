@@ -1,3 +1,5 @@
+@import './dividers';
+
 wowser
 
   .frame, .panel
@@ -8,13 +10,17 @@ wowser
     &:before
       content: ' '
       display: block
-      absolute: top -3px bottom -3px left -3px right -3px
+      position: absolute
+      top: -3px
+      bottom: -3px
+      left: -3px
+      right: -3px
       z-index: -1
       background: rgba(0, 0, 0, .8)
 
   .frame
     border-width: 5px
-    border-image: url('/images/frames/thin.png') 5 5 5 5 repeat
+    border-image: url('./images/thin.png') 5 5 5 5 repeat
 
     .divider
 
@@ -24,7 +30,7 @@ wowser
 
     &.thick
       border-width: 11px
-      border-image: url('/images/frames/thick.png') 11 11 11 11 repeat
+      border-image: url('./images/thick.png') 11 11 11 11 repeat
 
       .divider
 
@@ -34,10 +40,12 @@ wowser
 
   .panel
     border-width: 23px
-    border-image: url('/images/frames/panel.png') 23 23 23 23 repeat
+    border-image: url('./images/panel.png') 23 23 23 23 repeat
 
     .icon.portrait
-      absolute: top -30px left -46px
+      position: absolute
+      top: -30px
+      left: -46px
 
       & + h1, & + h2, & + h3
         margin-left: 1.5em
@@ -50,7 +58,7 @@ wowser
 
     &.headless
       border-width: 11px 23px 23px 23px
-      border-image: url('/images/frames/panel-headless.png') 11 23 23 23 repeat
+      border-image: url('./images/panel-headless.png') 11 23 23 23 repeat
 
       .icon.portrait
         top: -20px
