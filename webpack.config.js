@@ -20,11 +20,7 @@ module.exports = {
       {
         test: /\.styl$/,
         loader: 'style-loader!css-loader!stylus-loader?resolve url',
-        exclude: /node_modules/,
-        stylus: {
-          use: [nib()],
-          import: '~nib'
-        }
+        exclude: /node_modules/
       },
       {
         test: /\.jsx?$/,
