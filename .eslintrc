@@ -1,3 +1,7 @@
 {
-  "extends": "timkurvers/react"
+  "extends": "timkurvers/react",
+  "rules": {
+    // See: https://github.com/yannickcr/eslint-plugin-react/issues/128
+    "react/sort-comp": [0]
+  }
 }
