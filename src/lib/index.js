@@ -1,3 +1,5 @@
+const EventEmitter = require('events');
+
 const AuthHandler = require('./auth/handler');
 const CharactersHandler = require('./characters/handler');
 const ChatHandler = require('./game/chat/handler');
@@ -7,11 +9,11 @@ const Player = require('./game/player');
 const RealmsHandler = require('./realms/handler');
 const WorldHandler = require('./game/world/handler');
 
-module.exports = class Client {
-
-  static dependencies = require('./dependencies');
+module.exports = class Client extends EventEmitter {
 
   constructor(config) {
+    super();
+
     this.config = config || new Config();
     this.auth = new AuthHandler(this);
     this.realms = new RealmsHandler(this);
