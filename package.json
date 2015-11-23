@@ -73,7 +73,7 @@
     "html-webpack-plugin": "^1.6.2",
     "istanbul": "^0.3.16",
     "mocha": "^1.21.5",
-    "nib": "^1.0.4",
+    "nib": "^1.1.0",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.6.0",
     "style-loader": "^0.13.0",

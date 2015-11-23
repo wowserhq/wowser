@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nib = require('nib');
 
 module.exports = {
   context: __dirname + '/src',
@@ -19,6 +20,11 @@ module.exports = {
       {
         test: /\.styl$/,
         loader: 'style-loader!css-loader!stylus-loader?resolve url',
+        exclude: /node_modules/,
+        stylus: {
+          use: [nib()],
+          import: '~nib'
+        }
       },
       {
         test: /\.jsx?$/,
