@@ -46,10 +46,9 @@ class AuthScreen extends React.Component {
   }
 
   _onChange(event) {
-    const target = event.target;
-    const state = {};
-    state[target.name] = target.value;
-    this.setState(state);
+    this.setState({
+      [event.target.name]: event.target.value
+    });
   }
 
   _onConnect() {
