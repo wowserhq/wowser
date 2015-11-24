@@ -15,11 +15,11 @@ module.exports = class Pipeline {
 
   constructor() {
     this.router = express();
-    this.router.param('resource', this.resource.bind(this));
-    this.router.get('/:resource(*.blp).png', this.blp.bind(this));
-    this.router.get('/:resource(*.dbc)/:id(*)?.json', this.dbc.bind(this));
-    this.router.get('/find/:query', this.find.bind(this));
-    this.router.get('/:resource', this.serve.bind(this));
+    this.router.param('resource', ::this.resource);
+    this.router.get('/:resource(*.blp).png', ::this.blp);
+    this.router.get('/:resource(*.dbc)/:id(*)?.json', ::this.dbc);
+    this.router.get('/find/:query', ::this.find);
+    this.router.get('/:resource', ::this.serve);
   }
 
   get archive() {

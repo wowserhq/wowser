@@ -25,7 +25,7 @@ module.exports = class Bundle {
   get bundler() {
     if (!this._bundler) {
       this._bundler = browserify(this.src, this.options);
-      this._bundler.on('dep', this.cache.bind(this));
+      this._bundler.on('dep', ::this.cache);
       this.hook && this.hook(this._bundler);
     }
     return this._bundler;

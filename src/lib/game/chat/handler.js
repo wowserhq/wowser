@@ -14,7 +14,7 @@ module.exports = class ChatHandler extends EventEmitter {
     this.messages = [];
 
     // Listen for messages
-    this.session.game.on('packet:receive:SMSG_MESSAGE_CHAT', this.handleMessage.bind(this));
+    this.session.game.on('packet:receive:SMSG_MESSAGE_CHAT', ::this.handleMessage);
   }
 
   // Creates chat message

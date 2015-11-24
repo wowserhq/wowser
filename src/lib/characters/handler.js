@@ -16,7 +16,7 @@ module.exports = class CharacterHandler extends EventEmitter {
     this.list = [];
 
     // Listen for character list
-    this.session.game.on('packet:receive:SMSG_CHAR_ENUM', this.handleCharacterList.bind(this));
+    this.session.game.on('packet:receive:SMSG_CHAR_ENUM', ::this.handleCharacterList);
   }
 
   // Requests a fresh list of characters
