@@ -83,8 +83,8 @@ Getting this toolchain up and running, is easy and straight-forward:
    different set of ports if your server is on the same machine as your client.
 
    ```shell
-   node_modules/.bin/websockify 3724 host:3724
-   node_modules/.bin/websockify 8129 host:8129
+   npm run proxy 3724 host:3724
+   npm run proxy 8129 host:8129
    ```
 
 7. Use `npm run serve` to start Wowser.

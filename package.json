@@ -13,6 +13,7 @@
   "scripts": {
     "gulp": "gulp",
     "lint": "eslint src *.js; exit 0",
+    "proxy": "websockify",
     "start": "node bin/serve",
     "serve": "node bin/serve",
     "serve-dev": "nodemon bin/serve -w lib/server",
