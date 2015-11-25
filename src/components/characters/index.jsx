@@ -15,10 +15,10 @@ class CharactersScreen extends React.Component {
       characters: []
     };
 
-    this._onCharacterSelect = this._onCharacterSelect.bind(this);
-    this._onJoin = this._onJoin.bind(this);
-    this._onRefresh = this._onRefresh.bind(this);
-    this._onSubmit = this._onSubmit.bind(this);
+    this._onCharacterSelect = ::this._onCharacterSelect;
+    this._onJoin = ::this._onJoin;
+    this._onRefresh = ::this._onRefresh;
+    this._onSubmit = ::this._onSubmit;
 
     session.characters.on('refresh', this._onRefresh);
     session.game.on('join', this._onJoin);

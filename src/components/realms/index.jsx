@@ -15,10 +15,10 @@ class RealmsScreen extends React.Component {
       realms: []
     };
 
-    this._onAuthenticate = this._onAuthenticate.bind(this);
-    this._onRealmSelect = this._onRealmSelect.bind(this);
-    this._onRefresh = this._onRefresh.bind(this);
-    this._onSubmit = this._onSubmit.bind(this);
+    this._onAuthenticate = ::this._onAuthenticate;
+    this._onRealmSelect = ::this._onRealmSelect;
+    this._onRefresh = ::this._onRefresh;
+    this._onSubmit = ::this._onSubmit;
 
     session.realms.on('refresh', this._onRefresh);
     session.game.on('authenticate', this._onAuthenticate);

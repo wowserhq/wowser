@@ -26,7 +26,8 @@ class Wowser extends React.Component {
       screen: session.screen
     };
 
-    this._onScreenChange = this._onScreenChange.bind(this);
+    this._onScreenChange = ::this._onScreenChange;
+    this._onScreenSelect = ::this._onScreenSelect;
 
     session.on('screen:change', this._onScreenChange);
   }
@@ -58,7 +59,7 @@ class Wowser extends React.Component {
 
         <select className="screen-selector"
                 value={ this.state.screen }
-                onChange={ this._onScreenSelect.bind(this) }>
+                onChange={ this._onScreenSelect }>
           { screens.map((screen) => {
             return (
               <option key={ screen.id } value={ screen.id }>

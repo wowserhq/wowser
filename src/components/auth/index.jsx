@@ -17,10 +17,10 @@ class AuthScreen extends React.Component {
       password: ''
     };
 
-    this._onAuthenticate = this._onAuthenticate.bind(this);
-    this._onChange = this._onChange.bind(this);
-    this._onSubmit = this._onSubmit.bind(this);
-    this._onConnect = this._onConnect.bind(this);
+    this._onAuthenticate = ::this._onAuthenticate;
+    this._onChange = ::this._onChange;
+    this._onSubmit = ::this._onSubmit;
+    this._onConnect = ::this._onConnect;
 
     session.auth.on('connect', this._onConnect);
     session.auth.on('reject', session.auth.disconnect);
