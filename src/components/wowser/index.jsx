@@ -1,13 +1,13 @@
 const React = require('react');
 
+require('./index.styl');
+
 const AuthScreen = require('../auth');
 const CharactersScreen = require('../characters');
 const GameScreen = require('../game');
 const RealmsScreen = require('../realms');
 const Kit = require('../kit');
 const session = require('./session');
-
-require('./index.styl');
 
 class Wowser extends React.Component {
 
