@@ -3,23 +3,31 @@ wowser .portrait
   position: relative
   width: 178px
   height: 60px
-  background: url('/images/portrait.png') no-repeat
+  background: url('./images/portrait.png') no-repeat
 
   .icon
-    absolute: top -4px left -4px
+    position: absolute
+    top: -4px
+    left: -4px
     z-index: 1
 
   .name
-    absolute: top 4px left 64px
+    position: absolute
+    top: 4px
+    left: 64px
     color: #FFCC00
     font-size: 15px
 
   .level
-    absolute: top 6px right 12px
+    position: absolute
+    top: 6px
+    right: 12px
     font-size: 11px
 
   .divider
-    absolute: top 20px right 3px
+    position: absolute
+    top: 20px
+    right: 3px
     width: 113px
 
   .health, .mana
@@ -31,22 +39,30 @@ wowser .portrait
     text-align: center
 
   .health
-    absolute: bottom 23px right 6px
+    position: absolute
+    bottom: 23px
+    right: 6px
     background-image: linear-gradient(180deg, #330000 0%, #990000 100%)
     box-shadow: -1px -1px 0px #660000, 1px 1px 0px #E50202
 
   .mana
-    absolute: bottom 7px right 20px
+    position: absolute
+    bottom: 7px
+    right: 20px
     background-image: linear-gradient(180deg, #021D39 0%, #0B4C93 100%)
     box-shadow: -1px -1px 0px #063467, 1px 1px 0px #146CD0
 
-  &[self]
-    absolute: top 12px left 12px
+  &.self
+    position: absolute
+    top: 12px
+    left: 12px
 
-  &[target]
-    absolute: top 12px left 210px
+  &.target
+    position: absolute
+    top: 12px
+    left: 210px
 
 wowser .icon.portrait
   width: 66px
   height: 66px
-  background: url('/images/icon-portrait.png') no-repeat
+  background: url('./images/icon-portrait.png') no-repeat

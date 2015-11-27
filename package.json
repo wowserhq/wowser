@@ -36,6 +36,7 @@
     "blizzardry": "^0.2.7",
     "bluebird": "^2.10.0",
     "byte-buffer": "^1.0.3",
+    "classnames": "^2.2.0",
     "configstore": "^1.2.0",
     "deep-equal": "^0.2.1",
     "express": "^4.9.3",
