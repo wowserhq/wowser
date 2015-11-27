@@ -1,7 +1,9 @@
 module.exports = class ChatMessage {
 
   // Creates a new message
-  constructor() {
+  constructor(kind, text) {
+    this.kind = kind;
+    this.text = text;
     this.timestamp = new Date();
   }
 
