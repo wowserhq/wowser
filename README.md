@@ -47,16 +47,12 @@ In addition, there's good progress on getting terrain and models rendered.
 Wowser is presumed to be working on any browser supporting [JavaScript's typed
 arrays] and at the very least a binary version of the WebSocket protocol.
 
-## Development & Contribution
+## Development
 
-Wowser is written in [ES2015], compiled by [Babel], developed with [Gulp] and
-tested through [Mocha].
+Wowser is written in [ES2015], developed with [webpack] and [Gulp], compiled by
+[Babel] and [soon™] to be tested through [Mocha].
 
-Getting this toolchain up and running, is easy and straight-forward:
-
-1. Get the code:
-
-   ```shell
+1. ```shell
    git clone git://github.com/timkurvers/wowser.git
    ```
 
@@ -71,33 +67,52 @@ Getting this toolchain up and running, is easy and straight-forward:
 4. Install [StormLib] and [BLPConverter], which are used to handle Blizzard's
    game files.
 
-5. Run `npm run gulp` which will automatically build the project when source
-   files change.
+### Client
 
-6. To utilize raw TCP connections a WebSocket proxy is required for JavaScript
-   clients.
+[Webpack]'s development server monitors source files and builds:
 
-   [Websockify] can - among other things - act as a proxy for raw TCP sockets.
+```shell
+npm run web-dev
+```
 
-   For now, you will want to proxy both port 3724 (auth) and 8129 (world). Use a
-   different set of ports if your server is on the same machine as your client.
+Wowser will be served on `http://localhost:8080`.
 
-   ```shell
-   npm run proxy 3724 host:3724
-   npm run proxy 8129 host:8129
-   ```
+### Pipeline server
 
-7. Use `npm run serve` to start Wowser.
+To deliver game resources to its client, Wowser ships with a pipeline:
 
-   - On first run you will be prompted to specify the following:
-     1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
-     2. Server port (default is `3000`)
+```shell
+npm run serve
+```
 
-   - You can clear these settings by running `npm run reset`
+On first run you will be prompted to specify the following:
 
-   **Disclaimer:** Wowser serves up resources to the browser over HTTP. Depending
-   on your network configuration these may be available to others. Respect laws
-   and do not distribute game data you do not own.
+1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
+
+2. Server port (default is `3000`)
+
+Clear these settings by running `npm run reset`
+
+**Disclaimer:** Wowser serves up resources to the browser over HTTP. Depending
+on your network configuration these may be available to others. Respect laws and
+do not distribute game data you do not own.
+
+### Socket proxies
+
+To utilize raw TCP connections a WebSocket proxy is required for JavaScript
+clients.
+
+[Websockify] can - among other things - act as a proxy for raw TCP sockets.
+
+For now, you will want to proxy both port 3724 (auth) and 8129 (world). Use a
+different set of ports if the game server is on the same machine as your client.
+
+```shell
+npm run proxy 3724 host:3724
+npm run proxy 8129 host:8129
+```
+
+## Contribution
 
 When contributing, please:
 
@@ -113,3 +128,5 @@ When contributing, please:
 [Node.js]: http://nodejs.org/#download
 [StormLib]: https://github.com/timkurvers/blizzardry#mpq
 [Websockify]: https://github.com/kanaka/websockify/
+[soon™]: http://www.wowwiki.com/Soon
+[webpack]: http://webpack.github.io/
