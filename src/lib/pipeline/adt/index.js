@@ -100,7 +100,8 @@ module.exports = class ADT extends THREE.Mesh {
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
-        const worker = new Worker('/scripts/workers/pipeline.js');
+        const Worker = require('worker!../worker');
+        const worker = new Worker();
 
         worker.addEventListener('message', (event) => {
           const data = event.data;

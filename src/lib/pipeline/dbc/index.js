@@ -22,7 +22,8 @@ module.exports = class DBC {
   static load(name, id) {
     if (!(name in this.cache)) {
       this.cache[name] = new Promise((resolve, reject) => {
-        const worker = new Worker('/scripts/workers/pipeline.js');
+        const Worker = require('worker!../worker.js');
+        const worker = new Worker();
 
         worker.addEventListener('message', (event) => {
           const data = event.data;
