@@ -5,7 +5,7 @@ module.exports = {
   entry: './bootstrapper',
   output: {
     path: __dirname + '/public',
-    filename: 'bundle.js'
+    filename: 'wowser-[hash].js'
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
