@@ -52,7 +52,9 @@ arrays] and at the very least a binary version of the WebSocket protocol.
 Wowser is written in [ES2015], developed with [webpack] and [Gulp], compiled by
 [Babel] and [soon™] to be tested through [Mocha].
 
-1. ```shell
+1. Clone the repository:
+
+   ```shell
    git clone git://github.com/timkurvers/wowser.git
    ```
 
