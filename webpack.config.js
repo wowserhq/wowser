@@ -41,6 +41,12 @@ module.exports = {
     })
   ],
   devServer: {
-    contentBase: __dirname + '/public'
+    contentBase: __dirname + '/public',
+    proxy: {
+      '/pipeline/*': {
+        target: 'http://localhost:3000',
+        secure: false
+      }
+    }
   }
 };
