@@ -3,6 +3,7 @@ const THREE = require('three');
 
 require('./index.styl');
 
+const Controls = require('./controls');
 const HUD = require('./hud');
 const session = require('../wowser/session');
 
@@ -45,6 +46,7 @@ class GameScreen extends React.Component {
   }
 
   animate() {
+    this.refs.controls.update();
     this.renderer.render(session.world.scene, this.camera);
     requestAnimationFrame(this.animate);
   }
@@ -54,6 +56,7 @@ class GameScreen extends React.Component {
       <game className="game screen">
         <canvas ref="canvas"></canvas>
         <HUD />
+        <Controls ref="controls" for={ session.player } camera={ this.camera }/>
       </game>
     );
   }
