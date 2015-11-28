@@ -10,15 +10,7 @@ const plumber  = require('gulp-plumber');
 const config = {
   db: new Config(pkg.name),
   scripts: 'src/**/*.js',
-  specs: 'spec/**/*.js',
-  public: './public',
-  ui: {
-    styles: [
-      'src/ui/styles/ui/**/*.styl',
-      'src/ui/styles/**/*.styl'
-    ],
-    templates: 'src/ui/templates/**/*.html'
-  }
+  specs: 'spec/**/*.js'
 };
 
 gulp.task('reset', function() {
@@ -29,8 +21,6 @@ gulp.task('reset', function() {
 gulp.task('clean', function(cb) {
   del([
     'lib/*',
-    'public/scripts/*',
-    'public/styles/*',
     'spec/*'
   ], cb);
 });
