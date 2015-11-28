@@ -20,7 +20,8 @@
     "pretest": "gulp rebuild",
     "reset": "gulp reset",
     "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive",
-    "webpack": "webpack-dev-server"
+    "web-dev": "webpack-dev-server",
+    "web-release": "webpack --optimize --progress"
   },
   "repository": "timkurvers/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
