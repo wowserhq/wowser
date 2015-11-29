@@ -1,5 +1,6 @@
-const Material = require('../material');
-const THREE = require('three');
+import THREE from 'three';
+
+import Material from '../material';
 
 module.exports = class Submesh extends THREE.Mesh {
 

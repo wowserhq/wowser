@@ -1,6 +1,7 @@
-const EventEmitter = require('events');
-const Map = require('./map');
-const THREE = require('three');
+import EventEmitter from 'events';
+import THREE from 'three';
+
+import Map from './map';
 
 module.exports = class WorldHandler extends EventEmitter {
 

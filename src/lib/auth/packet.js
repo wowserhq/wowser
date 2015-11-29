@@ -1,6 +1,6 @@
-const AuthOpcode = require('./opcode');
-const BasePacket = require('../net/packet');
-const ObjectUtil = require('../utils/object-util');
+import AuthOpcode from './opcode';
+import BasePacket from '../net/packet';
+import ObjectUtil from '../utils/object-util';
 
 module.exports = class AuthPacket extends BasePacket {
 

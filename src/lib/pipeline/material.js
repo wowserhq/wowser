@@ -1,4 +1,4 @@
-const THREE = require('three');
+import THREE from 'three';
 
 module.exports = class Material extends THREE.MeshBasicMaterial {
 

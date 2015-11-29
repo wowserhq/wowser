@@ -1,6 +1,6 @@
-const React = require('react');
-const THREE = require('three');
-const key = require('keymaster');
+import React from 'react';
+import THREE from 'three';
+import key from 'keymaster';
 
 class Controls extends React.Component {
 

@@ -1,6 +1,6 @@
-const chai   = require('chai');
-const sinon  = require('sinon');
-const bridge = require('sinon-chai');
+import bridge from 'sinon-chai';
+import chai from 'chai';
+import sinon from 'sinon';
 
 chai.use(bridge);
 

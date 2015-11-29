@@ -1,4 +1,6 @@
-const THREE = require('three');
+import THREE from 'three';
+
+import Worker from 'worker!../../worker';
 
 module.exports = class WMOGroup extends THREE.Mesh {
 
@@ -67,7 +69,6 @@ module.exports = class WMOGroup extends THREE.Mesh {
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
-        const Worker = require('worker!../../worker');
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

@@ -1,4 +1,4 @@
-const ByteBuffer = require('byte-buffer');
+import ByteBuffer from 'byte-buffer';
 
 // Feedable hash implementation
 module.exports = class Hash {

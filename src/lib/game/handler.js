@@ -1,11 +1,12 @@
-const BigNum = require('../crypto/big-num');
-const ByteBuffer = require('byte-buffer');
-const Crypt = require('../crypto/crypt');
-const GameOpcode = require('./opcode');
-const GamePacket = require('./packet');
-const GUID = require('../game/guid');
-const SHA1 = require('../crypto/hash/sha1');
-const Socket = require('../net/socket');
+import ByteBuffer from 'byte-buffer';
+
+import BigNum from '../crypto/big-num';
+import Crypt from '../crypto/crypt';
+import GameOpcode from './opcode';
+import GamePacket from './packet';
+import GUID from '../game/guid';
+import SHA1 from '../crypto/hash/sha1';
+import Socket from '../net/socket';
 
 module.exports = class GameHandler extends Socket {
 

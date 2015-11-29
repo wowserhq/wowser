@@ -1,11 +1,11 @@
-const React = require('react');
+import React from 'react';
 
-require('./index.styl');
+import './index.styl';
 
-const Chat = require('../chat');
-const Portrait = require('../portrait');
-const Quests = require('../quests');
-const session = require('../../wowser/session');
+import Chat from '../chat';
+import Portrait from '../portrait';
+import Quests from '../quests';
+import session from '../../wowser/session';
 
 class HUD extends React.Component {
 

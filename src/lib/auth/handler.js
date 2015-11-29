@@ -1,8 +1,8 @@
-const AuthChallengeOpcode = require('./challenge-opcode');
-const AuthOpcode = require('./opcode');
-const AuthPacket = require('./packet');
-const Socket = require('../net/socket');
-const SRP = require('../crypto/srp');
+import AuthChallengeOpcode from './challenge-opcode';
+import AuthOpcode from './opcode';
+import AuthPacket from './packet';
+import Socket from '../net/socket';
+import SRP from '../crypto/srp';
 
 module.exports = class AuthHandler extends Socket {
 

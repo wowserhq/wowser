@@ -1,4 +1,4 @@
-const {} = require('./spec-helper');
+import {} from './spec-helper';
 
 describe('Wowser', function() {
 

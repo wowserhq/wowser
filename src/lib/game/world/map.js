@@ -1,9 +1,10 @@
-const ADT = require('../../pipeline/adt');
-const DBC = require('../../pipeline/dbc');
-const M2 = require('../../pipeline/m2');
-const THREE = require('three');
-const WDT = require('../../pipeline/wdt');
-const WMO = require('../../pipeline/wmo');
+import THREE from 'three';
+
+import ADT from '../../pipeline/adt';
+import DBC from '../../pipeline/dbc';
+import M2 from '../../pipeline/m2';
+import WDT from '../../pipeline/wdt';
+import WMO from '../../pipeline/wmo';
 
 module.exports = class Map extends THREE.Group {
 

@@ -1,7 +1,8 @@
-const DBC = require('../pipeline/dbc');
-const Entity = require('./entity');
-const M2 = require('../pipeline/m2');
-const THREE = require('three');
+import THREE from 'three';
+
+import DBC from '../pipeline/dbc';
+import Entity from './entity';
+import M2 from '../pipeline/m2';
 
 module.exports = class Unit extends Entity {
 

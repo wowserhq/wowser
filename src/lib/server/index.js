@@ -1,7 +1,8 @@
-const express = require('express');
-const logger = require('morgan');
-const Pipeline = require('./pipeline');
-const ServerConfig = require('./utils/server-config');
+import express from 'express';
+import logger from 'morgan';
+
+import Pipeline from './pipeline';
+import ServerConfig from './utils/server-config';
 
 module.exports = class Server {
 

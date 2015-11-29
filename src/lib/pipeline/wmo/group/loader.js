@@ -1,6 +1,7 @@
-const { DecodeStream } = require('blizzardry/lib/restructure');
-const Loader = require('../../../net/loader');
-const WMOGroup = require('blizzardry/lib/wmo/group');
+import { DecodeStream } from 'blizzardry/lib/restructure';
+import WMOGroup from 'blizzardry/lib/wmo/group';
+
+import Loader from '../../../net/loader';
 
 const loader = new Loader();
 

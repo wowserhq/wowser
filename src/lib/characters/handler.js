@@ -1,7 +1,8 @@
-const Character = require('./character');
-const EventEmitter = require('events');
-const GamePacket = require('../game/packet');
-const GameOpcode = require('../game/opcode');
+import EventEmitter from 'events';
+
+import Character from './character';
+import GamePacket from '../game/packet';
+import GameOpcode from '../game/opcode';
 
 module.exports = class CharacterHandler extends EventEmitter {
 

@@ -1,12 +1,19 @@
+import ADT from './adt/loader';
+import DBC from './dbc/loader';
+import M2 from './m2/loader';
+import WDT from './wdt/loader';
+import WMO from './wmo/loader';
+import WMOGroup from './wmo/group/loader';
+
 const worker = self;
 
 const loaders = {
-  ADT: require('./adt/loader'),
-  DBC: require('./dbc/loader'),
-  M2: require('./m2/loader'),
-  WDT: require('./wdt/loader'),
-  WMO: require('./wmo/loader'),
-  WMOGroup: require('./wmo/group/loader')
+  ADT,
+  DBC,
+  M2,
+  WDT,
+  WMO,
+  WMOGroup
 };
 
 worker.addEventListener('message', (event) => {

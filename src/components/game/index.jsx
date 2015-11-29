@@ -1,11 +1,11 @@
-const React = require('react');
-const THREE = require('three');
+import React from 'react';
+import THREE from 'three';
 
-require('./index.styl');
+import './index.styl';
 
-const Controls = require('./controls');
-const HUD = require('./hud');
-const session = require('../wowser/session');
+import Controls from './controls';
+import HUD from './hud';
+import session from '../wowser/session';
 
 class GameScreen extends React.Component {
 

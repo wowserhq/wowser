@@ -1,11 +1,11 @@
-const babel    = require('gulp-babel');
-const cache    = require('gulp-cached');
-const Config   = require('configstore');
-const del      = require('del');
-const gulp     = require('gulp');
-const mocha    = require('gulp-mocha');
-const pkg      = require('./package.json');
-const plumber  = require('gulp-plumber');
+import Config from 'configstore';
+import babel from 'gulp-babel';
+import cache from 'gulp-cached';
+import del from 'del';
+import gulp from 'gulp';
+import mocha from 'gulp-mocha';
+import pkg from './package.json';
+import plumber from 'gulp-plumber';
 
 const config = {
   db: new Config(pkg.name),

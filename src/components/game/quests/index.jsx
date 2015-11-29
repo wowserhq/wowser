@@ -1,6 +1,6 @@
-const React = require('react');
+import React from 'react';
 
-require('./index.styl');
+import './index.styl';
 
 class QuestsPanel extends React.Component {
 

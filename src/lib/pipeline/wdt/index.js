@@ -1,4 +1,6 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
+
+import Worker from 'worker!../worker';
 
 module.exports = class WDT {
 
@@ -11,7 +13,6 @@ module.exports = class WDT {
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
-        const Worker = require('worker!../worker');
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

@@ -1,6 +1,6 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-const Wowser = require('./components/wowser');
+import Wowser from './components/wowser';
 
 ReactDOM.render(<Wowser />, document.querySelector('app'));

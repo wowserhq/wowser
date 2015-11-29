@@ -1,13 +1,13 @@
-const React = require('react');
+import React from 'react';
 
-require('./index.styl');
+import './index.styl';
 
-const AuthScreen = require('../auth');
-const CharactersScreen = require('../characters');
-const GameScreen = require('../game');
-const RealmsScreen = require('../realms');
-const Kit = require('../kit');
-const session = require('./session');
+import AuthScreen from '../auth';
+import CharactersScreen from '../characters';
+import GameScreen from '../game';
+import RealmsScreen from '../realms';
+import Kit from '../kit';
+import session from './session';
 
 class Wowser extends React.Component {
 

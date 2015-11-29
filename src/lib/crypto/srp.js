@@ -1,6 +1,7 @@
-const equal = require('deep-equal');
-const BigNum = require('./big-num');
-const SHA1 = require('./hash/sha1');
+import equal from 'deep-equal';
+
+import BigNum from './big-num';
+import SHA1 from './hash/sha1';
 
 // Secure Remote Password
 // http://tools.ietf.org/html/rfc2945

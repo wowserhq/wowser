@@ -1,7 +1,8 @@
-const AuthOpcode = require('../auth/opcode');
-const AuthPacket = require('../auth/packet');
-const EventEmitter = require('events');
-const Realm = require('./realm');
+import EventEmitter from 'events';
+
+import AuthOpcode from '../auth/opcode';
+import AuthPacket from '../auth/packet';
+import Realm from './realm';
 
 module.exports = class RealmsHandler extends EventEmitter {
 

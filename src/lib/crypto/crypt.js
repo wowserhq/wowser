@@ -1,6 +1,7 @@
-const ArrayUtil = require('../utils/array-util');
-const { HMAC } = require('jsbn/lib/sha1');
-const RC4 = require('jsbn/lib/rc4');
+import { HMAC } from 'jsbn/lib/sha1';
+import RC4 from 'jsbn/lib/rc4';
+
+import ArrayUtil from '../utils/array-util';
 
 module.exports = class Crypt {
 

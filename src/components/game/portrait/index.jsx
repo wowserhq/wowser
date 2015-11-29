@@ -1,7 +1,7 @@
-const React = require('react');
-const classes = require('classnames');
+import React from 'react';
+import classes from 'classnames';
 
-require('./index.styl');
+import './index.styl';
 
 class Portrait extends React.Component {
 

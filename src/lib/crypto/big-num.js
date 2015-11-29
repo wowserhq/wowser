@@ -1,4 +1,4 @@
-const BigInteger = require('jsbn/lib/big-integer');
+import BigInteger from 'jsbn/lib/big-integer';
 
 // C-like BigNum decorator for JSBN's BigInteger
 module.exports = class BigNum {

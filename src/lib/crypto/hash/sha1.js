@@ -1,5 +1,6 @@
-const Hash = require('../hash');
-const SHA1Base = require('jsbn/lib/sha1');
+import SHA1Base from 'jsbn/lib/sha1';
+
+import Hash from '../hash';
 
 // SHA-1 implementation
 module.exports = class SHA1 extends Hash {

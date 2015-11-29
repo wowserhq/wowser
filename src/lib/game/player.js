@@ -1,4 +1,4 @@
-const Unit = require('./unit');
+import Unit from './unit';
 
 module.exports = class Player extends Unit {
 

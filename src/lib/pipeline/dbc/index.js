@@ -1,4 +1,6 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
+
+import Worker from 'worker!../worker.js';
 
 module.exports = class DBC {
 
@@ -22,7 +24,6 @@ module.exports = class DBC {
   static load(name, id) {
     if (!(name in this.cache)) {
       this.cache[name] = new Promise((resolve, reject) => {
-        const Worker = require('worker!../worker.js');
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

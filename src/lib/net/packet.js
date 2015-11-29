@@ -1,4 +1,4 @@
-const ByteBuffer = require('byte-buffer');
+import ByteBuffer from 'byte-buffer';
 
 module.exports = class Packet extends ByteBuffer {
 

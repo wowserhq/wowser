@@ -1,4 +1,4 @@
-const Client = require('../../lib');
+import Client from '../../lib';
 
 class Session extends Client {
 

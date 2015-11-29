@@ -1,4 +1,4 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
 module.exports = class Entity extends EventEmitter {
 

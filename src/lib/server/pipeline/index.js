@@ -1,11 +1,12 @@
-const express = require('express');
-const find = require('array-find');
-const Archive = require('./archive');
-const ServerConfig = require('../utils/server-config');
-const BLP = require('blizzardry/lib/blp');
-const { DecodeStream } = require('blizzardry/lib/restructure');
-const DBC = require('blizzardry/lib/dbc/entities');
-const { PNG } = require('pngjs');
+import BLP from 'blizzardry/lib/blp';
+import DBC from 'blizzardry/lib/dbc/entities';
+import { DecodeStream } from 'blizzardry/lib/restructure';
+import { PNG } from 'pngjs';
+import express from 'express';
+import find from 'array-find';
+
+import Archive from './archive';
+import ServerConfig from '../utils/server-config';
 
 module.exports = class Pipeline {
 

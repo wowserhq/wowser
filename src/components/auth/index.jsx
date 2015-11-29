@@ -1,6 +1,6 @@
-const React = require('react');
+import React from 'react';
 
-const session = require('../wowser/session');
+import session from '../wowser/session';
 
 class AuthScreen extends React.Component {
 

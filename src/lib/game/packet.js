@@ -1,7 +1,7 @@
-const BasePacket = require('../net/packet');
-const GameOpcode = require('./opcode');
-const GUID = require('./guid');
-const ObjectUtil = require('../utils/object-util');
+import BasePacket from '../net/packet';
+import GameOpcode from './opcode';
+import GUID from './guid';
+import ObjectUtil from '../utils/object-util';
 
 module.exports = class GamePacket extends BasePacket {
 

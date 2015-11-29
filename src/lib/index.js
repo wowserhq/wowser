@@ -1,13 +1,13 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
-const AuthHandler = require('./auth/handler');
-const CharactersHandler = require('./characters/handler');
-const ChatHandler = require('./game/chat/handler');
-const Config = require('./config');
-const GameHandler = require('./game/handler');
-const Player = require('./game/player');
-const RealmsHandler = require('./realms/handler');
-const WorldHandler = require('./game/world/handler');
+import AuthHandler from './auth/handler';
+import CharactersHandler from './characters/handler';
+import ChatHandler from './game/chat/handler';
+import Config from './config';
+import GameHandler from './game/handler';
+import Player from './game/player';
+import RealmsHandler from './realms/handler';
+import WorldHandler from './game/world/handler';
 
 module.exports = class Client extends EventEmitter {
 

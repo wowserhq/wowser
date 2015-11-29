@@ -1,6 +1,8 @@
-const Promise = require('bluebird');
-const Submesh = require('./submesh');
-const THREE = require('three');
+import Promise from 'bluebird';
+import THREE from 'three';
+
+import Submesh from './submesh';
+import Worker from 'worker!../worker.js';
 
 module.exports = class M2 extends THREE.Group {
 
@@ -83,7 +85,6 @@ module.exports = class M2 extends THREE.Group {
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, reject) => {
-        const Worker = require('worker!../worker.js');
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

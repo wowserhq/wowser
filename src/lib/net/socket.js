@@ -1,5 +1,5 @@
-const ByteBuffer = require('byte-buffer');
-const EventEmitter = require('events');
+import ByteBuffer from 'byte-buffer';
+import EventEmitter from 'events';
 
 // Base-class for any socket including signals and host/port management
 module.exports = class Socket extends EventEmitter {

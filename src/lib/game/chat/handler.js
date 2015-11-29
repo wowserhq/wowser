@@ -1,5 +1,6 @@
-const EventEmitter = require('events');
-const Message = require('./message');
+import EventEmitter from 'events';
+
+import Message from './message';
 
 module.exports = class ChatHandler extends EventEmitter {
 

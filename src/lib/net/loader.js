@@ -1,4 +1,4 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
 
 module.exports = class Loader {
 
