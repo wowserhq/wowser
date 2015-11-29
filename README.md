@@ -81,7 +81,15 @@ Wowser will be served on `http://localhost:8080`.
 
 ### Pipeline server
 
-To deliver game resources to its client, Wowser ships with a pipeline:
+To deliver game resources to its client, Wowser ships with a pipeline.
+
+Build the pipeline:
+
+```shell
+npm run gulp
+```
+
+After building, serve the pipeline as follows:
 
 ```shell
 npm run serve
