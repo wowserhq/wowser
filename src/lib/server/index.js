@@ -16,7 +16,7 @@ module.exports = class Server {
     this.app.use('/pipeline', new Pipeline().router);
   }
 
-  init() {
+  start() {
     if (this.isFirstRun) {
       ServerConfig
         .prompt()

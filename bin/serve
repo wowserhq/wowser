@@ -2,4 +2,4 @@
 
 const Server = require('../lib/server');
 
-(new Server(__dirname + '/..')).init();
+(new Server(__dirname + '/..')).start();
