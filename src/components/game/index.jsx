@@ -63,4 +63,4 @@ class GameScreen extends React.Component {
 
 }
 
-module.exports = GameScreen;
+export default GameScreen;

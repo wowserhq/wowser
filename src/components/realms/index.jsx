@@ -94,4 +94,4 @@ class RealmsScreen extends React.Component {
 
 }
 
-module.exports = RealmsScreen;
+export default RealmsScreen;

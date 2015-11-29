@@ -1,6 +1,6 @@
 import Unit from './unit';
 
-module.exports = class Player extends Unit {
+class Player extends Unit {
 
   constructor() {
     super();
@@ -15,4 +15,6 @@ module.exports = class Player extends Unit {
     this.displayID = 24978;
   }
 
-};
+}
+
+export default Player;

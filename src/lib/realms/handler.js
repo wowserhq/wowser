@@ -4,7 +4,7 @@ import AuthOpcode from '../auth/opcode';
 import AuthPacket from '../auth/packet';
 import Realm from './realm';
 
-module.exports = class RealmsHandler extends EventEmitter {
+class RealmsHandler extends EventEmitter {
 
   // Creates a new realm handler
   constructor(session) {
@@ -57,4 +57,6 @@ module.exports = class RealmsHandler extends EventEmitter {
     this.emit('refresh');
   }
 
-};
+}
+
+export default RealmsHandler;

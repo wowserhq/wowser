@@ -9,7 +9,7 @@ import Player from './game/player';
 import RealmsHandler from './realms/handler';
 import WorldHandler from './game/world/handler';
 
-module.exports = class Client extends EventEmitter {
+class Client extends EventEmitter {
 
   constructor(config) {
     super();
@@ -24,4 +24,6 @@ module.exports = class Client extends EventEmitter {
     this.world = new WorldHandler(this);
   }
 
-};
+}
+
+export default Client;

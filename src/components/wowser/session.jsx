@@ -21,4 +21,4 @@ class Session extends Client {
 
 }
 
-module.exports = new Session();
+export default new Session();

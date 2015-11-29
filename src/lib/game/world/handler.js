@@ -3,7 +3,7 @@ import THREE from 'three';
 
 import Map from './map';
 
-module.exports = class WorldHandler extends EventEmitter {
+class WorldHandler extends EventEmitter {
 
   constructor(session) {
     super();
@@ -141,4 +141,6 @@ module.exports = class WorldHandler extends EventEmitter {
   //   this.scene.add(adt);
   // });
 
-};
+}
+
+export default WorldHandler;

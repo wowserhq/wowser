@@ -98,4 +98,4 @@ class CharactersScreen extends React.Component {
 
 }
 
-module.exports = CharactersScreen;
+export default CharactersScreen;

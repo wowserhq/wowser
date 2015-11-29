@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import Material from '../material';
 
-module.exports = class Submesh extends THREE.Mesh {
+class Submesh extends THREE.Mesh {
 
   constructor(id, geometry, textureUnits) {
     super(geometry);
@@ -64,4 +64,6 @@ module.exports = class Submesh extends THREE.Mesh {
     this.reapplyTextureUnit();
   }
 
-};
+}
+
+export default Submesh;

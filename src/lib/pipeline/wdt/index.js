@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 
 import Worker from 'worker!../worker';
 
-module.exports = class WDT {
+class WDT {
 
   static cache = {};
 
@@ -27,4 +27,6 @@ module.exports = class WDT {
     return this.cache[path];
   }
 
-};
+}
+
+export default WDT;

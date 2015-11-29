@@ -2,7 +2,7 @@ import ByteBuffer from 'byte-buffer';
 import EventEmitter from 'events';
 
 // Base-class for any socket including signals and host/port management
-module.exports = class Socket extends EventEmitter {
+class Socket extends EventEmitter {
 
   // Maximum buffer capacity
   // TODO: Arbitrarily chosen, determine this cap properly
@@ -109,4 +109,6 @@ module.exports = class Socket extends EventEmitter {
     return false;
   }
 
-};
+}
+
+export default Socket;

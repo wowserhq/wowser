@@ -8,7 +8,7 @@ import find from 'array-find';
 import Archive from './archive';
 import ServerConfig from '../utils/server-config';
 
-module.exports = class Pipeline {
+class Pipeline {
 
   static get DATA_DIR() {
     return ServerConfig.db.get('clientData');
@@ -84,4 +84,6 @@ module.exports = class Pipeline {
     res.send(req.resource.data);
   }
 
-};
+}
+
+export default Pipeline;

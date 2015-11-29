@@ -4,7 +4,7 @@ import Character from './character';
 import GamePacket from '../game/packet';
 import GameOpcode from '../game/opcode';
 
-module.exports = class CharacterHandler extends EventEmitter {
+class CharacterHandler extends EventEmitter {
 
   // Creates a new character handler
   constructor(session) {
@@ -82,4 +82,6 @@ module.exports = class CharacterHandler extends EventEmitter {
     this.emit('refresh');
   }
 
-};
+}
+
+export default CharacterHandler;

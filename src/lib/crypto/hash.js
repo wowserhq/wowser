@@ -1,7 +1,7 @@
 import ByteBuffer from 'byte-buffer';
 
 // Feedable hash implementation
-module.exports = class Hash {
+class Hash {
 
   // Creates a new hash
   constructor() {
@@ -50,4 +50,6 @@ module.exports = class Hash {
     return this;
   }
 
-};
+}
+
+export default Hash;

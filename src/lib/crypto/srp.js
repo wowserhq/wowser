@@ -5,7 +5,7 @@ import SHA1 from './hash/sha1';
 
 // Secure Remote Password
 // http://tools.ietf.org/html/rfc2945
-module.exports = class SRP {
+class SRP {
 
   // Creates new SRP instance with given constant prime and generator
   constructor(N, g) {
@@ -180,4 +180,6 @@ module.exports = class SRP {
     return equal(M2.toArray(), this._M2.digest);
   }
 
-};
+}
+
+export default SRP;

@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 
 import Message from './message';
 
-module.exports = class ChatHandler extends EventEmitter {
+class ChatHandler extends EventEmitter {
 
   // Creates a new chat handler
   constructor(session) {
@@ -59,4 +59,6 @@ module.exports = class ChatHandler extends EventEmitter {
     this.emit('message', message);
   }
 
-};
+}
+
+export default ChatHandler;

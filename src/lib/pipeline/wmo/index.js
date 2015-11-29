@@ -5,7 +5,7 @@ import Group from './group';
 import Material from '../material';
 import Worker from 'worker!../worker';
 
-module.exports = class WMO extends THREE.Group {
+class WMO extends THREE.Group {
 
   static cache = {};
 
@@ -54,4 +54,6 @@ module.exports = class WMO extends THREE.Group {
     });
   }
 
-};
+}
+
+export default WMO;

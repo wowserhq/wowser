@@ -6,7 +6,7 @@ import M2 from '../../pipeline/m2';
 import WDT from '../../pipeline/wdt';
 import WMO from '../../pipeline/wmo';
 
-module.exports = class Map extends THREE.Group {
+class Map extends THREE.Group {
 
   static TILES = 64;
   static ZEROPOINT = ADT.TILE_SIZE * 32;
@@ -100,4 +100,6 @@ module.exports = class Map extends THREE.Group {
     });
   }
 
-};
+}
+
+export default Map;

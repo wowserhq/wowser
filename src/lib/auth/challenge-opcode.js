@@ -1,4 +1,4 @@
-module.exports = class ChallengeOpcode {
+class ChallengeOpcode {
 
   static SUCCESS            = 0x00
   static UNKNOWN0           = 0x01
@@ -20,4 +20,6 @@ module.exports = class ChallengeOpcode {
   static TRIAL_EXPIRED      = 0x11
   static BATTLE_NET         = 0x12
 
-};
+}
+
+export default ChallengeOpcode;

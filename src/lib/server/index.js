@@ -4,7 +4,7 @@ import logger from 'morgan';
 import Pipeline from './pipeline';
 import ServerConfig from './utils/server-config';
 
-module.exports = class Server {
+class Server {
 
   constructor(root = __dirname) {
     this.isFirstRun = ServerConfig.db.get('isFirstRun');
@@ -38,4 +38,6 @@ module.exports = class Server {
     this.app.listen(serverPort);
   }
 
-};
+}
+
+export default Server;

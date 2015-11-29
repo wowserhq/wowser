@@ -1,4 +1,4 @@
-module.exports = class Realm {
+class Realm {
 
   // Creates a new realm
   constructor() {
@@ -46,4 +46,6 @@ module.exports = class Realm {
     this._port = parts[1] || NaN;
   }
 
-};
+}
+
+export default Realm;

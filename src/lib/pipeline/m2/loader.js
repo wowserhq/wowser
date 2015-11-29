@@ -6,7 +6,7 @@ import Loader from '../../net/loader';
 
 const loader = new Loader();
 
-module.exports = function(path) {
+export default function(path) {
   return loader.load(path).then((raw) => {
     let buffer = new Buffer(new Uint8Array(raw));
     let stream = new DecodeStream(buffer);
@@ -23,4 +23,4 @@ module.exports = function(path) {
       return [data, skinData];
     });
   });
-};
+}

@@ -33,4 +33,4 @@ class ServerConfig {
   }
 }
 
-module.exports = new ServerConfig();
+export default new ServerConfig();

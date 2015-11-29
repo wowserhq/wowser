@@ -104,4 +104,4 @@ class AuthScreen extends React.Component {
 
 }
 
-module.exports = AuthScreen;
+export default AuthScreen;

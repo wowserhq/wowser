@@ -4,7 +4,7 @@ import THREE from 'three';
 import Submesh from './submesh';
 import Worker from 'worker!../worker.js';
 
-module.exports = class M2 extends THREE.Group {
+class M2 extends THREE.Group {
 
   static cache = {};
 
@@ -100,4 +100,6 @@ module.exports = class M2 extends THREE.Group {
     });
   }
 
-};
+}
+
+export default M2;

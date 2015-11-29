@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 
-module.exports = class Loader {
+class Loader {
 
   constructor() {
     this.prefix = this.prefix || '/pipeline/';
@@ -26,4 +26,6 @@ module.exports = class Loader {
     });
   }
 
-};
+}
+
+export default Loader;

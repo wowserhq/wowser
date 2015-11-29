@@ -21,7 +21,7 @@ class Raw {
 
 }
 
-module.exports = class Config {
+class Config {
 
   constructor() {
     this.game = 'Wow ';
@@ -46,4 +46,6 @@ module.exports = class Config {
     });
   }
 
-};
+}
+
+export default Config;

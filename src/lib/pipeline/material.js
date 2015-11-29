@@ -1,6 +1,6 @@
 import THREE from 'three';
 
-module.exports = class Material extends THREE.MeshBasicMaterial {
+class Material extends THREE.MeshBasicMaterial {
 
   constructor(params = {}) {
     params.wireframe = true;
@@ -22,4 +22,6 @@ module.exports = class Material extends THREE.MeshBasicMaterial {
     );
   }
 
-};
+}
+
+export default Material;

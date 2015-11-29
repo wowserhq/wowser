@@ -22,4 +22,4 @@ class QuestsPanel extends React.Component {
 
 }
 
-module.exports = QuestsPanel;
+export default QuestsPanel;

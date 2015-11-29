@@ -1,7 +1,7 @@
 import MPQ from 'blizzardry/lib/mpq';
 import glob from 'globby';
 
-module.exports = class Archive {
+class Archive {
 
   static CHAIN = [
     'common.MPQ',
@@ -33,4 +33,6 @@ module.exports = class Archive {
     return base;
   }
 
-};
+}
+
+export default Archive;

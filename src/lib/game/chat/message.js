@@ -1,4 +1,4 @@
-module.exports = class ChatMessage {
+class ChatMessage {
 
   // Creates a new message
   constructor(kind, text) {
@@ -12,4 +12,6 @@ module.exports = class ChatMessage {
     return `[Message; Text: ${this.text}; GUID: ${this.guid}]`;
   }
 
-};
+}
+
+export default ChatMessage;

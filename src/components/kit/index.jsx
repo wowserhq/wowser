@@ -52,4 +52,4 @@ class KitScreen extends React.Component {
 
 }
 
-module.exports = KitScreen;
+export default KitScreen;

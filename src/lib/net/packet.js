@@ -1,6 +1,6 @@
 import ByteBuffer from 'byte-buffer';
 
-module.exports = class Packet extends ByteBuffer {
+class Packet extends ByteBuffer {
 
   // Creates a new packet with given opcode from given source or length
   constructor(opcode, source, outgoing = true) {
@@ -42,4 +42,6 @@ module.exports = class Packet extends ByteBuffer {
     return this;
   }
 
-};
+}
+
+export default Packet;

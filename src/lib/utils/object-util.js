@@ -1,4 +1,4 @@
-module.exports = class ObjectUtil {
+class ObjectUtil {
 
   // Retrieves key for given value (if any) in object
   static keyByValue(object, target) {
@@ -16,4 +16,6 @@ module.exports = class ObjectUtil {
     return object.lookup[target];
   }
 
-};
+}
+
+export default ObjectUtil;

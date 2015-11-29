@@ -3,7 +3,7 @@ import THREE from 'three';
 
 import Worker from 'worker!../worker';
 
-module.exports = class ADT extends THREE.Mesh {
+class ADT extends THREE.Mesh {
 
   static TILE_SIZE = 533.33333;
   static CHUNK_SIZE = 33.333333;
@@ -115,4 +115,6 @@ module.exports = class ADT extends THREE.Mesh {
     return this.cache[path];
   }
 
-};
+}
+
+export default ADT;

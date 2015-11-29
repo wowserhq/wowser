@@ -1,4 +1,4 @@
-module.exports = class GameOpcode {
+class GameOpcode {
 
   static CMSG_CHAR_ENUM                     = 0x0037
 
@@ -81,4 +81,6 @@ module.exports = class GameOpcode {
 
   static MSG_SET_RAID_DIFFICULTY            = 0x04EB
 
-};
+}
+
+export default GameOpcode;

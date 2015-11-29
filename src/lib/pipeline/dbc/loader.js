@@ -5,7 +5,7 @@ import Loader from '../../net/loader';
 
 const loader = new Loader();
 
-module.exports = function(name) {
+export default function(name) {
   const path = `DBFilesClient\\${name}.dbc`;
   const entity = DBC[name];
 
@@ -19,4 +19,4 @@ module.exports = function(name) {
 
     return data;
   });
-};
+}

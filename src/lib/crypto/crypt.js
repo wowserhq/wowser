@@ -3,7 +3,7 @@ import RC4 from 'jsbn/lib/rc4';
 
 import ArrayUtil from '../utils/array-util';
 
-module.exports = class Crypt {
+class Crypt {
 
   // Creates crypt
   constructor() {
@@ -57,4 +57,6 @@ module.exports = class Crypt {
     }
   }
 
-};
+}
+
+export default Crypt;

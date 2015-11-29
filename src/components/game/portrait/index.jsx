@@ -34,4 +34,4 @@ class Portrait extends React.Component {
 
 }
 
-module.exports = Portrait;
+export default Portrait;

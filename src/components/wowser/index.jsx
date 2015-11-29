@@ -76,4 +76,4 @@ class Wowser extends React.Component {
 
 }
 
-module.exports = Wowser;
+export default Wowser;

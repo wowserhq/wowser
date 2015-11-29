@@ -1,7 +1,7 @@
 import BigInteger from 'jsbn/lib/big-integer';
 
 // C-like BigNum decorator for JSBN's BigInteger
-module.exports = class BigNum {
+class BigNum {
 
   // Convenience BigInteger.ZERO decorator
   static ZERO = new BigNum(BigInteger.ZERO)
@@ -108,4 +108,6 @@ module.exports = class BigNum {
     return new BigNum(bytes);
   }
 
-};
+}
+
+export default BigNum;

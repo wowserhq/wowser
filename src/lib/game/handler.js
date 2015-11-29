@@ -8,7 +8,7 @@ import GUID from '../game/guid';
 import SHA1 from '../crypto/hash/sha1';
 import Socket from '../net/socket';
 
-module.exports = class GameHandler extends Socket {
+class GameHandler extends Socket {
 
   // Creates a new game handler
   constructor(session) {
@@ -176,4 +176,6 @@ module.exports = class GameHandler extends Socket {
     this.emit('join');
   }
 
-};
+}
+
+export default GameHandler;

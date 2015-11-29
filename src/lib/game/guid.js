@@ -1,4 +1,4 @@
-module.exports = class GUID {
+class GUID {
 
   // GUID byte-length (64-bit)
   static LENGTH = 8
@@ -24,4 +24,6 @@ module.exports = class GUID {
     return `[GUID; Hex: 0x${high}${low}]`;
   }
 
-};
+}
+
+export default GUID;

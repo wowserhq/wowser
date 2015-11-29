@@ -4,7 +4,7 @@ import DBC from '../pipeline/dbc';
 import Entity from './entity';
 import M2 from '../pipeline/m2';
 
-module.exports = class Unit extends Entity {
+class Unit extends Entity {
 
   constructor() {
     super();
@@ -53,4 +53,6 @@ module.exports = class Unit extends Entity {
     });
   }
 
-};
+}
+
+export default Unit;

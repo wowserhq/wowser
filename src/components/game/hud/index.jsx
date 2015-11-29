@@ -24,4 +24,4 @@ class HUD extends React.Component {
 
 }
 
-module.exports = HUD;
+export default HUD;

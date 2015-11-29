@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import Worker from 'worker!../../worker';
 
-module.exports = class WMOGroup extends THREE.Mesh {
+class WMOGroup extends THREE.Mesh {
 
   static cache = {};
 
@@ -84,4 +84,6 @@ module.exports = class WMOGroup extends THREE.Mesh {
     });
   }
 
-};
+}
+
+export default WMOGroup;

@@ -72,4 +72,4 @@ class ChatPanel extends React.Component {
 
 }
 
-module.exports = ChatPanel;
+export default ChatPanel;

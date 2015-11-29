@@ -3,7 +3,7 @@ import GameOpcode from './opcode';
 import GUID from './guid';
 import ObjectUtil from '../utils/object-util';
 
-module.exports = class GamePacket extends BasePacket {
+class GamePacket extends BasePacket {
 
   // Header sizes in bytes for both incoming and outgoing packets
   static HEADER_SIZE_INCOMING = 4
@@ -54,4 +54,6 @@ module.exports = class GamePacket extends BasePacket {
   // writePackedGUID: (guid) ->
   //   return this
 
-};
+}
+
+export default GamePacket;

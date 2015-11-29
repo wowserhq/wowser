@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 
 import Worker from 'worker!../worker.js';
 
-module.exports = class DBC {
+class DBC {
 
   static cache = {};
 
@@ -44,4 +44,6 @@ module.exports = class DBC {
     return this.cache[name];
   }
 
-};
+}
+
+export default DBC;

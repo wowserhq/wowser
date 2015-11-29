@@ -1,4 +1,4 @@
-module.exports = class ArrayUtil {
+class ArrayUtil {
 
   // Generates array from given hex string
   static fromHex(hex) {
@@ -9,4 +9,6 @@ module.exports = class ArrayUtil {
     return array;
   }
 
-};
+}
+
+export default ArrayUtil;

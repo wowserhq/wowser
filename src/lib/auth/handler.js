@@ -4,7 +4,7 @@ import AuthPacket from './packet';
 import Socket from '../net/socket';
 import SRP from '../crypto/srp';
 
-module.exports = class AuthHandler extends Socket {
+class AuthHandler extends Socket {
 
   // Default port for the auth-server
   static PORT = 3724
@@ -169,4 +169,6 @@ module.exports = class AuthHandler extends Socket {
     }
   }
 
-};
+}
+
+export default AuthHandler;

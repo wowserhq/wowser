@@ -4,7 +4,13 @@ import sinon from 'sinon';
 
 chai.use(bridge);
 
-module.exports = {
-  expect: chai.expect,
-  sinon: sinon
-};
+beforeEach(function() {
+  this.sandbox = sinon.sandbox.create();
+});
+
+afterEach(function() {
+  this.sandbox.restore();
+});
+
+export const expect = chai.expect;
+export sinon from 'sinon';

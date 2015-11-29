@@ -2,7 +2,7 @@ import AuthOpcode from './opcode';
 import BasePacket from '../net/packet';
 import ObjectUtil from '../utils/object-util';
 
-module.exports = class AuthPacket extends BasePacket {
+class AuthPacket extends BasePacket {
 
   // Header size in bytes for both incoming and outgoing packets
   static HEADER_SIZE = 1
@@ -22,4 +22,6 @@ module.exports = class AuthPacket extends BasePacket {
     this.writeByte(this.opcode);
   }
 
-};
+}
+
+export default AuthPacket;
