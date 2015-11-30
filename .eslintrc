@@ -1,6 +1,9 @@
 {
   "extends": "timkurvers/react",
   "rules": {
+    // Allow vertically aligning values
+    "no-multi-spaces": [0],
+
     // See: https://github.com/yannickcr/eslint-plugin-react/issues/128
     "react/sort-comp": [0]
   }
