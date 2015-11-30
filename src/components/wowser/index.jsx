@@ -39,7 +39,7 @@ class Wowser extends React.Component {
     return <Screen />;
   }
 
-  _onScreenChange(from, to) {
+  _onScreenChange(_from, to) {
     this.setState({ screen: to });
   }
 

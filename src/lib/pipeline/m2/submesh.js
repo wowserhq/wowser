@@ -28,27 +28,27 @@ class Submesh extends THREE.Mesh {
     const { texture } = textureUnit;
 
     switch (texture.type) {
-    case 0:
-      // Hardcoded texture
-      this.material.texture = texture.filename;
-      break;
-    case 11:
-      if (this.skin1) {
-        this.material.texture = this.skin1;
-      }
-      break;
-    case 12:
-      if (this.skin2) {
-        this.material.texture = this.skin2;
-      }
-      break;
-    case 13:
-      if (this.skin3) {
-        this.material.texture = this.skin3;
-      }
-      break;
-    default:
-      break;
+      case 0:
+        // Hardcoded texture
+        this.material.texture = texture.filename;
+        break;
+      case 11:
+        if (this.skin1) {
+          this.material.texture = this.skin1;
+        }
+        break;
+      case 12:
+        if (this.skin2) {
+          this.material.texture = this.skin2;
+        }
+        break;
+      case 13:
+        if (this.skin3) {
+          this.material.texture = this.skin3;
+        }
+        break;
+      default:
+        break;
     }
   }
 

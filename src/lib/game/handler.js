@@ -65,7 +65,7 @@ class GameHandler extends Socket {
   }
 
   // Data received handler
-  dataReceived(socket) {
+  dataReceived(_socket) {
     while (true) {
       if (!this.connected) {
         return;
@@ -172,7 +172,7 @@ class GameHandler extends Socket {
   }
 
   // World login handler (SMSG_LOGIN_VERIFY_WORLD)
-  handleWorldLogin(gp) {
+  handleWorldLogin(_gp) {
     this.emit('join');
   }
 

@@ -23,7 +23,7 @@ class DBC {
 
   static load(name, id) {
     if (!(name in this.cache)) {
-      this.cache[name] = new Promise((resolve, reject) => {
+      this.cache[name] = new Promise((resolve, _reject) => {
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

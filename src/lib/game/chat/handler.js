@@ -35,20 +35,20 @@ class ChatHandler extends EventEmitter {
   }
 
   // Sends given message
-  send(message) {
+  send(_message) {
     throw new Error('sending chat messages is not yet implemented');
   }
 
   // Message handler (SMSG_MESSAGE_CHAT)
   handleMessage(gp) {
-    const type = gp.readUnsignedByte();
-    const lang = gp.readUnsignedInt();
+    gp.readUnsignedByte(); // type
+    gp.readUnsignedInt(); // language
     const guid1 = gp.readGUID();
     gp.readUnsignedInt();
-    const guid2 = gp.readGUID();
+    gp.readGUID(); // guid2
     const len = gp.readUnsignedInt();
     const text = gp.readString(len);
-    const flags = gp.readUnsignedByte();
+    gp.readUnsignedByte(); // flags
 
     const message = new Message();
     message.text = text;

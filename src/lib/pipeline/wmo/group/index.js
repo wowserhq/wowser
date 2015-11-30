@@ -68,7 +68,7 @@ class WMOGroup extends THREE.Mesh {
 
   static load(path) {
     if (!(path in this.cache)) {
-      this.cache[path] = new Promise((resolve, reject) => {
+      this.cache[path] = new Promise((resolve, _reject) => {
         const worker = new Worker();
 
         worker.addEventListener('message', (event) => {

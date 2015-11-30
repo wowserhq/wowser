@@ -90,7 +90,7 @@ class AuthHandler extends Socket {
   }
 
   // Data received handler
-  dataReceived(socket) {
+  dataReceived() {
     while (true) {
       if (!this.connected || this.buffer.available < AuthPacket.HEADER_SIZE) {
         return;
@@ -115,42 +115,44 @@ class AuthHandler extends Socket {
     const status = ap.readUnsignedByte();
 
     switch (status) {
-    case AuthChallengeOpcode.SUCCESS:
-      console.info('received logon challenge');
+      case AuthChallengeOpcode.SUCCESS:
+        console.info('received logon challenge');
 
-      const B = ap.read(32);              // B
+        const B = ap.read(32);              // B
 
-      const glen = ap.readUnsignedByte(); // g-length
-      const g = ap.read(glen);            // g
+        const glen = ap.readUnsignedByte(); // g-length
+        const g = ap.read(glen);            // g
 
-      const Nlen = ap.readUnsignedByte(); // n-length
-      const N = ap.read(Nlen);            // N
+        const Nlen = ap.readUnsignedByte(); // n-length
+        const N = ap.read(Nlen);            // N
 
-      const salt = ap.read(32);           // salt
+        const salt = ap.read(32);           // salt
 
-      ap.read(16);                  // unknown
-      ap.readUnsignedByte();        // security flags
+        ap.read(16);                  // unknown
+        ap.readUnsignedByte();        // security flags
 
-      this.srp = new SRP(N, g);
-      this.srp.feed(salt, B, this.account, this.password);
+        this.srp = new SRP(N, g);
+        this.srp.feed(salt, B, this.account, this.password);
 
-      const lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2);
-      lpp.write(this.srp.A.toArray());
-      lpp.write(this.srp.M1.digest);
-      lpp.write(new Array(20)); // CRC hash
-      lpp.writeByte(0x00);      // number of keys
-      lpp.writeByte(0x00);      // security flags
+        const lpp = new AuthPacket(AuthOpcode.LOGON_PROOF, 1 + 32 + 20 + 20 + 2);
+        lpp.write(this.srp.A.toArray());
+        lpp.write(this.srp.M1.digest);
+        lpp.write(new Array(20)); // CRC hash
+        lpp.writeByte(0x00);      // number of keys
+        lpp.writeByte(0x00);      // security flags
 
-      this.send(lpp);
-      break;
-    case AuthChallengeOpcode.ACCOUNT_INVALID:
-      console.warn('account invalid');
-      this.emit('reject');
-      break;
-    case AuthChallengeOpcode.BUILD_INVALID:
-      console.warn('build invalid');
-      this.emit('reject');
-      break;
+        this.send(lpp);
+        break;
+      case AuthChallengeOpcode.ACCOUNT_INVALID:
+        console.warn('account invalid');
+        this.emit('reject');
+        break;
+      case AuthChallengeOpcode.BUILD_INVALID:
+        console.warn('build invalid');
+        this.emit('reject');
+        break;
+      default:
+        break;
     }
   }
 

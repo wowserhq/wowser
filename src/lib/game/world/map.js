@@ -90,7 +90,7 @@ class Map extends THREE.Group {
   }
 
   static load(id) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       DBC.load('Map', id).then((data) => {
         const { internalName: name } = data;
         WDT.load(`World\\Maps\\${name}\\${name}.wdt`).then((wdt) => {

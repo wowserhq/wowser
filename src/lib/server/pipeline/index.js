@@ -28,9 +28,10 @@ class Pipeline {
     return this._archive;
   }
 
-  resource(req, res, next, path) {
+  resource(req, _res, next, path) {
     req.resourcePath = path;
-    if (req.resource = this.archive.files.get(path)) {
+    req.resource = this.archive.files.get(path);
+    if (req.resource) {
       next();
     } else {
       const err = new Error('resource not found');
@@ -53,16 +54,18 @@ class Pipeline {
 
   dbc(req, res) {
     const name = req.resourcePath.match(/(\w+)\.dbc/)[1];
-    if (definition = DBC[name]) {
-      dbc = definition.dbc.decode(new DecodeStream(req.resource.data));
-      if (id = req.params[0]) {
-        entity = find(dbc.records, function(entity) {
+    const definition = DBC[name];
+    if (definition) {
+      const dbc = definition.dbc.decode(new DecodeStream(req.resource.data));
+      const id = req.params[0];
+      if (id) {
+        const match = find(dbc.records, function(entity) {
           return String(entity.id) === id;
         });
-        if (entity) {
-          res.send(entity);
+        if (match) {
+          res.send(match);
         } else {
-          err = new Error('entity not found');
+          const err = new Error('entity not found');
           err.status = 404;
           throw err;
         }
@@ -70,7 +73,7 @@ class Pipeline {
         res.send(dbc.records);
       }
     } else {
-      err = new Error('entity definition not found');
+      const err = new Error('entity definition not found');
       err.status = 404;
       throw err;
     }

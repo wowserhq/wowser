@@ -17,7 +17,7 @@ class ServerConfig {
   }
 
   prompt() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       console.log('> Preparing initial setup\n');
 
       inquirer.prompt(prompts, answers => {
