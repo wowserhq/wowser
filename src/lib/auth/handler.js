@@ -7,7 +7,7 @@ import SRP from '../crypto/srp';
 class AuthHandler extends Socket {
 
   // Default port for the auth-server
-  static PORT = 3724
+  static PORT = 3724;
 
   // Creates a new authentication handler
   constructor(session) {

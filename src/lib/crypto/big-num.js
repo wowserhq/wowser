@@ -4,7 +4,7 @@ import BigInteger from 'jsbn/lib/big-integer';
 class BigNum {
 
   // Convenience BigInteger.ZERO decorator
-  static ZERO = new BigNum(BigInteger.ZERO)
+  static ZERO = new BigNum(BigInteger.ZERO);
 
   // Creates a new BigNum
   constructor(value, radix) {

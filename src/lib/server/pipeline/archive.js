@@ -17,7 +17,7 @@ class Archive {
     '*/patch-*.MPQ',
     'patch.MPQ',
     'patch-*.MPQ'
-  ]
+  ];
 
   static build(root) {
     const patterns = this.CHAIN.map(function(path) {

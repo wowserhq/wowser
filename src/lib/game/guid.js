@@ -1,7 +1,7 @@
 class GUID {
 
   // GUID byte-length (64-bit)
-  static LENGTH = 8
+  static LENGTH = 8;
 
   // Creates a new GUID
   constructor(buffer) {

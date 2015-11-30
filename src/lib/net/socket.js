@@ -6,7 +6,7 @@ class Socket extends EventEmitter {
 
   // Maximum buffer capacity
   // TODO: Arbitrarily chosen, determine this cap properly
-  static BUFFER_CAP = 2048
+  static BUFFER_CAP = 2048;
 
   // Creates a new socket
   constructor() {

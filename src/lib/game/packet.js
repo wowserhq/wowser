@@ -6,12 +6,12 @@ import ObjectUtil from '../utils/object-util';
 class GamePacket extends BasePacket {
 
   // Header sizes in bytes for both incoming and outgoing packets
-  static HEADER_SIZE_INCOMING = 4
-  static HEADER_SIZE_OUTGOING = 6
+  static HEADER_SIZE_INCOMING = 4;
+  static HEADER_SIZE_OUTGOING = 6;
 
   // Opcode sizes in bytes for both incoming and outgoing packets
-  static OPCODE_SIZE_INCOMING = 2
-  static OPCODE_SIZE_OUTGOING = 4
+  static OPCODE_SIZE_INCOMING = 2;
+  static OPCODE_SIZE_OUTGOING = 4;
 
   constructor(opcode, source, outgoing = true) {
     if (!source) {
