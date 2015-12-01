@@ -50,7 +50,7 @@
     "pngjs": "^0.4.0",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
-    "three": "^0.72.0",
+    "three": "^0.73.0",
     "websockify": "^0.7.1"
   },
   "devDependencies": {
