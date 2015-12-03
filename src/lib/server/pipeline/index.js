@@ -57,7 +57,7 @@ class Pipeline {
     const definition = DBC[name];
     if (definition) {
       const dbc = definition.dbc.decode(new DecodeStream(req.resource.data));
-      const id = req.params[0];
+      const id = req.params.id;
       if (id) {
         const match = find(dbc.records, function(entity) {
           return String(entity.id) === id;
