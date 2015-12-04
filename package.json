@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "array-find": "^0.1.1",
-    "blizzardry": "^0.2.7",
+    "blizzardry": "^0.3.0",
     "bluebird": "^2.10.0",
     "byte-buffer": "^1.0.3",
     "classnames": "^2.2.0",

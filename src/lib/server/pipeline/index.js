@@ -1,5 +1,5 @@
 import BLP from 'blizzardry/lib/blp';
-import DBC from 'blizzardry/lib/dbc/entities';
+import * as DBC from 'blizzardry/lib/dbc/entities';
 import { DecodeStream } from 'blizzardry/lib/restructure';
 import { PNG } from 'pngjs';
 import express from 'express';
