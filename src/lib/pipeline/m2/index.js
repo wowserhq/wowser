@@ -19,6 +19,30 @@ class M2 extends THREE.Group {
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
+    const bones = [];
+    const rootBones = [];
+
+    this.data.bones.forEach((joint) => {
+      const bone = new THREE.Bone();
+      bone.position.copy(joint.pivotPoint);
+      bones.push(bone);
+
+      if (joint.parentID > -1) {
+        const parent = bones[joint.parentID];
+        parent.add(bone);
+
+        // Correct bone positioning
+        let up = bone;
+        while (up = up.parent) {
+          bone.position.sub(up.position);
+        }
+      } else {
+        rootBones.push(bone);
+      }
+    });
+
+    this.skeleton = new THREE.Skeleton(bones);
+
     const vertices = data.vertices;
 
     vertices.forEach(function(vertex) {
