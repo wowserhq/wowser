@@ -3,6 +3,7 @@ import THREE from 'three';
 
 import Group from './group';
 import Material from '../material';
+import M2 from '../m2';
 import Worker from 'worker!../worker';
 
 class WMO extends THREE.Group {
@@ -30,6 +31,33 @@ class WMO extends THREE.Group {
         this.add(group);
       });
     }
+  }
+
+  set doodadSet(doodadSet) {
+    const set = this.data.MODS.sets[doodadSet];
+    const { startIndex: start, doodadCount: count  } = set;
+
+    const doodads = this.data.MODD.doodads.slice(start, start + count);
+    this.renderDoodads(doodads);
+  }
+
+  renderDoodads(entries) {
+    entries.forEach((entry) => {
+      M2.load(entry.filename).then((m2) => {
+        m2.position.set(
+          -entry.position.x,
+          -entry.position.y,
+          entry.position.z
+        );
+
+        m2.quaternion.copy(entry.rotation);
+
+        const scale = entry.scale;
+        m2.scale.set(scale, scale, scale);
+
+        this.add(m2);
+      });
+    });
   }
 
   clone() {

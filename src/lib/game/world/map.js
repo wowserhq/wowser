@@ -49,6 +49,8 @@ class Map extends THREE.Group {
             entry.position.y
           );
 
+          wmo.doodadSet = entry.doodadSet;
+
           // Provided as (X, Z, -Y)
           wmo.rotation.set(
             entry.rotation.x * Math.PI / 180,
