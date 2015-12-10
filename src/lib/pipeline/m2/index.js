@@ -107,6 +107,7 @@ class M2 extends THREE.Group {
   }
 
   static load(path) {
+    path = path.replace(/\.md(x|l)/i, '.m2');
     if (!(path in this.cache)) {
       this.cache[path] = new Promise((resolve, _reject) => {
         const worker = new Worker();

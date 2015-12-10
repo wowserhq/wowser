@@ -37,7 +37,6 @@ class Unit extends Entity {
       DBC.load('CreatureModelData', modelID).then((modelData) => {
         this.modelData = modelData;
         this.modelData.path = this.modelData.file.match(/^(.+?)(?:[^\\]+)$/)[1];
-        this.modelData.file = this.modelData.file.replace('.mdx', '.m2');
         this.displayInfo.modelData = this.modelData;
 
         M2.load(this.modelData.file).then((m2) => {
