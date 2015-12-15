@@ -1,6 +1,4 @@
-import Promise from 'bluebird';
-
-import Worker from 'worker!../worker.js';
+import WorkerPool from '../worker/pool';
 
 class DBC {
 
@@ -23,15 +21,9 @@ class DBC {
 
   static load(name, id) {
     if (!(name in this.cache)) {
-      this.cache[name] = new Promise((resolve, _reject) => {
-        const worker = new Worker();
-
-        worker.addEventListener('message', (event) => {
-          const data = event.data;
-          resolve(new this(data));
-        });
-
-        worker.postMessage(['DBC', name]);
+      this.cache[name] = WorkerPool.enqueue('DBC', name).then((args) => {
+        const [data] = args;
+        return new this(data);
       });
     }
 

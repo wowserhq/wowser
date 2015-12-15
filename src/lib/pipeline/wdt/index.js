@@ -1,6 +1,4 @@
-import Promise from 'bluebird';
-
-import Worker from 'worker!../worker';
+import WorkerPool from '../worker/pool';
 
 class WDT {
 
@@ -12,15 +10,8 @@ class WDT {
 
   static load(path) {
     if (!(path in this.cache)) {
-      this.cache[path] = new Promise((resolve, _reject) => {
-        const worker = new Worker();
-
-        worker.addEventListener('message', (event) => {
-          const data = event.data;
-          resolve(new this(data));
-        });
-
-        worker.postMessage(['WDT', path]);
+      this.cache[path] = WorkerPool.enqueue('WDT', path).then((data) => {
+        return new this(data);
       });
     }
 

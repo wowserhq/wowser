@@ -1,10 +1,9 @@
-import Promise from 'bluebird';
 import THREE from 'three';
 
 import Group from './group';
 import Material from '../material';
 import M2 from '../m2';
-import Worker from 'worker!../worker';
+import WorkerPool from '../worker/pool';
 
 class WMO extends THREE.Group {
 
@@ -66,15 +65,9 @@ class WMO extends THREE.Group {
 
   static load(path) {
     if (!(path in this.cache)) {
-      this.cache[path] = new Promise((resolve, _reject) => {
-        const worker = new Worker();
-
-        worker.addEventListener('message', (event) => {
-          const data = event.data;
-          resolve(new this(path, data));
-        });
-
-        worker.postMessage(['WMO', path]);
+      this.cache[path] = WorkerPool.enqueue('WMO', path).then((args) => {
+        const [data] = args;
+        return new this(path, data);
       });
     }
     return this.cache[path].then((wmo) => {

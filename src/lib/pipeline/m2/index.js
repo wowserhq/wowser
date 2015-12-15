@@ -1,8 +1,7 @@
-import Promise from 'bluebird';
 import THREE from 'three';
 
 import Submesh from './submesh';
-import Worker from 'worker!../worker.js';
+import WorkerPool from '../worker/pool';
 
 class M2 extends THREE.Group {
 
@@ -109,15 +108,9 @@ class M2 extends THREE.Group {
   static load(path) {
     path = path.replace(/\.md(x|l)/i, '.m2');
     if (!(path in this.cache)) {
-      this.cache[path] = new Promise((resolve, _reject) => {
-        const worker = new Worker();
-
-        worker.addEventListener('message', (event) => {
-          const [data, skinData] = event.data;
-          resolve(new this(path, data, skinData));
-        });
-
-        worker.postMessage(['M2', path]);
+      this.cache[path] = WorkerPool.enqueue('M2', path).then((args) => {
+        const [data, skinData] = args;
+        return new this(path, data, skinData);
       });
     }
     return this.cache[path].then((m2) => {

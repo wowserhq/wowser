@@ -1,6 +1,6 @@
 import THREE from 'three';
 
-import Worker from 'worker!../../worker';
+import WorkerPool from '../../worker/pool';
 
 class WMOGroup extends THREE.Mesh {
 
@@ -68,15 +68,9 @@ class WMOGroup extends THREE.Mesh {
 
   static load(path) {
     if (!(path in this.cache)) {
-      this.cache[path] = new Promise((resolve, _reject) => {
-        const worker = new Worker();
-
-        worker.addEventListener('message', (event) => {
-          const data = event.data;
-          resolve(new this(data));
-        });
-
-        worker.postMessage(['WMOGroup', path]);
+      this.cache[path] = WorkerPool.enqueue('WMOGroup', path).then((args) => {
+        const [data] = args;
+        return new this(data);
       });
     }
     return this.cache[path].then((wmoGroup) => {
