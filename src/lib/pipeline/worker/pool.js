@@ -12,7 +12,7 @@ class WorkerPool {
   }
 
   get defaultConcurrency() {
-    return navigator.hardwareConcurrency;
+    return navigator.hardwareConcurrency || 4;
   }
 
   get thread() {
