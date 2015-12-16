@@ -9,7 +9,7 @@ import WMO from '../../pipeline/wmo';
 class Map extends THREE.Group {
 
   static TILES = 64;
-  static ZEROPOINT = ADT.TILE_SIZE * 32;
+  static ZEROPOINT = ADT.SIZE * 32;
 
   constructor(data, wdt) {
     super();

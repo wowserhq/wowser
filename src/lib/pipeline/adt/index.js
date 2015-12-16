@@ -1,11 +1,11 @@
 import THREE from 'three';
 
+import Chunk from './chunk';
 import WorkerPool from '../worker/pool';
 
-class ADT extends THREE.Mesh {
+class ADT extends THREE.Group {
 
-  static TILE_SIZE = 533.33333;
-  static CHUNK_SIZE = 33.333333;
+  static SIZE = 533.33333;
 
   static cache = {};
 
@@ -21,55 +21,12 @@ class ADT extends THREE.Mesh {
     this.position.x = this.constructor.positionFor(this.tileX);
     this.position.y = this.constructor.positionFor(this.tileY);
 
-    const geometry = this.geometry;
-
     // TODO: Potentially move these calculations and mesh generation to worker
 
-    const faces = geometry.faces = [];
-    const vertices = geometry.vertices = [];
-
-    const size = this.constructor.CHUNK_SIZE;
-    const step = size / 8;
-
-    // See: http://www.pxr.dk/wowdev/wiki/index.php?title=ADT#MCVT_sub-chunk
-    for (let cy = 0; cy < 16; ++cy) {
-      for (let cx = 0; cx < 16; ++cx) {
-        const cindex = cy * 16 + cx;
-        const chunk = data.MCNKs[cindex];
-
-        chunk.MCVT.heights.forEach(function(height, index) {
-          let y = Math.floor(index / 17);
-          let x = index % 17;
-          if (x > 8) {
-            y += 0.5;
-            x -= 8.5;
-          }
-
-          // Mirror geometry over X and Y axes
-          const vertex = new THREE.Vector3(
-            -(cy * size + y * step),
-            -(cx * size + x * step),
-            chunk.position.z + height
-          );
-          vertices.push(vertex);
-        });
-
-        const coffset = cindex * 145;
-        let index = coffset + 9;
-        for (let y = 0; y < 8; ++y) {
-          for (let x = 0; x < 8; ++x) {
-            faces.push(new THREE.Face3(index, index - 9, index - 8));
-            faces.push(new THREE.Face3(index, index - 8, index + 9));
-            faces.push(new THREE.Face3(index, index + 9, index + 8));
-            faces.push(new THREE.Face3(index, index + 8, index - 9));
-            index++;
-          }
-          index += 9;
-        }
-      }
-    }
-
-    this.material = new THREE.MeshBasicMaterial({ wireframe: true });
+    data.MCNKs.forEach((chunkData) => {
+      const chunk = new Chunk(chunkData, data.MTEX.filenames);
+      this.add(chunk);
+    });
   }
 
   get wmos() {
@@ -81,11 +38,11 @@ class ADT extends THREE.Mesh {
   }
 
   static positionFor(tile) {
-    return (32 - tile) * this.TILE_SIZE | 0;
+    return (32 - tile) * this.SIZE | 0;
   }
 
   static tileFor(position) {
-    return 32 - (position / this.TILE_SIZE) | 0;
+    return 32 - (position / this.SIZE) | 0;
   }
 
   static loadTile(map, tileX, tileY) {
