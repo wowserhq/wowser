@@ -45,19 +45,19 @@ class ADT extends THREE.Group {
     return 32 - (position / this.SIZE) | 0;
   }
 
-  static loadTile(map, tileX, tileY) {
-    return ADT.load(`World\\Maps\\${map}\\${map}_${tileY}_${tileX}.adt`);
+  static loadTile(map, tileX, tileY, wdtFlags) {
+    return ADT.load(`World\\Maps\\${map}\\${map}_${tileY}_${tileX}.adt`, wdtFlags);
   }
 
-  static loadAtCoords(map, x, y) {
+  static loadAtCoords(map, x, y, wdtFlags) {
     const tileX = this.tileFor(x);
     const tileY = this.tileFor(y);
-    return this.loadTile(map, tileX, tileY);
+    return this.loadTile(map, tileX, tileY, wdtFlags);
   }
 
-  static load(path) {
+  static load(path, wdtFlags) {
     if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('ADT', path).then((args) => {
+      this.cache[path] = WorkerPool.enqueue('ADT', path, wdtFlags).then((args) => {
         const [data] = args;
         return new this(path, data);
       });

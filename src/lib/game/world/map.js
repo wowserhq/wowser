@@ -32,7 +32,7 @@ class Map extends THREE.Group {
     // TODO: Load ADTs in a radius
     // TODO: Unloading unused ADTs outside of radius
     // TODO: Prevent this from loading the current ADT over and over again
-    ADT.loadAtCoords(this.internalName, x, y).then((adt) => {
+    ADT.loadAtCoords(this.internalName, x, y, this.wdt.data.flags).then((adt) => {
       this.add(adt);
       this.renderWMOs(adt.wmos);
       this.renderDoodads(adt.doodads);

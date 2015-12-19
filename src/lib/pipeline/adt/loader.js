@@ -5,11 +5,11 @@ import Loader from '../../net/loader';
 
 const loader = new Loader();
 
-export default function(path) {
+export default function(path, wdtFlags) {
   return loader.load(path).then((raw) => {
     const buffer = new Buffer(new Uint8Array(raw));
     const stream = new DecodeStream(buffer);
-    const data = ADT.decode(stream);
+    const data = ADT(wdtFlags).decode(stream);
     return data;
   });
 }
