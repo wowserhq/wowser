@@ -62,6 +62,9 @@ class Controls extends React.Component {
     this.element.addEventListener('mousemove', this._onMouseMove);
     this.element.addEventListener('mousewheel', this._onMouseWheel);
 
+    // Firefox scroll-wheel support
+    this.element.addEventListener('DOMMouseScroll', this._onMouseWheel);
+
     this.update();
   }
 
@@ -70,6 +73,7 @@ class Controls extends React.Component {
     this.element.removeEventListener('mouseup', this._onMouseUp);
     this.element.removeEventListener('mousemove', this._onMouseMove);
     this.element.removeEventListener('mousewheel', this._onMouseWheel);
+    this.element.removeEventListener('DOMMouseScroll', this._onMouseWheel);
   }
 
   update() {
