@@ -24,7 +24,10 @@ class RealmsHandler extends EventEmitter {
   refresh() {
     console.info('refreshing realmlist');
 
-    const ap = new AuthPacket(AuthOpcode.REALM_LIST);
+    const ap = new AuthPacket(AuthOpcode.REALM_LIST, 1 + 4);
+
+    // Per WoWDev, the opcode is followed by an unknown uint32
+    ap.writeUnsignedInt(0x00);
 
     return this.session.auth.send(ap);
   }
