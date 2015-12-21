@@ -22,6 +22,11 @@ module.exports = {
         exclude: /node_modules/
       },
       {
+        test: /\.(frag|vert)$/,
+        loader: 'raw-loader!glslify-loader',
+        exclude: /node_modules/
+      },
+      {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/
