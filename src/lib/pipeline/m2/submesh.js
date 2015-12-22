@@ -50,6 +50,54 @@ class Submesh extends THREE.Mesh {
       default:
         break;
     }
+
+    const { renderFlags } = textureUnit;
+
+    // No backface culling.
+    if (renderFlags.flags & 0x04) {
+      this.material.side = THREE.DoubleSide;
+
+      // Not clear if this is an acceptable assumption, but it covers things like cobweb M2s in
+      // Duskwood.
+      this.material.transparent = true;
+    }
+
+    // TODO: Implement remaining blend modes (5, 6)
+    switch (renderFlags.blendingMode) {
+      case 0:
+        this.material.blending = THREE.NoBlending;
+        this.material.blendSrc = THREE.OneFactor;
+        this.material.blendDst = THREE.ZeroFactor;
+        break;
+      case 1:
+        this.material.transparent = true;
+
+        this.material.blendSrc = THREE.OneFactor;
+        this.material.blendDst = THREE.ZeroFactor;
+        this.material.blendSrcAlpha = THREE.OneFactor;
+        this.material.blendDstAlpha = THREE.ZeroFactor;
+        break;
+      case 2:
+        this.material.blendSrc = THREE.SrcAlphaFactor;
+        this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
+        this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
+        this.material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
+        break;
+      case 3:
+        this.material.blendSrc = THREE.SrcColorFactor;
+        this.material.blendDst = THREE.DstColorFactor;
+        this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
+        this.material.blendDstAlpha = THREE.DstAlphaFactor;
+        break;
+      case 4:
+        this.material.blendSrc = THREE.SrcAlphaFactor;
+        this.material.blendDst = THREE.OneFactor;
+        this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
+        this.material.blendDstAlpha = THREE.OneFactor;
+        break;
+      default:
+        break;
+    }
   }
 
   reapplyTextureUnit() {
