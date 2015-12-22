@@ -59,11 +59,13 @@ class M2 extends THREE.Group {
     sharedGeometry.rotateX(-Math.PI / 2);
 
     const { textures } = data;
+    const { renderFlags } = data;
     const { indices, textureUnits, triangles } = skinData;
 
     // TODO: Look up colors, render flags and what not
     textureUnits.forEach(function(textureUnit) {
       textureUnit.texture = textures[textureUnit.textureIndex];
+      textureUnit.renderFlags = renderFlags[textureUnit.renderFlagsIndex];
     });
 
     this.skinData.submeshes.forEach((submesh, id) => {
