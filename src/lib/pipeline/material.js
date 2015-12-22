@@ -6,6 +6,7 @@ class Material extends THREE.MeshBasicMaterial {
 
   constructor(params = {}) {
     params.wireframe = true;
+    params.transparent = true;
     super(params);
   }
 
