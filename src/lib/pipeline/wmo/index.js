@@ -19,6 +19,7 @@ class WMO extends THREE.Group {
     const mats = this.data.MOMT.materials.map(function(materialData) {
       const material = new Material();
 
+      // TODO: Handle multiple textures
       material.texture = textures[materialData.textures[0].offset];
 
       // Transparent blending
