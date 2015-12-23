@@ -18,7 +18,16 @@ class WMO extends THREE.Group {
     const textures = this.data.MOTX.filenames;
     const mats = this.data.MOMT.materials.map(function(materialData) {
       const material = new Material();
+
       material.texture = textures[materialData.textures[0].offset];
+
+      // Transparent blending
+      if (materialData.blendMode === 1) {
+        material.transparent = true;
+        material.alphaTest = 0.5;
+        material.side = THREE.DoubleSide;
+      }
+
       return material;
     });
 
