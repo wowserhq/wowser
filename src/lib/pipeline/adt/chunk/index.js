@@ -16,11 +16,11 @@ class Chunk extends THREE.Mesh {
     this.position.y = -(data.indexX * size);
     this.position.x = -(data.indexY * size);
 
-    const vertices = data.MCVT.heights.length;
+    const vertexCount = data.MCVT.heights.length;
 
-    const positions = new Float32Array(vertices * 3);
-    const uv = new Float32Array(vertices * 2);
-    const uvAlpha = new Float32Array(vertices * 2);
+    const positions = new Float32Array(vertexCount * 3);
+    const uvs = new Float32Array(vertexCount * 2);
+    const uvsAlpha = new Float32Array(vertexCount * 2);
 
     // See: http://www.pxr.dk/wowdev/wiki/index.php?title=ADT#MCVT_sub-chunk
     data.MCVT.heights.forEach(function(height, index) {
@@ -37,11 +37,11 @@ class Chunk extends THREE.Mesh {
       positions[index * 3 + 1] = -(x * unitSize);
       positions[index * 3 + 2] = data.position.z + height;
 
-      uv[index * 2] = x;
-      uv[index * 2 + 1] = y;
+      uvs[index * 2] = x;
+      uvs[index * 2 + 1] = y;
 
-      uvAlpha[index * 2] = x / 8;
-      uvAlpha[index * 2 + 1] = y / 8;
+      uvsAlpha[index * 2] = x / 8;
+      uvsAlpha[index * 2 + 1] = y / 8;
     });
 
     const indices = new Uint32Array(8 * 8 * 4 * 3);
@@ -67,8 +67,8 @@ class Chunk extends THREE.Mesh {
     const geometry = this.geometry = new THREE.BufferGeometry();
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.addAttribute('uv', new THREE.BufferAttribute(uv, 2));
-    geometry.addAttribute('uvAlpha', new THREE.BufferAttribute(uvAlpha, 2));
+    geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.addAttribute('uvAlpha', new THREE.BufferAttribute(uvsAlpha, 2));
 
     this.material = new Material(data, textureNames);
   }
