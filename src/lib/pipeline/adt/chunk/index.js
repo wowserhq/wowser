@@ -44,7 +44,7 @@ class Chunk extends THREE.Mesh {
       uvAlpha[index * 2 + 1] = y / 8;
     });
 
-    const indices = new Uint32Array(vertices * 3 * 3);
+    const indices = new Uint32Array(8 * 8 * 4 * 3);
 
     let faceIndex = 0;
     const addFace = (index1, index2, index3) => {
