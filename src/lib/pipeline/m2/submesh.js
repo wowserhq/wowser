@@ -72,6 +72,9 @@ class Submesh extends THREE.Mesh {
       case 1:
         this.material.transparent = true;
 
+        this.material.alphaTest = 0.5;
+        this.material.side = THREE.DoubleSide;
+
         this.material.blendSrc = THREE.OneFactor;
         this.material.blendDst = THREE.ZeroFactor;
         this.material.blendSrcAlpha = THREE.OneFactor;
