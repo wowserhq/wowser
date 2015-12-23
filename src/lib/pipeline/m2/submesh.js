@@ -51,9 +51,11 @@ class Submesh extends THREE.Mesh {
         break;
     }
 
-    const { renderFlags } = textureUnit;
+    this.applyRenderFlags(textureUnit.renderFlags);
+  }
 
-    // No backface culling.
+  applyRenderFlags(renderFlags) {
+    // Flag 0x04 - no backface culling
     if (renderFlags.flags & 0x04) {
       this.material.side = THREE.DoubleSide;
 
@@ -62,13 +64,14 @@ class Submesh extends THREE.Mesh {
       this.material.transparent = true;
     }
 
-    // TODO: Implement remaining blend modes (5, 6)
+    // Blending modes
     switch (renderFlags.blendingMode) {
       case 0:
         this.material.blending = THREE.NoBlending;
         this.material.blendSrc = THREE.OneFactor;
         this.material.blendDst = THREE.ZeroFactor;
         break;
+
       case 1:
         this.material.transparent = true;
 
@@ -80,24 +83,42 @@ class Submesh extends THREE.Mesh {
         this.material.blendSrcAlpha = THREE.OneFactor;
         this.material.blendDstAlpha = THREE.ZeroFactor;
         break;
+
       case 2:
         this.material.blendSrc = THREE.SrcAlphaFactor;
         this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
         this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
         this.material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
         break;
+
       case 3:
         this.material.blendSrc = THREE.SrcColorFactor;
         this.material.blendDst = THREE.DstColorFactor;
         this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
         this.material.blendDstAlpha = THREE.DstAlphaFactor;
         break;
+
       case 4:
         this.material.blendSrc = THREE.SrcAlphaFactor;
         this.material.blendDst = THREE.OneFactor;
         this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
         this.material.blendDstAlpha = THREE.OneFactor;
         break;
+
+      case 5:
+        this.material.blendSrc = THREE.SrcAlphaFactor;
+        this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
+        this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
+        this.material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
+        break;
+
+      case 6:
+        this.material.blendSrc = THREE.DstColorFactor;
+        this.material.blendDst = THREE.SrcColorFactor;
+        this.material.blendSrcAlpha = THREE.DstAlphaFactor;
+        this.material.blendDstAlpha = THREE.SrcAlphaFactor;
+        break;
+
       default:
         break;
     }
