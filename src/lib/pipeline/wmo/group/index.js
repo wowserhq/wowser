@@ -11,13 +11,28 @@ class WMOGroup extends THREE.Mesh {
 
     this.data = data;
 
-    const geometry = this.geometry;
+    const vertexCount = data.MOVT.vertices.length;
+    const textureCoords = data.MOTV.textureCoords;
 
-    data.MOVT.vertices.forEach(function(vertex) {
+    const positions = new Float32Array(vertexCount * 3);
+    const uvs = new Float32Array(vertexCount * 2);
+
+    data.MOVT.vertices.forEach(function(vertex, index) {
       // Provided as (X, Z, -Y)
-      const vector = new THREE.Vector3(vertex[0], vertex[2], -vertex[1]);
-      geometry.vertices.push(vector);
+      positions[index * 3] = vertex[0];
+      positions[index * 3 + 1] = vertex[2];
+      positions[index * 3 + 2] = -vertex[1];
+
+      uvs[index * 2] = textureCoords[index][0];
+      uvs[index * 2 + 1] = textureCoords[index][1];
     });
+
+    const indices = new Uint32Array(data.MOVI.triangles);
+
+    const geometry = this.geometry = new THREE.BufferGeometry();
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 
     // Mirror geometry over X and Y axes and rotate
     const matrix = new THREE.Matrix4();
@@ -25,35 +40,9 @@ class WMOGroup extends THREE.Mesh {
     geometry.applyMatrix(matrix);
     geometry.rotateX(-Math.PI / 2);
 
-    const uvs = [];
-    const triangles = data.MOVI.triangles;
-    const batches = data.MOBA.batches;
-
-    let faceIndex = 0;
-    batches.forEach(function(batch) {
-      const lastIndex = batch.firstIndex + batch.indexCount;
-      for (let i = batch.firstIndex; i < lastIndex; i += 3, ++faceIndex) {
-        const vindices = [
-          triangles[i],
-          triangles[i + 1],
-          triangles[i + 2]
-        ];
-
-        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
-        if (batch.materialID > 0) {
-          face.materialIndex = batch.materialID;
-        }
-        geometry.faces.push(face);
-
-        uvs[faceIndex] = [];
-        vindices.forEach(function(index) {
-          const textureCoords = data.MOTV.textureCoords[index];
-          uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
-        });
-      }
+    data.MOBA.batches.forEach(function(batch) {
+      geometry.addGroup(batch.firstIndex, batch.indexCount, batch.materialID);
     });
-
-    geometry.faceVertexUvs = [uvs];
   }
 
   clone() {
