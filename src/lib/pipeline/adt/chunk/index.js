@@ -16,6 +16,8 @@ class Chunk extends THREE.Mesh {
     this.position.y = -(data.indexX * size);
     this.position.x = -(data.indexY * size);
 
+    this.holes = data.holes;
+
     const vertexCount = data.MCVT.heights.length;
 
     const positions = new Float32Array(vertexCount * 3);
@@ -56,11 +58,13 @@ class Chunk extends THREE.Mesh {
 
     for (let y = 0; y < 8; ++y) {
       for (let x = 0; x < 8; ++x) {
-        const index = 9 + y * 17 + x;
-        addFace(index, index - 9, index - 8);
-        addFace(index, index - 8, index + 9);
-        addFace(index, index + 9, index + 8);
-        addFace(index, index + 8, index - 9);
+        if (!this.isHole(y, x)) {
+          const index = 9 + y * 17 + x;
+          addFace(index, index - 9, index - 8);
+          addFace(index, index - 8, index + 9);
+          addFace(index, index + 9, index + 8);
+          addFace(index, index + 8, index - 9);
+        }
       }
     }
 
@@ -71,6 +75,14 @@ class Chunk extends THREE.Mesh {
     geometry.addAttribute('uvAlpha', new THREE.BufferAttribute(uvsAlpha, 2));
 
     this.material = new Material(data, textureNames);
+  }
+
+  isHole(y, x) {
+    const column = Math.floor(y / 2);
+    const row = Math.floor(x / 2);
+
+    const bit = 1 << (column * 4 + row);
+    return bit & this.holes;
   }
 
 }
