@@ -12,6 +12,8 @@ class WorldHandler extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
+    this.prevCameraRotation = null;
+
     // TODO: Use this handler for all entities, not just the player
     this.player.on('change:model', (oldModel, newModel) => {
       if (oldModel) {
@@ -95,12 +97,19 @@ class WorldHandler extends EventEmitter {
     }
   }
 
-  animate() {
-    this.animateModels();
+  animate(camera) {
+    const cameraRotated = this.prevCameraRotation === null ||
+      !this.prevCameraRotation.equals(camera.quaternion);
+
+    this.animateModels(cameraRotated);
+
+    this.prevCameraRotation = camera.quaternion.clone();
   }
 
-  animateModels() {
-    this.animateBillboards();
+  animateModels(cameraRotated) {
+    if (cameraRotated) {
+      this.animateBillboards();
+    }
   }
 
   animateBillboards() {
