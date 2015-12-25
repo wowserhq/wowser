@@ -99,6 +99,10 @@ class Submesh extends THREE.SkinnedMesh {
         break;
 
       case 4:
+        this.material.transparent = true;
+
+        this.material.side = THREE.DoubleSide;
+
         this.material.blendSrc = THREE.SrcAlphaFactor;
         this.material.blendDst = THREE.OneFactor;
         this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
