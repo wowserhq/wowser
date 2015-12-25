@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import Material from '../material';
 
-class Submesh extends THREE.Mesh {
+class Submesh extends THREE.SkinnedMesh {
 
   constructor(id, geometry, textureUnits) {
     super(geometry);
@@ -22,7 +22,7 @@ class Submesh extends THREE.Mesh {
   }
 
   applyTextureUnit(textureUnit) {
-    this.material = new Material();
+    this.material = new Material({ skinning: true });
     this.textureUnit = textureUnit;
 
     const { texture } = textureUnit;

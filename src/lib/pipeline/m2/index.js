@@ -23,7 +23,13 @@ class M2 extends THREE.Group {
 
     this.data.bones.forEach((joint) => {
       const bone = new THREE.Bone();
-      bone.position.copy(joint.pivotPoint);
+
+      const { pivotPoint } = joint;
+
+      // Provided as (-X, -Y, Z)
+      const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
+      bone.position.copy(correctedPosition);
+
       bones.push(bone);
 
       if (joint.parentID > -1) {
@@ -50,6 +56,14 @@ class M2 extends THREE.Group {
         // Provided as (X, Z, -Y)
         new THREE.Vector3(position[0], position[2], -position[1])
       );
+
+      sharedGeometry.skinIndices.push(
+        new THREE.Vector4(...vertex.boneIndices)
+      );
+
+      sharedGeometry.skinWeights.push(
+        new THREE.Vector4(...vertex.boneWeights)
+      );
     });
 
     // Mirror geometry over X and Y axes and rotate
@@ -70,6 +84,11 @@ class M2 extends THREE.Group {
 
     this.skinData.submeshes.forEach((submesh, id) => {
       const geometry = sharedGeometry.clone();
+
+      // TODO: Figure out why this isn't cloned by the line above
+      geometry.skinIndices = Array.from(sharedGeometry.skinIndices);
+      geometry.skinWeights = Array.from(sharedGeometry.skinWeights);
+
       const uvs = [];
 
       const { startTriangle: start, triangleCount: count } = submesh;
@@ -93,6 +112,13 @@ class M2 extends THREE.Group {
       geometry.faceVertexUvs = [uvs];
 
       const mesh = new Submesh(id, geometry, textureUnits);
+
+      rootBones.forEach((bone) => {
+        mesh.add(bone);
+      });
+
+      mesh.bind(this.skeleton);
+
       this.add(mesh);
     });
   }
