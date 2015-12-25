@@ -30,6 +30,8 @@ class WorldHandler extends EventEmitter {
 
     this.map = null;
 
+    this.billboards = [];
+
     // Darkshire (Eastern Kingdoms)
     this.worldport(0, -10559, -1189, 28);
 
@@ -78,12 +80,64 @@ class WorldHandler extends EventEmitter {
           this.scene.remove(this.map);
         }
         this.map = map;
+        this.map.setWorld(this);
         this.scene.add(this.map);
         port();
       });
     } else {
       port();
     }
+  }
+
+  addBillboards(newBillboards) {
+    if (newBillboards.length > 0) {
+      this.billboards = this.billboards.concat(newBillboards);
+    }
+  }
+
+  animate() {
+    this.animateModels();
+  }
+
+  animateModels() {
+    this.animateBillboards();
+  }
+
+  animateBillboards() {
+    this.billboards.forEach((billboard) => {
+      const mesh = billboard[0];
+      const skeleton = mesh.skeleton;
+      const boneIndex = billboard[1];
+      const pivotPoint = billboard[2];
+      const bone = skeleton.bones[boneIndex];
+
+      const mvMatrix = mesh.modelViewMatrix.elements;
+      const viewRight = new THREE.Vector3(mvMatrix[0], mvMatrix[4], mvMatrix[8]);
+      const viewUp = new THREE.Vector3(mvMatrix[1], mvMatrix[5], mvMatrix[9]);
+      viewRight.multiplyScalar(-1);
+
+      const tMatrix = new THREE.Matrix4();
+      const t2Matrix = new THREE.Matrix4();
+
+      tMatrix.set(
+        1,  viewUp.x,   viewRight.x,  pivotPoint.x,
+        0,  viewUp.y,   viewRight.y,  pivotPoint.y,
+        0,  viewUp.z,   viewRight.z,  pivotPoint.z,
+        0,  0,          0,            1
+      );
+
+      t2Matrix.set(
+        1,  0,          0,            -pivotPoint.x,
+        0,  1,          0,            -pivotPoint.y,
+        0,  0,          1,            -pivotPoint.z,
+        0,  0,          0,            1
+      );
+
+      tMatrix.multiply(t2Matrix);
+
+      bone.rotation.setFromRotationMatrix(tMatrix);
+      // bone.applyMatrix(tMatrix);
+    });
   }
 
   // M2.load('Creature\\Rabbit\\Rabbit.m2').then((m2) => {

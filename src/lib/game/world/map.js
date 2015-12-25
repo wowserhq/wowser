@@ -22,10 +22,16 @@ class Map extends THREE.Group {
     // TODO: Track ADTs in some sort of fashion
     this.wmos = {};
     this.doodads = {};
+
+    this.world = null;
   }
 
   get internalName() {
     return this.data.internalName;
+  }
+
+  setWorld(world) {
+    this.world = world;
   }
 
   render(x, y) {
@@ -86,6 +92,10 @@ class Map extends THREE.Group {
           }
 
           this.add(m2);
+
+          if (this.world !== null) {
+            this.world.addBillboards(m2.billboards);
+          }
         });
       }
     });

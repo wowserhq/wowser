@@ -13,6 +13,7 @@ class M2 extends THREE.Group {
     this.path = path;
     this.data = data;
     this.skinData = skinData;
+    this.billboards = [];
 
     const sharedGeometry = new THREE.Geometry();
 
@@ -20,8 +21,14 @@ class M2 extends THREE.Group {
 
     const bones = [];
     const rootBones = [];
+    const billboardedBones = [];
 
-    this.data.bones.forEach((joint) => {
+    this.data.bones.forEach((joint, index) => {
+      // Track billboarded bones
+      if (joint.flags & 0x08) {
+        billboardedBones.push([index, joint.pivotPoint]);
+      }
+
       const bone = new THREE.Bone();
 
       const { pivotPoint } = joint;
@@ -120,6 +127,16 @@ class M2 extends THREE.Group {
       mesh.bind(this.skeleton);
 
       this.add(mesh);
+
+      // Preserve billboarded bones for animation in the WorldHandler.
+      if (billboardedBones.length > 0) {
+        billboardedBones.forEach((billboardedBone) => {
+          // Not really sure about appropriate way to determine if mesh is relevant
+          if (billboardedBone[0] === submesh.rootBone) {
+            this.billboards.push([mesh, billboardedBone[0], billboardedBone[1]]);
+          }
+        });
+      }
     });
   }
 

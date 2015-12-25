@@ -47,6 +47,9 @@ class GameScreen extends React.Component {
 
   animate() {
     this.refs.controls.update();
+
+    session.world.animate();
+
     this.renderer.render(session.world.scene, this.camera);
     requestAnimationFrame(this.animate);
   }
