@@ -106,10 +106,10 @@ class Submesh extends THREE.SkinnedMesh {
         break;
 
       case 5:
-        this.material.blendSrc = THREE.SrcAlphaFactor;
-        this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
-        this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
-        this.material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
+        this.material.blendSrc = THREE.DstColorFactor;
+        this.material.blendDst = THREE.ZeroFactor;
+        this.material.blendSrcAlpha = THREE.DstAlphaFactor;
+        this.material.blendDstAlpha = THREE.ZeroFactor;
         break;
 
       case 6:
