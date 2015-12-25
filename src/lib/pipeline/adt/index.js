@@ -38,7 +38,7 @@ class ADT extends THREE.Group {
   }
 
   static positionFor(tile) {
-    return (32 - tile) * this.SIZE | 0;
+    return (32 - tile) * this.SIZE;
   }
 
   static tileFor(position) {
