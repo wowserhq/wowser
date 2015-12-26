@@ -39,6 +39,9 @@ class WorldHandler extends EventEmitter {
     // Stonewrought Dam (Eastern Kingdoms)
     // this.worldport(0, -4651, -3316, 296);
 
+    // Ironforge (Eastern Kingdoms)
+    // this.worldport(0, -4981.25, -881.542, 502.66);
+
     // Darnassus (Kalimdor)
     // this.worldport(1, 9947, 2557, 1316);
 
@@ -51,8 +54,29 @@ class WorldHandler extends EventEmitter {
     // Un'Goro Crater (Kalimdor)
     // this.worldport(1, -7183, -1394, -183);
 
+    // Everlook (Kalimdor)
+    // this.worldport(1, 6721.44, -4659.09, 721.893);
+
+    // Stonetalon Mountains (Kalimdor)
+    // this.worldport(1, 2506.3, 1470.14, 263.722);
+
+    // Mulgore (Kalimdor)
+    // this.worldport(1, -1828.913, -426.307, 6.299);
+
+    // Thunderbluff (Kalimdor)
+    // this.worldport(1, -1315.901, 138.6357, 302.008);
+
+    // Auberdine (Kalimdor)
+    // this.worldport(1, 6355.151, 508.831, 15.859);
+
     // The Exodar (Expansion 01)
     // this.worldport(530, -4013, -11894, -2);
+
+    // Nagrand (Expansion 01)
+    // this.worldport(530, -743.149, 8385.114, 33.435);
+
+    // Eversong Woods (Expansion 01)
+    // this.worldport(530, 9152.441, -7442.229, 68.144);
 
     // Daggercap Bay (Northrend)
     // this.worldport(571, 1031, -5192, 180);
