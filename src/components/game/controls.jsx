@@ -77,58 +77,45 @@ class Controls extends React.Component {
   }
 
   update() {
+    const unit = this.unit;
     const delta = this.clock.getDelta();
     const distance = 30 * delta;
     const angle = Math.PI / 2 * delta;
-    let moved = false;
 
-    if (this.unit.model) {
+    if (this.unit) {
       if (key.isPressed('up') || key.isPressed('w')) {
-        this.unit.model.translateX(distance);
-        moved = true;
+        unit.moveForward(distance);
       }
 
       if (key.isPressed('down') || key.isPressed('s')) {
-        this.unit.model.translateX(-distance);
-        moved = true;
+        unit.moveBackward(distance);
       }
 
       if (key.isPressed('q')) {
-        this.unit.model.translateY(distance);
-        moved = true;
+        unit.strafeLeft(distance);
       }
 
       if (key.isPressed('e')) {
-        this.unit.model.translateY(-distance);
-        moved = true;
+        unit.strafeRight(distance);
       }
 
       if (key.isPressed('space')) {
-        this.unit.model.translateZ(distance);
-        moved = true;
+        unit.ascend(distance);
       }
 
       if (key.isPressed('x')) {
-        this.unit.model.translateZ(-distance);
-        moved = true;
+        unit.descend(distance);
       }
 
       if (key.isPressed('left') || key.isPressed('a')) {
-        this.unit.model.rotateZ(angle);
-        moved = true;
+        unit.rotateLeft(angle);
       }
 
       if (key.isPressed('right') || key.isPressed('d')) {
-        this.unit.model.rotateZ(-angle);
-        moved = true;
+        unit.rotateRight(angle);
       }
 
-      // TODO: This should be decoupled from the unit's model
-      if (moved) {
-        this.unit.emit('change:position', this.unit);
-      }
-
-      this.target = this.unit.model.position;
+      this.target = this.unit.position;
     }
 
     const position = this.camera.position;

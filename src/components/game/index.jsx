@@ -15,12 +15,15 @@ class GameScreen extends React.Component {
   constructor() {
     super();
 
-    this.animate = ::this.animate;
+    this.update = ::this.update;
     this.resize = ::this.resize;
 
     this.camera = new THREE.PerspectiveCamera(60, this.aspectRatio, 1, 1000);
     this.camera.up.set(0, 0, 1);
     this.camera.position.set(15, 0, 7);
+
+    this.renderer = null;
+    this.requestID = null;
   }
 
   componentDidMount() {
@@ -30,9 +33,23 @@ class GameScreen extends React.Component {
     });
 
     this.resize();
-    this.animate();
+    this.update();
 
     window.addEventListener('resize', this.resize);
+  }
+
+  componentWillUnmount() {
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer = null;
+    }
+
+    if (this.requestID) {
+      this.requestID = null;
+      cancelAnimationFrame(this.requestID);
+    }
+
+    window.removeEventListener('resize', this.resize);
   }
 
   get aspectRatio() {
@@ -45,13 +62,17 @@ class GameScreen extends React.Component {
     this.camera.updateProjectionMatrix();
   }
 
-  animate() {
+  update() {
+    if (!this.renderer) {
+      return;
+    }
+
     this.refs.controls.update();
 
     session.world.animate(this.camera);
 
     this.renderer.render(session.world.scene, this.camera);
-    requestAnimationFrame(this.animate);
+    this.requestID = requestAnimationFrame(this.update);
   }
 
   render() {

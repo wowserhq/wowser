@@ -13,6 +13,17 @@ class Player extends Unit {
     this.target.name = 'Target';
 
     this.displayID = 24978;
+    this.mapID = null;
+  }
+
+  worldport(mapID, x, y, z) {
+    if (!this.mapID || this.mapID !== mapID) {
+      this.mapID = mapID;
+      this.emit('map:change', mapID);
+    }
+
+    this.position.set(x, y, z);
+    this.emit('position:change', this);
   }
 
 }
