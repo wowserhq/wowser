@@ -26,7 +26,7 @@ class M2 extends THREE.Group {
     this.data.bones.forEach((joint, index) => {
       // Track billboarded bones
       if (joint.flags & 0x08) {
-        billboardedBones.push([index, joint.pivotPoint]);
+        billboardedBones.push(index);
       }
 
       const bone = new THREE.Bone();
@@ -128,14 +128,10 @@ class M2 extends THREE.Group {
 
       this.add(mesh);
 
-      // Preserve billboarded bones for animation in the WorldHandler.
-      if (billboardedBones.length > 0) {
-        billboardedBones.forEach((billboardedBone) => {
-          // Not really sure about appropriate way to determine if mesh is relevant
-          if (billboardedBone[0] === submesh.rootBone) {
-            this.billboards.push([mesh, billboardedBone[0], billboardedBone[1]]);
-          }
-        });
+      // Preserve billboarded bones for animation in the WorldHandler. Not really sure about
+      // appropriate way to determine if mesh's bones are relevant.
+      if (billboardedBones.length > 0 && billboardedBones.indexOf(submesh.rootBone) !== -1) {
+        this.billboards.push([mesh, submesh.rootBone]);
       }
     });
   }

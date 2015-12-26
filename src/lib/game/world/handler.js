@@ -101,51 +101,42 @@ class WorldHandler extends EventEmitter {
     const cameraRotated = this.prevCameraRotation === null ||
       !this.prevCameraRotation.equals(camera.quaternion);
 
-    this.animateModels(cameraRotated);
+    this.animateModels(camera, cameraRotated);
 
     this.prevCameraRotation = camera.quaternion.clone();
   }
 
-  animateModels(cameraRotated) {
+  animateModels(camera, cameraRotated) {
     if (cameraRotated) {
-      this.animateBillboards();
+      this.animateBillboards(camera);
     }
   }
 
-  animateBillboards() {
+  animateBillboards(camera) {
     this.billboards.forEach((billboard) => {
       const mesh = billboard[0];
-      const skeleton = mesh.skeleton;
       const boneIndex = billboard[1];
-      const pivotPoint = billboard[2];
+
+      const skeleton = mesh.skeleton;
       const bone = skeleton.bones[boneIndex];
 
       const mvMatrix = mesh.modelViewMatrix.elements;
       const viewRight = new THREE.Vector3(mvMatrix[0], mvMatrix[4], mvMatrix[8]);
       const viewUp = new THREE.Vector3(mvMatrix[1], mvMatrix[5], mvMatrix[9]);
+      const look = camera.getWorldDirection();
+
       viewRight.multiplyScalar(-1);
 
       const tMatrix = new THREE.Matrix4();
-      const t2Matrix = new THREE.Matrix4();
 
       tMatrix.set(
-        1,  viewUp.x,   viewRight.x,  pivotPoint.x,
-        0,  viewUp.y,   viewRight.y,  pivotPoint.y,
-        0,  viewUp.z,   viewRight.z,  pivotPoint.z,
-        0,  0,          0,            1
+        look.x,   viewRight.x,  viewUp.x,  0,
+        look.y,   viewRight.y,  viewUp.y,  0,
+        look.z,   viewRight.z,  viewUp.z,  0,
+        0,        0,            0,         1
       );
-
-      t2Matrix.set(
-        1,  0,          0,            -pivotPoint.x,
-        0,  1,          0,            -pivotPoint.y,
-        0,  0,          1,            -pivotPoint.z,
-        0,  0,          0,            1
-      );
-
-      tMatrix.multiply(t2Matrix);
 
       bone.rotation.setFromRotationMatrix(tMatrix);
-      // bone.applyMatrix(tMatrix);
     });
   }
 
