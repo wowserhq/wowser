@@ -21,13 +21,15 @@ class M2 extends THREE.Group {
 
     const bones = [];
     const rootBones = [];
+    const indexedBones = [];
 
-    this.data.bones.forEach((joint) => {
+    this.data.bones.forEach((joint, index) => {
       const bone = new THREE.Bone();
 
-      const { pivotPoint } = joint;
+      indexedBones[index] = bone;
 
       // M2 bone positioning seems to be inverted on X and Y
+      const { pivotPoint } = joint;
       const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
       bone.position.copy(correctedPosition);
 
@@ -35,6 +37,7 @@ class M2 extends THREE.Group {
 
       // Track billboarded bones
       if (joint.flags & 0x08) {
+        bone.userData.isBillboard = true;
         this.billboards.push(bone);
       }
 
@@ -117,7 +120,13 @@ class M2 extends THREE.Group {
 
       geometry.faceVertexUvs = [uvs];
 
-      const mesh = new Submesh(id, geometry, textureUnits);
+      let isBillboard = false;
+
+      if (indexedBones[submesh.rootBone].userData.isBillboard) {
+        isBillboard = true;
+      }
+
+      const mesh = new Submesh(id, geometry, textureUnits, isBillboard);
 
       rootBones.forEach((bone) => {
         mesh.add(bone);
@@ -146,15 +155,22 @@ class M2 extends THREE.Group {
   }
 
   applyBillboard(camera, bone) {
+    // TODO Is there a better way to get the relevant non-bone parent?
+    let boneRoot = bone.parent;
+    while (boneRoot.type === 'Bone') {
+      boneRoot = boneRoot.parent;
+    }
+
     const camPos = this.worldToLocal(camera.position.clone());
-    const camUp = camera.up.clone();
 
     const modelForward = new THREE.Vector3(camPos.x, camPos.y, camPos.z);
     modelForward.normalize();
 
-    const modelRight = new THREE.Vector3();
-    modelRight.crossVectors(camUp, modelForward);
-    modelRight.normalize();
+    // TODO Why is the bone's mvm always set to identity? It would be better if we could pull
+    // modelRight out of the bone's mvm.
+    const modelVmEl = boneRoot.modelViewMatrix.elements;
+    const modelRight = new THREE.Vector3(modelVmEl[0], modelVmEl[4], modelVmEl[8]);
+    modelRight.multiplyScalar(-1);
 
     const modelUp = new THREE.Vector3();
     modelUp.crossVectors(modelForward, modelRight);

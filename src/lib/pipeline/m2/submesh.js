@@ -4,12 +4,14 @@ import Material from '../material';
 
 class Submesh extends THREE.SkinnedMesh {
 
-  constructor(id, geometry, textureUnits) {
+  constructor(id, geometry, textureUnits, isBillboard) {
     super(geometry);
 
     this.skin1 = null;
     this.skin2 = null;
     this.skin3 = null;
+
+    this.isBillboard = isBillboard;
 
     // TODO: Figure out why some submeshes have multiple texture units
     textureUnits.forEach((textureUnit) => {
@@ -25,7 +27,7 @@ class Submesh extends THREE.SkinnedMesh {
     this.material = new Material({ skinning: true });
     this.textureUnit = textureUnit;
 
-    const { texture } = textureUnit;
+    const { texture, renderFlags } = textureUnit;
 
     switch (texture.type) {
       case 0:
@@ -51,21 +53,25 @@ class Submesh extends THREE.SkinnedMesh {
         break;
     }
 
-    this.applyRenderFlags(textureUnit.renderFlags);
+    this.applyRenderFlags(renderFlags);
   }
 
   applyRenderFlags(renderFlags) {
-    // Flag 0x04 - no backface culling
-    if (renderFlags.flags & 0x04) {
-      this.material.side = THREE.DoubleSide;
+    const { flags, blendingMode } = renderFlags;
 
-      // Not clear if this is an acceptable assumption, but it covers things like cobweb M2s in
-      // Duskwood.
+    // Flag 0x04 (no backface culling) and all billboards need double side rendering.
+    if (flags & 0x04 || this.isBillboard) {
+      this.material.side = THREE.DoubleSide;
+    }
+
+    // Flag 0x04 (no backface culling) and billboards with blending mode above 1 need to obey
+    // alpha values in the material texture.
+    if (flags & 0x04 || (this.isBillboard && blendingMode > 1)) {
       this.material.transparent = true;
     }
 
     // Blending modes
-    switch (renderFlags.blendingMode) {
+    switch (blendingMode) {
       case 0:
         this.material.blending = THREE.NoBlending;
         this.material.blendSrc = THREE.OneFactor;
@@ -99,10 +105,6 @@ class Submesh extends THREE.SkinnedMesh {
         break;
 
       case 4:
-        this.material.transparent = true;
-
-        this.material.side = THREE.DoubleSide;
-
         this.material.blendSrc = THREE.SrcAlphaFactor;
         this.material.blendDst = THREE.OneFactor;
         this.material.blendSrcAlpha = THREE.SrcAlphaFactor;
