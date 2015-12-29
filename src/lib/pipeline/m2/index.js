@@ -120,11 +120,7 @@ class M2 extends THREE.Group {
 
       geometry.faceVertexUvs = [uvs];
 
-      let isBillboard = false;
-
-      if (indexedBones[submesh.rootBone].userData.isBillboard) {
-        isBillboard = true;
-      }
+      const isBillboard = indexedBones[submesh.rootBone].userData.isBillboard === true;
 
       const mesh = new Submesh(id, geometry, textureUnits, isBillboard);
 
