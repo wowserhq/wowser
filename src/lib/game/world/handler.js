@@ -34,10 +34,10 @@ class WorldHandler extends EventEmitter {
     this.player.on('map:change', this.changeMap);
     this.player.on('position:change', this.changePosition);
 
-    this.billboards = [];
+    this.billboardedM2s = [];
 
     // Darkshire (Eastern Kingdoms)
-    this.player.worldport(0, -10559, -1189, 28);
+    // this.player.worldport(0, -10559, -1189, 28);
 
     // Booty Bay (Eastern Kingdoms)
     // this.player.worldport(0, -14354, 518, 22);
@@ -142,10 +142,8 @@ class WorldHandler extends EventEmitter {
     this.renderAtCoords(player.position.x, player.position.y);
   }
 
-  addBillboards(newBillboards) {
-    if (newBillboards.length > 0) {
-      this.billboards = this.billboards.concat(newBillboards);
-    }
+  addBillboardedM2(m2) {
+    this.billboardedM2s.push(m2);
   }
 
   animate(camera) {
@@ -159,38 +157,11 @@ class WorldHandler extends EventEmitter {
 
   animateModels(camera, cameraRotated) {
     if (cameraRotated) {
-      this.animateBillboards(camera);
+      this.billboardedM2s.forEach((m2) => {
+        m2.applyBillboards(camera);
+      });
     }
   }
-
-  animateBillboards(camera) {
-    this.billboards.forEach((billboard) => {
-      const mesh = billboard[0];
-      const boneIndex = billboard[1];
-
-      const skeleton = mesh.skeleton;
-      const bone = skeleton.bones[boneIndex];
-
-      const mvMatrix = mesh.modelViewMatrix.elements;
-      const viewRight = new THREE.Vector3(mvMatrix[0], mvMatrix[4], mvMatrix[8]);
-      const viewUp = new THREE.Vector3(mvMatrix[1], mvMatrix[5], mvMatrix[9]);
-      const look = camera.getWorldDirection();
-
-      viewRight.multiplyScalar(-1);
-
-      const tMatrix = new THREE.Matrix4();
-
-      tMatrix.set(
-        look.x,   viewRight.x,  viewUp.x,  0,
-        look.y,   viewRight.y,  viewUp.y,  0,
-        look.z,   viewRight.z,  viewUp.z,  0,
-        0,        0,            0,         1
-      );
-
-      bone.rotation.setFromRotationMatrix(tMatrix);
-    });
-  }
-
 }
 
 export default WorldHandler;

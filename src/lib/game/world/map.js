@@ -93,8 +93,8 @@ class Map extends THREE.Group {
 
           this.add(m2);
 
-          if (this.world !== null) {
-            this.world.addBillboards(m2.billboards);
+          if (this.world !== null && m2.billboards.length > 0) {
+            this.world.addBillboardedM2(m2);
           }
         });
       }

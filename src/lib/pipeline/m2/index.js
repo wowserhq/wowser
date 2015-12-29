@@ -21,29 +21,30 @@ class M2 extends THREE.Group {
 
     const bones = [];
     const rootBones = [];
-    const billboardedBones = [];
 
-    this.data.bones.forEach((joint, index) => {
-      // Track billboarded bones
-      if (joint.flags & 0x08) {
-        billboardedBones.push(index);
-      }
-
+    this.data.bones.forEach((joint) => {
       const bone = new THREE.Bone();
 
       const { pivotPoint } = joint;
 
-      // Provided as (-X, -Y, Z)
+      // M2 bone positioning seems to be inverted on X and Y
       const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
       bone.position.copy(correctedPosition);
 
       bones.push(bone);
 
+      // Track billboarded bones
+      if (joint.flags & 0x08) {
+        bone.userData.isBillboard = true;
+        bone.userData.pivotPoint = correctedPosition;
+        this.billboards.push(bone);
+      }
+
       if (joint.parentID > -1) {
         const parent = bones[joint.parentID];
         parent.add(bone);
 
-        // Correct bone positioning
+        // Correct bone positioning relative to parent
         let up = bone;
         while (up = up.parent) {
           bone.position.sub(up.position);
@@ -127,12 +128,6 @@ class M2 extends THREE.Group {
       mesh.bind(this.skeleton);
 
       this.add(mesh);
-
-      // Preserve billboarded bones for animation in the WorldHandler. Not really sure about
-      // appropriate way to determine if mesh's bones are relevant.
-      if (billboardedBones.length > 0 && billboardedBones.indexOf(submesh.rootBone) !== -1) {
-        this.billboards.push([mesh, submesh.rootBone]);
-      }
     });
   }
 
@@ -144,6 +139,54 @@ class M2 extends THREE.Group {
 
   clone() {
     return new this.constructor(this.path, this.data, this.skinData);
+  }
+
+  applyBillboards(camera) {
+    this.billboards.forEach((bone) => {
+      this.applyBillboard(camera, bone);
+    });
+  }
+
+  applyBillboard(camera, bone) {
+    const pivotPoint = bone.userData.pivotPoint;
+
+    const tMatrix = new THREE.Matrix4().identity();
+
+    tMatrix.setPosition(pivotPoint);
+
+    const camPos = camera.position.clone();
+    const invMatrixWorld = new THREE.Matrix4().getInverse(this.matrixWorld);
+    camPos.applyMatrix4(invMatrixWorld);
+
+    const camUp = camera.up;
+
+    const modelForward = new THREE.Vector4(
+      camPos.x - pivotPoint.x,
+      camPos.y - pivotPoint.y,
+      camPos.z - pivotPoint.z,
+      0
+    ).normalize();
+
+    const modelRight = new THREE.Vector3();
+    modelRight.crossVectors(camUp, modelForward);
+    modelRight.normalize();
+
+    const modelUp = new THREE.Vector3();
+    modelUp.crossVectors(modelForward, modelRight);
+    modelUp.normalize();
+
+    const rotateMatrix = new THREE.Matrix4();
+
+    rotateMatrix.set(
+      modelForward.x,   modelRight.x,   modelUp.x,  0,
+      modelForward.y,   modelRight.y,   modelUp.y,  0,
+      modelForward.z,   modelRight.z,   modelUp.z,  0,
+      0,                0,              0,          1
+    );
+
+    tMatrix.multiply(rotateMatrix);
+
+    bone.rotation.setFromRotationMatrix(tMatrix);
   }
 
   static load(path) {
