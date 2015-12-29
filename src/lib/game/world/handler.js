@@ -37,7 +37,7 @@ class WorldHandler extends EventEmitter {
     this.billboardedM2s = [];
 
     // Darkshire (Eastern Kingdoms)
-    // this.player.worldport(0, -10559, -1189, 28);
+    this.player.worldport(0, -10559, -1189, 28);
 
     // Booty Bay (Eastern Kingdoms)
     // this.player.worldport(0, -14354, 518, 22);
