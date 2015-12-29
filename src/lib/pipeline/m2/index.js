@@ -35,8 +35,6 @@ class M2 extends THREE.Group {
 
       // Track billboarded bones
       if (joint.flags & 0x08) {
-        bone.userData.isBillboard = true;
-        bone.userData.pivotPoint = correctedPosition;
         this.billboards.push(bone);
       }
 
@@ -148,24 +146,11 @@ class M2 extends THREE.Group {
   }
 
   applyBillboard(camera, bone) {
-    const pivotPoint = bone.userData.pivotPoint;
+    const camPos = this.worldToLocal(camera.position.clone());
+    const camUp = camera.up.clone();
 
-    const tMatrix = new THREE.Matrix4().identity();
-
-    tMatrix.setPosition(pivotPoint);
-
-    const camPos = camera.position.clone();
-    const invMatrixWorld = new THREE.Matrix4().getInverse(this.matrixWorld);
-    camPos.applyMatrix4(invMatrixWorld);
-
-    const camUp = camera.up;
-
-    const modelForward = new THREE.Vector4(
-      camPos.x - pivotPoint.x,
-      camPos.y - pivotPoint.y,
-      camPos.z - pivotPoint.z,
-      0
-    ).normalize();
+    const modelForward = new THREE.Vector3(camPos.x, camPos.y, camPos.z);
+    modelForward.normalize();
 
     const modelRight = new THREE.Vector3();
     modelRight.crossVectors(camUp, modelForward);
@@ -184,9 +169,7 @@ class M2 extends THREE.Group {
       0,                0,              0,          1
     );
 
-    tMatrix.multiply(rotateMatrix);
-
-    bone.rotation.setFromRotationMatrix(tMatrix);
+    bone.rotation.setFromRotationMatrix(rotateMatrix);
   }
 
   static load(path) {
