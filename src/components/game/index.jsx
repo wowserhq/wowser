@@ -15,7 +15,7 @@ class GameScreen extends React.Component {
   constructor() {
     super();
 
-    this.update = ::this.update;
+    this.animate = ::this.animate;
     this.resize = ::this.resize;
 
     this.camera = new THREE.PerspectiveCamera(60, this.aspectRatio, 1, 1000);
@@ -33,7 +33,7 @@ class GameScreen extends React.Component {
     });
 
     this.resize();
-    this.update();
+    this.animate();
 
     window.addEventListener('resize', this.resize);
   }
@@ -62,7 +62,7 @@ class GameScreen extends React.Component {
     this.camera.updateProjectionMatrix();
   }
 
-  update() {
+  animate() {
     if (!this.renderer) {
       return;
     }
@@ -72,7 +72,7 @@ class GameScreen extends React.Component {
     session.world.animate(this.camera);
 
     this.renderer.render(session.world.scene, this.camera);
-    this.requestID = requestAnimationFrame(this.update);
+    this.requestID = requestAnimationFrame(this.animate);
   }
 
   render() {
