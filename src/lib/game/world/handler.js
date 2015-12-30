@@ -15,15 +15,6 @@ class WorldHandler extends EventEmitter {
 
     this.prevCameraRotation = null;
 
-    // TODO: Use this handler for all entities, not just the player
-    this.player.on('change:model', (oldModel, newModel) => {
-      if (oldModel) {
-        this.scene.remove(oldModel);
-      }
-
-      this.scene.add(newModel);
-    });
-
     this.changeMap = ::this.changeMap;
     this.changeModel = ::this.changeModel;
     this.changePosition = ::this.changePosition;
