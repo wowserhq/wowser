@@ -13,6 +13,7 @@ class M2 extends THREE.Group {
     this.path = path;
     this.data = data;
     this.skinData = skinData;
+    this.billboards = [];
 
     const sharedGeometry = new THREE.Geometry();
 
@@ -24,19 +25,24 @@ class M2 extends THREE.Group {
     this.data.bones.forEach((joint) => {
       const bone = new THREE.Bone();
 
+      // M2 bone positioning seems to be inverted on X and Y
       const { pivotPoint } = joint;
-
-      // Provided as (-X, -Y, Z)
       const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
       bone.position.copy(correctedPosition);
 
       bones.push(bone);
 
+      // Track billboarded bones
+      if (joint.flags & 0x08) {
+        bone.userData.isBillboard = true;
+        this.billboards.push(bone);
+      }
+
       if (joint.parentID > -1) {
         const parent = bones[joint.parentID];
         parent.add(bone);
 
-        // Correct bone positioning
+        // Correct bone positioning relative to parent
         let up = bone;
         while (up = up.parent) {
           bone.position.sub(up.position);
@@ -111,7 +117,9 @@ class M2 extends THREE.Group {
 
       geometry.faceVertexUvs = [uvs];
 
-      const mesh = new Submesh(id, geometry, textureUnits);
+      const isBillboard = bones[submesh.rootBone].userData.isBillboard === true;
+
+      const mesh = new Submesh(id, geometry, textureUnits, isBillboard);
 
       rootBones.forEach((bone) => {
         mesh.add(bone);
@@ -131,6 +139,46 @@ class M2 extends THREE.Group {
 
   clone() {
     return new this.constructor(this.path, this.data, this.skinData);
+  }
+
+  applyBillboards(camera) {
+    this.billboards.forEach((bone) => {
+      this.applyBillboard(camera, bone);
+    });
+  }
+
+  applyBillboard(camera, bone) {
+    // TODO Is there a better way to get the relevant non-bone parent?
+    let boneRoot = bone.parent;
+    while (boneRoot.type === 'Bone') {
+      boneRoot = boneRoot.parent;
+    }
+
+    const camPos = this.worldToLocal(camera.position.clone());
+
+    const modelForward = new THREE.Vector3(camPos.x, camPos.y, camPos.z);
+    modelForward.normalize();
+
+    // TODO Why is the bone's mvm always set to identity? It would be better if we could pull
+    // modelRight out of the bone's mvm.
+    const modelVmEl = boneRoot.modelViewMatrix.elements;
+    const modelRight = new THREE.Vector3(modelVmEl[0], modelVmEl[4], modelVmEl[8]);
+    modelRight.multiplyScalar(-1);
+
+    const modelUp = new THREE.Vector3();
+    modelUp.crossVectors(modelForward, modelRight);
+    modelUp.normalize();
+
+    const rotateMatrix = new THREE.Matrix4();
+
+    rotateMatrix.set(
+      modelForward.x,   modelRight.x,   modelUp.x,  0,
+      modelForward.y,   modelRight.y,   modelUp.y,  0,
+      modelForward.z,   modelRight.z,   modelUp.z,  0,
+      0,                0,              0,          1
+    );
+
+    bone.rotation.setFromRotationMatrix(rotateMatrix);
   }
 
   static load(path) {

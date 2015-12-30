@@ -128,6 +128,11 @@ class WorldHandler extends EventEmitter {
     this.renderAtCoords(player.position.x, player.position.y);
   }
 
+  animate(camera, cameraRotated) {
+    if (this.map !== null) {
+      this.map.animate(camera, cameraRotated);
+    }
+  }
 }
 
 export default WorldHandler;
