@@ -23,15 +23,11 @@ class Map extends THREE.Group {
     this.wmos = {};
     this.doodads = {};
 
-    this.world = null;
+    this.billboardedM2s = [];
   }
 
   get internalName() {
     return this.data.internalName;
-  }
-
-  setWorld(world) {
-    this.world = world;
   }
 
   render(x, y) {
@@ -93,12 +89,28 @@ class Map extends THREE.Group {
 
           this.add(m2);
 
-          if (this.world !== null && m2.billboards.length > 0) {
-            this.world.addBillboardedM2(m2);
+          if (m2.billboards.length > 0) {
+            this.addBillboardedM2(m2);
           }
         });
       }
     });
+  }
+
+  addBillboardedM2(m2) {
+    this.billboardedM2s.push(m2);
+  }
+
+  animate(camera, cameraRotated) {
+    this.animateModels(camera, cameraRotated);
+  }
+
+  animateModels(camera, cameraRotated) {
+    if (cameraRotated) {
+      this.billboardedM2s.forEach((m2) => {
+        m2.applyBillboards(camera);
+      });
+    }
   }
 
   static load(id) {

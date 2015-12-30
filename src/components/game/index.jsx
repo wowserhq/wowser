@@ -22,6 +22,8 @@ class GameScreen extends React.Component {
     this.camera.up.set(0, 0, 1);
     this.camera.position.set(15, 0, 7);
 
+    this.prevCameraRotation = null;
+
     this.renderer = null;
     this.requestID = null;
   }
@@ -69,10 +71,15 @@ class GameScreen extends React.Component {
 
     this.refs.controls.update();
 
-    session.world.animate(this.camera);
+    const cameraRotated = this.prevCameraRotation === null ||
+      !this.prevCameraRotation.equals(this.camera.quaternion);
+
+    session.world.animate(this.camera, cameraRotated);
 
     this.renderer.render(session.world.scene, this.camera);
     this.requestID = requestAnimationFrame(this.animate);
+
+    this.prevCameraRotation = this.camera.quaternion.clone();
   }
 
   render() {

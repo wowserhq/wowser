@@ -13,8 +13,6 @@ class WorldHandler extends EventEmitter {
     this.scene = new THREE.Scene();
     this.map = null;
 
-    this.prevCameraRotation = null;
-
     this.changeMap = ::this.changeMap;
     this.changeModel = ::this.changeModel;
     this.changePosition = ::this.changePosition;
@@ -24,8 +22,6 @@ class WorldHandler extends EventEmitter {
 
     this.player.on('map:change', this.changeMap);
     this.player.on('position:change', this.changePosition);
-
-    this.billboardedM2s = [];
 
     // Darkshire (Eastern Kingdoms)
     this.player.worldport(0, -10559, -1189, 28);
@@ -111,7 +107,6 @@ class WorldHandler extends EventEmitter {
         this.scene.remove(this.map);
       }
       this.map = map;
-      this.map.setWorld(this);
       this.scene.add(this.map);
       this.renderAtCoords(this.player.position.x, this.player.position.y);
     });
@@ -133,24 +128,9 @@ class WorldHandler extends EventEmitter {
     this.renderAtCoords(player.position.x, player.position.y);
   }
 
-  addBillboardedM2(m2) {
-    this.billboardedM2s.push(m2);
-  }
-
-  animate(camera) {
-    const cameraRotated = this.prevCameraRotation === null ||
-      !this.prevCameraRotation.equals(camera.quaternion);
-
-    this.animateModels(camera, cameraRotated);
-
-    this.prevCameraRotation = camera.quaternion.clone();
-  }
-
-  animateModels(camera, cameraRotated) {
-    if (cameraRotated) {
-      this.billboardedM2s.forEach((m2) => {
-        m2.applyBillboards(camera);
-      });
+  animate(camera, cameraRotated) {
+    if (this.map !== null) {
+      this.map.animate(camera, cameraRotated);
     }
   }
 }
