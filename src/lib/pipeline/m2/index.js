@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import Submesh from './submesh';
+import AnimationManager from './animation-manager';
 import WorkerPool from '../worker/pool';
 
 class M2 extends THREE.Group {
@@ -17,16 +18,9 @@ class M2 extends THREE.Group {
     this.billboards = [];
 
     this.isAnimated = this.data.isAnimated;
-    this.animationClips = [];
-    this.animations = [];
+    this.animations = new AnimationManager(this, this.data.animations);
 
     const sharedGeometry = new THREE.Geometry();
-
-    // Establish clips for each animation.
-    this.data.animations.forEach((animationDef, index) => {
-      const clip = new THREE.AnimationClip('animation-' + index, animationDef.length, []);
-      this.animationClips[index] = clip;
-    });
 
     // TODO: Potentially move these calculations and mesh generation to worker
 
@@ -64,7 +58,7 @@ class M2 extends THREE.Group {
 
       // Bone translation animation block
       if (joint.translation.isAnimated) {
-        this.registerAnimationTrack({
+        this.animations.registerTrack({
           target: bone,
           property: 'position',
           animationBlock: joint.translation,
@@ -85,7 +79,7 @@ class M2 extends THREE.Group {
 
       // Bone rotation animation block
       if (joint.rotation.isAnimated) {
-        this.registerAnimationTrack({
+        this.animations.registerTrack({
           target: bone,
           property: 'quaternion',
           animationBlock: joint.rotation,
@@ -99,7 +93,7 @@ class M2 extends THREE.Group {
 
       // Bone scaling animation block
       if (joint.scaling.isAnimated) {
-        this.registerAnimationTrack({
+        this.animations.registerTrack({
           target: bone,
           property: 'scale',
           animationBlock: joint.scaling,
@@ -216,54 +210,6 @@ class M2 extends THREE.Group {
       const mesh = new Submesh(id, submeshOpts);
 
       this.add(mesh);
-    });
-
-    this.registerAnimations();
-  }
-
-  registerAnimationTrack(settings) {
-    const trackName = settings.target.uuid + '.' + settings.property;
-    const animationBlock = settings.animationBlock;
-
-    animationBlock.tracks.forEach((trackDef, animationIndex) => {
-      // Avoid attempting to create empty tracks.
-      if (trackDef.keyframes.length === 0) {
-        return;
-      }
-
-      const keyframes = [];
-
-      trackDef.keyframes.forEach((keyframeDef) => {
-        const keyframe = {
-          time: keyframeDef.time,
-          value: settings.valueTransform(keyframeDef.value)
-        };
-
-        keyframes.push(keyframe);
-      });
-
-      const clip = this.animationClips[animationIndex];
-      const track = new THREE[settings.trackType](trackName, keyframes);
-
-      clip.tracks.push(track);
-    });
-  }
-
-  registerAnimations() {
-    this.animationClips.forEach((clip) => {
-      const animationMixer = new THREE.AnimationMixer(this);
-
-      // M2 animations are keyframed in milliseconds.
-      animationMixer.timeScale = 1000.0;
-
-      clip.trim();
-      clip.optimize();
-
-      const action = new THREE.AnimationAction(clip);
-
-      animationMixer.addAction(action);
-
-      this.animations.push(animationMixer);
     });
   }
 

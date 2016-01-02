@@ -98,6 +98,9 @@ class Map extends THREE.Group {
   }
 
   addAnimatedM2(m2) {
+    // TODO: Manage which animations play and when.
+    m2.animations.play(0);
+
     this.animatedM2s.push(m2);
   }
 
@@ -107,9 +110,8 @@ class Map extends THREE.Group {
 
   animateModels(delta, camera, cameraRotated) {
     this.animatedM2s.forEach((m2) => {
-      // TODO: Manage which animations play and when.
       if (m2.animations.length > 0) {
-        m2.animations[0].update(delta);
+        m2.animations.update(delta);
       }
 
       if (cameraRotated) {
