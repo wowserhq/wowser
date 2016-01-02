@@ -7,6 +7,8 @@ class AnimationManager {
     this.activeActions = {};
 
     this.mixer = new THREE.AnimationMixer(root);
+
+    // M2 animations are keyframed in milliseconds.
     this.mixer.timeScale = 1000.0;
 
     this.registerClips(animationDefs);
@@ -77,24 +79,6 @@ class AnimationManager {
 
       clip.trim();
       clip.optimize();
-    });
-  }
-
-  registerAnimations() {
-    this.animationClips.forEach((clip) => {
-      const animationMixer = new THREE.AnimationMixer(this);
-
-      // M2 animations are keyframed in milliseconds.
-      animationMixer.timeScale = 1000.0;
-
-      clip.trim();
-      clip.optimize();
-
-      const action = new THREE.AnimationAction(clip);
-
-      animationMixer.addAction(action);
-
-      this.animations.push(animationMixer);
     });
   }
 
