@@ -121,6 +121,10 @@ class WorldHandler extends EventEmitter {
     if (newModel) {
       newModel.skeletonHelper = new THREE.SkeletonHelper(newModel);
       this.scene.add(newModel.skeletonHelper);
+
+      if (newModel.isAnimated && this.map !== null) {
+        this.map.addAnimatedM2(newModel);
+      }
     }
   }
 
@@ -128,9 +132,9 @@ class WorldHandler extends EventEmitter {
     this.renderAtCoords(player.position.x, player.position.y);
   }
 
-  animate(camera, cameraRotated) {
+  animate(delta, camera, cameraRotated) {
     if (this.map !== null) {
-      this.map.animate(camera, cameraRotated);
+      this.map.animate(delta, camera, cameraRotated);
     }
   }
 }

@@ -23,7 +23,7 @@ class Map extends THREE.Group {
     this.wmos = {};
     this.doodads = {};
 
-    this.billboardedM2s = [];
+    this.animatedM2s = [];
   }
 
   get internalName() {
@@ -89,28 +89,38 @@ class Map extends THREE.Group {
 
           this.add(m2);
 
-          if (m2.billboards.length > 0) {
-            this.addBillboardedM2(m2);
+          if (m2.isAnimated) {
+            this.addAnimatedM2(m2);
           }
         });
       }
     });
   }
 
-  addBillboardedM2(m2) {
-    this.billboardedM2s.push(m2);
+  addAnimatedM2(m2) {
+    this.animatedM2s.push(m2);
   }
 
-  animate(camera, cameraRotated) {
-    this.animateModels(camera, cameraRotated);
+  animate(delta, camera, cameraRotated) {
+    this.animateModels(delta, camera, cameraRotated);
   }
 
-  animateModels(camera, cameraRotated) {
-    if (cameraRotated) {
-      this.billboardedM2s.forEach((m2) => {
+  animateModels(delta, camera, cameraRotated) {
+    this.animatedM2s.forEach((m2) => {
+      // TODO: Manage which animations play and when.
+      if (m2.animations.length > 0) {
+        m2.animations[0].update(delta);
+      }
+
+      if (cameraRotated) {
         m2.applyBillboards(camera);
-      });
-    }
+      }
+
+      // If present, ensure the skeleton helper animates with the model.
+      if (m2.skeletonHelper) {
+        m2.skeletonHelper.update();
+      }
+    });
   }
 
   static load(id) {
