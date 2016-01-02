@@ -3,6 +3,8 @@ import THREE from 'three';
 class AnimationManager {
 
   constructor(root, animationDefs) {
+    this.animationDefs = animationDefs;
+
     this.clips = [];
     this.activeActions = {};
 
@@ -11,7 +13,7 @@ class AnimationManager {
     // M2 animations are keyframed in milliseconds.
     this.mixer.timeScale = 1000.0;
 
-    this.registerClips(animationDefs);
+    this.registerClips(this.animationDefs);
 
     this.length = this.clips.length;
   }
@@ -56,6 +58,13 @@ class AnimationManager {
     const animationBlock = opts.animationBlock;
 
     animationBlock.tracks.forEach((trackDef, animationIndex) => {
+      const animationDef = this.animationDefs[animationIndex];
+
+      // Avoid creating tracks for external .anim animations.
+      if ((animationDef.flags & 0x130) === 0) {
+        return;
+      }
+
       // Avoid attempting to create empty tracks.
       if (trackDef.keyframes.length === 0) {
         return;
