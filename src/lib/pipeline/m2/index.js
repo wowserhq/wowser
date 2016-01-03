@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import Submesh from './submesh';
+import AnimationManager from './animation-manager';
 import WorkerPool from '../worker/pool';
 
 class M2 extends THREE.Group {
@@ -13,7 +14,11 @@ class M2 extends THREE.Group {
     this.path = path;
     this.data = data;
     this.skinData = skinData;
+
     this.billboards = [];
+
+    this.isAnimated = this.data.isAnimated;
+    this.animations = new AnimationManager(this, this.data.animations);
 
     const sharedGeometry = new THREE.Geometry();
 
@@ -32,12 +37,6 @@ class M2 extends THREE.Group {
 
       bones.push(bone);
 
-      // Track billboarded bones
-      if (joint.flags & 0x08) {
-        bone.userData.isBillboard = true;
-        this.billboards.push(bone);
-      }
-
       if (joint.parentID > -1) {
         const parent = bones[joint.parentID];
         parent.add(bone);
@@ -49,6 +48,61 @@ class M2 extends THREE.Group {
         }
       } else {
         rootBones.push(bone);
+      }
+
+      // Track billboarded bones
+      if (joint.flags & 0x08) {
+        bone.userData.isBillboard = true;
+        this.billboards.push(bone);
+      }
+
+      // Bone translation animation block
+      if (joint.translation.isAnimated) {
+        this.animations.registerTrack({
+          target: bone,
+          property: 'position',
+          animationBlock: joint.translation,
+          trackType: 'VectorKeyframeTrack',
+
+          valueTransform: function(value) {
+            const translatedBone = bone.clone();
+
+            // Same inverted X and Y values as the pivotPoint above.
+            translatedBone.translateX(-value.x);
+            translatedBone.translateY(-value.y);
+            translatedBone.translateZ(value.z);
+
+            return translatedBone.position;
+          }
+        });
+      }
+
+      // Bone rotation animation block
+      if (joint.rotation.isAnimated) {
+        this.animations.registerTrack({
+          target: bone,
+          property: 'quaternion',
+          animationBlock: joint.rotation,
+          trackType: 'QuaternionKeyframeTrack',
+
+          valueTransform: function(value) {
+            return new THREE.Quaternion(value.x, value.y, -value.z, value.w).inverse();
+          }
+        });
+      }
+
+      // Bone scaling animation block
+      if (joint.scaling.isAnimated) {
+        this.animations.registerTrack({
+          target: bone,
+          property: 'scale',
+          animationBlock: joint.scaling,
+          trackType: 'VectorKeyframeTrack',
+
+          valueTransform: function(value) {
+            return new THREE.Vector3(value.x, value.y, value.z);
+          }
+        });
       }
     });
 
@@ -78,14 +132,28 @@ class M2 extends THREE.Group {
     sharedGeometry.applyMatrix(matrix);
     sharedGeometry.rotateX(-Math.PI / 2);
 
-    const { textures } = data;
-    const { renderFlags } = data;
+    const { textureLookups, textures, renderFlags } = data;
+    const { transparencyLookups, transparencies, colors } = data;
     const { indices, textureUnits, triangles } = skinData;
 
     // TODO: Look up colors, render flags and what not
     textureUnits.forEach(function(textureUnit) {
-      textureUnit.texture = textures[textureUnit.textureIndex];
+      const textureLookup = textureLookups[textureUnit.textureIndex];
+      const texture = textures[textureLookup];
+      textureUnit.texture = texture;
+
       textureUnit.renderFlags = renderFlags[textureUnit.renderFlagsIndex];
+
+      if (textureUnit.transparencyIndex > -1) {
+        const transparencyLookup = transparencyLookups[textureUnit.transparencyIndex];
+        const transparency = transparencies[transparencyLookup];
+        textureUnit.transparency = transparency;
+      }
+
+      if (textureUnit.colorIndex > -1) {
+        const color = colors[textureUnit.colorIndex];
+        textureUnit.color = color;
+      }
     });
 
     this.skinData.submeshes.forEach((submesh, id) => {
@@ -106,6 +174,7 @@ class M2 extends THREE.Group {
         ];
 
         const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
+
         geometry.faces.push(face);
 
         uvs[faceIndex] = [];
@@ -117,28 +186,31 @@ class M2 extends THREE.Group {
 
       geometry.faceVertexUvs = [uvs];
 
+      const submeshGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+
       const isBillboard = bones[submesh.rootBone].userData.isBillboard === true;
 
-      const mesh = new Submesh(id, geometry, textureUnits, isBillboard);
-
-      rootBones.forEach((bone) => {
-        mesh.add(bone);
+      // Extract texture units associated with this particular submesh, since not all texture units
+      // apply to all submeshes.
+      const submeshTextureUnits = [];
+      textureUnits.forEach((textureUnit) => {
+        if (textureUnit.submeshIndex === id) {
+          submeshTextureUnits.push(textureUnit);
+        }
       });
 
-      mesh.bind(this.skeleton);
+      const submeshOpts = {
+        index: id,
+        geometry: submeshGeometry,
+        rootBones: rootBones,
+        textureUnits: submeshTextureUnits,
+        isBillboard: isBillboard
+      };
+
+      const mesh = new Submesh(this, submeshOpts);
 
       this.add(mesh);
     });
-  }
-
-  set displayInfo(displayInfo) {
-    this.children.forEach(function(submesh) {
-      submesh.displayInfo = displayInfo;
-    });
-  }
-
-  clone() {
-    return new this.constructor(this.path, this.data, this.skinData);
   }
 
   applyBillboards(camera) {
@@ -179,6 +251,16 @@ class M2 extends THREE.Group {
     );
 
     bone.rotation.setFromRotationMatrix(rotateMatrix);
+  }
+
+  set displayInfo(displayInfo) {
+    this.children.forEach(function(submesh) {
+      submesh.displayInfo = displayInfo;
+    });
+  }
+
+  clone() {
+    return new this.constructor(this.path, this.data, this.skinData);
   }
 
   static load(path) {

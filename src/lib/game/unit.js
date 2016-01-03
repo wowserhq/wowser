@@ -69,7 +69,15 @@ class Unit extends Entity {
     if (this._model) {
       this.view.remove(this._model);
     }
+
     this.view.add(m2);
+
+    // Auto-play animation index 0 in unit model, if present
+    // TODO: Properly manage unit animations
+    if (m2.isAnimated && m2.animations.length > 0) {
+      m2.animations.play(0);
+    }
+
     this.emit('model:change', this, this._model, m2);
     this._model = m2;
   }
