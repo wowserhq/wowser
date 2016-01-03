@@ -6,7 +6,7 @@ import M2 from '../../pipeline/m2';
 import WDT from '../../pipeline/wdt';
 import WMO from '../../pipeline/wmo';
 
-class Map extends THREE.Group {
+class WorldMap extends THREE.Group {
 
   static TILES = 64;
   static ZEROPOINT = ADT.SIZE * 32;
@@ -23,7 +23,7 @@ class Map extends THREE.Group {
     this.wmos = {};
 
     this.queuedDoodads = {};
-    this.doodads = new window.Map();
+    this.doodads = new Map();
   }
 
   get internalName() {
@@ -137,4 +137,4 @@ class Map extends THREE.Group {
 
 }
 
-export default Map;
+export default WorldMap;

@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import THREE from 'three';
 
-import Map from './map';
+import WorldMap from './map';
 
 class WorldHandler extends EventEmitter {
 
@@ -102,7 +102,7 @@ class WorldHandler extends EventEmitter {
   }
 
   changeMap(mapID) {
-    Map.load(mapID).then((map) => {
+    WorldMap.load(mapID).then((map) => {
       if (this.map) {
         this.scene.remove(this.map);
       }
