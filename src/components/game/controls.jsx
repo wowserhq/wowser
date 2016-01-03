@@ -78,41 +78,41 @@ class Controls extends React.Component {
 
   update() {
     const unit = this.unit;
+
+    // TODO: Get rid of this delta retrieval call
     const delta = this.clock.getDelta();
-    const distance = 30 * delta;
-    const angle = Math.PI / 2 * delta;
 
     if (this.unit) {
       if (key.isPressed('up') || key.isPressed('w')) {
-        unit.moveForward(distance);
+        unit.moveForward(delta);
       }
 
       if (key.isPressed('down') || key.isPressed('s')) {
-        unit.moveBackward(distance);
+        unit.moveBackward(delta);
       }
 
       if (key.isPressed('q')) {
-        unit.strafeLeft(distance);
+        unit.strafeLeft(delta);
       }
 
       if (key.isPressed('e')) {
-        unit.strafeRight(distance);
+        unit.strafeRight(delta);
       }
 
       if (key.isPressed('space')) {
-        unit.ascend(distance);
+        unit.ascend(delta);
       }
 
       if (key.isPressed('x')) {
-        unit.descend(distance);
+        unit.descend(delta);
       }
 
       if (key.isPressed('left') || key.isPressed('a')) {
-        unit.rotateLeft(angle);
+        unit.rotateLeft(delta);
       }
 
       if (key.isPressed('right') || key.isPressed('d')) {
-        unit.rotateRight(angle);
+        unit.rotateRight(delta);
       }
 
       this.target = this.unit.position;

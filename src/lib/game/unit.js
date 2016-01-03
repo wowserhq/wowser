@@ -19,6 +19,9 @@ class Unit extends Entity {
     this.maxMp = 0;
     this.mp = 0;
 
+    this.rotateSpeed = 2;
+    this.moveSpeed = 40;
+
     this._view = new THREE.Group();
 
     this._displayID = 0;
@@ -82,43 +85,43 @@ class Unit extends Entity {
     this._model = m2;
   }
 
-  ascend(distance) {
-    this.view.translateZ(distance);
+  ascend(delta) {
+    this.view.translateZ(this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
-  descend(distance) {
-    this.view.translateZ(-distance);
+  descend(delta) {
+    this.view.translateZ(-this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
-  moveForward(distance) {
-    this.view.translateX(distance);
+  moveForward(delta) {
+    this.view.translateX(this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
-  moveBackward(distance) {
-    this.view.translateX(-distance);
+  moveBackward(delta) {
+    this.view.translateX(-this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
-  rotateLeft(angle) {
-    this.view.rotateZ(angle);
+  rotateLeft(delta) {
+    this.view.rotateZ(this.rotateSpeed * delta);
     this.emit('position:change', this);
   }
 
-  rotateRight(angle) {
-    this.view.rotateZ(-angle);
+  rotateRight(delta) {
+    this.view.rotateZ(-this.rotateSpeed * delta);
     this.emit('position:change', this);
   }
 
-  strafeLeft(distance) {
-    this.view.translateY(distance);
+  strafeLeft(delta) {
+    this.view.translateY(this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
-  strafeRight(distance) {
-    this.view.translateY(-distance);
+  strafeRight(delta) {
+    this.view.translateY(-this.moveSpeed * delta);
     this.emit('position:change', this);
   }
 
