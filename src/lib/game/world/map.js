@@ -21,9 +21,9 @@ class Map extends THREE.Group {
 
     // TODO: Track ADTs in some sort of fashion
     this.wmos = {};
-    this.doodads = {};
 
-    this.animatedM2s = [];
+    this.queuedDoodads = {};
+    this.doodads = new window.Map();
   }
 
   get internalName() {
@@ -68,8 +68,8 @@ class Map extends THREE.Group {
 
   renderDoodads(entries) {
     entries.forEach((entry) => {
-      if (!this.doodads[entry.id]) {
-        this.doodads[entry.id] = M2.load(entry.filename).then((m2) => {
+      if (!this.queuedDoodads[entry.id]) {
+        this.queuedDoodads[entry.id] = M2.load(entry.filename).then((m2) => {
           m2.position.set(
             -(entry.position.z - this.constructor.ZEROPOINT),
             -(entry.position.x - this.constructor.ZEROPOINT),
@@ -89,38 +89,39 @@ class Map extends THREE.Group {
 
           this.add(m2);
 
-          if (m2.isAnimated) {
-            this.addAnimatedM2(m2);
+          // TODO: When unloading a doodad, ensure it is removed from the doodads map.
+          this.doodads.set(entry.id, m2);
+
+          // Auto-play animation index 0 in doodad, if animations are present
+          // TODO: Properly manage doodad animations
+          if (m2.isAnimated && m2.animations.length > 0) {
+            m2.animations.play(0);
           }
         });
       }
     });
   }
 
-  addAnimatedM2(m2) {
-    // TODO: Manage which animations play and when.
-    m2.animations.play(0);
-
-    this.animatedM2s.push(m2);
-  }
-
   animate(delta, camera, cameraRotated) {
-    this.animateModels(delta, camera, cameraRotated);
+    this.animateDoodads(delta, camera, cameraRotated);
   }
 
-  animateModels(delta, camera, cameraRotated) {
-    this.animatedM2s.forEach((m2) => {
-      if (m2.animations.length > 0) {
-        m2.animations.update(delta);
+  animateDoodads(delta, camera, cameraRotated) {
+    this.doodads.forEach((doodad) => {
+      if (!doodad.isAnimated) {
+        return;
       }
 
-      if (cameraRotated) {
-        m2.applyBillboards(camera);
+      if (doodad.animations.length > 0) {
+        doodad.animations.update(delta);
       }
 
-      // If present, ensure the skeleton helper animates with the model.
-      if (m2.skeletonHelper) {
-        m2.skeletonHelper.update();
+      if (cameraRotated && doodad.billboards.length > 0) {
+        doodad.applyBillboards(camera);
+      }
+
+      if (doodad.skeletonHelper) {
+        doodad.skeletonHelper.update();
       }
     });
   }
