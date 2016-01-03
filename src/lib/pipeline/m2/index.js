@@ -200,14 +200,14 @@ class M2 extends THREE.Group {
       });
 
       const submeshOpts = {
+        index: id,
         geometry: submeshGeometry,
-        skeleton: this.skeleton,
         rootBones: rootBones,
         textureUnits: submeshTextureUnits,
         isBillboard: isBillboard
       };
 
-      const mesh = new Submesh(id, submeshOpts);
+      const mesh = new Submesh(this, submeshOpts);
 
       this.add(mesh);
     });
