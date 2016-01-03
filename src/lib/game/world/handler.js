@@ -121,10 +121,6 @@ class WorldHandler extends EventEmitter {
     if (newModel) {
       newModel.skeletonHelper = new THREE.SkeletonHelper(newModel);
       this.scene.add(newModel.skeletonHelper);
-
-      if (newModel.isAnimated && this.map !== null) {
-        this.map.addAnimatedM2(newModel);
-      }
     }
   }
 
@@ -133,9 +129,33 @@ class WorldHandler extends EventEmitter {
   }
 
   animate(delta, camera, cameraRotated) {
+    this.animateEntities(delta, camera, cameraRotated);
+
     if (this.map !== null) {
       this.map.animate(delta, camera, cameraRotated);
     }
+  }
+
+  animateEntities(delta, camera, cameraRotated) {
+    this.entities.forEach((entity) => {
+      const { model } = entity;
+
+      if (model === null || !model.isAnimated) {
+        return;
+      }
+
+      if (model.animations.length > 0) {
+        model.animations.update(delta);
+      }
+
+      if (cameraRotated && model.billboards.length > 0) {
+        model.applyBillboards(camera);
+      }
+
+      if (model.skeletonHelper) {
+        model.skeletonHelper.update();
+      }
+    });
   }
 }
 
