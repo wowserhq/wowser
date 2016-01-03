@@ -53,6 +53,17 @@ class AnimationManager {
     });
   }
 
+  unregisterTrack(trackName) {
+    this.clips.forEach((clip) => {
+      clip.tracks = clip.tracks.filter((track) => {
+        return track.name !== trackName;
+      });
+
+      clip.trim();
+      clip.optimize();
+    });
+  }
+
   registerTrack(opts) {
     const trackName = opts.target.uuid + '.' + opts.property;
     const animationBlock = opts.animationBlock;
@@ -89,6 +100,8 @@ class AnimationManager {
       clip.trim();
       clip.optimize();
     });
+
+    return trackName;
   }
 
 }
