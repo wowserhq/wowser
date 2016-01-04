@@ -67,14 +67,8 @@ class M2 extends THREE.Group {
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
-            const translatedBone = bone.clone();
-
-            // Same inverted X and Y values as the pivotPoint above.
-            translatedBone.translateX(-value.x);
-            translatedBone.translateY(-value.y);
-            translatedBone.translateZ(value.z);
-
-            return translatedBone.position;
+            const translation = new THREE.Vector3(-value.x, -value.y, value.z);
+            return bone.position.clone().add(translation);
           }
         });
       }
