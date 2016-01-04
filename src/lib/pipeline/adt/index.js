@@ -25,6 +25,10 @@ class ADT {
     return this.data.MDDF.entries;
   }
 
+  get textures() {
+    return this.data.MTEX.filenames;
+  }
+
   static positionFor(tile) {
     return (32 - tile) * this.SIZE;
   }
