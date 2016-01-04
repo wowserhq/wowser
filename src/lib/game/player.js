@@ -9,8 +9,7 @@ class Player extends Unit {
     this.hp = this.hp;
     this.mp = this.mp;
 
-    this.target = new Unit();
-    this.target.name = 'Target';
+    this.target = null;
 
     this.displayID = 24978;
     this.mapID = null;
