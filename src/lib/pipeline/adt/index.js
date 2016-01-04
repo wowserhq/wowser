@@ -1,32 +1,20 @@
-import THREE from 'three';
-
-import Chunk from './chunk';
 import WorkerPool from '../worker/pool';
 
-class ADT extends THREE.Group {
+class ADT {
 
   static SIZE = 533.33333;
 
   static cache = {};
 
   constructor(path, data) {
-    super();
-
     this.path = path;
     this.data = data;
 
     const tyx = this.path.match(/(\d+)_(\d+)\.adt$/);
     this.tileX = +tyx[2];
     this.tileY = +tyx[1];
-    this.position.x = this.constructor.positionFor(this.tileX);
-    this.position.y = this.constructor.positionFor(this.tileY);
-
-    // TODO: Potentially move these calculations and mesh generation to worker
-
-    data.MCNKs.forEach((chunkData) => {
-      const chunk = new Chunk(chunkData, data.MTEX.filenames);
-      this.add(chunk);
-    });
+    this.x = this.constructor.positionFor(this.tileX);
+    this.y = this.constructor.positionFor(this.tileY);
   }
 
   get wmos() {
