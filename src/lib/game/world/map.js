@@ -83,35 +83,39 @@ class WorldMap extends THREE.Group {
   }
 
   loadChunkByIndex(index) {
-    if (!this.queuedChunks.has(index)) {
-      const perRow = this.constructor.CHUNKS_PER_ROW;
-      const chunkX = (index / perRow) | 0;
-      const chunkY = index % perRow;
-
-      this.queuedChunks.set(index, Chunk.load(this, chunkX, chunkY).then((chunk) => {
-        this.chunks.set(index, chunk);
-
-        chunk.doodadEntries.forEach((entry) => {
-          this.loadDoodad(entry);
-        });
-
-        chunk.wmoEntries.forEach((entry) => {
-          this.loadWMO(entry);
-        });
-
-        this.add(chunk);
-      }));
+    if (this.queuedChunks.has(index)) {
+      return;
     }
+
+    const perRow = this.constructor.CHUNKS_PER_ROW;
+    const chunkX = (index / perRow) | 0;
+    const chunkY = index % perRow;
+
+    this.queuedChunks.set(index, Chunk.load(this, chunkX, chunkY).then((chunk) => {
+      this.chunks.set(index, chunk);
+
+      chunk.doodadEntries.forEach((entry) => {
+        this.loadDoodad(entry);
+      });
+
+      chunk.wmoEntries.forEach((entry) => {
+        this.loadWMO(entry);
+      });
+
+      this.add(chunk);
+    }));
   }
 
   unloadChunkByIndex(index) {
     const chunk = this.chunks.get(index);
-    if (chunk) {
-      // TODO: Unload doodads and WMOs
-      this.queuedChunks.delete(index);
-      this.chunks.delete(index);
-      this.remove(chunk);
+    if (!chunk) {
+      return;
     }
+
+    // TODO: Unload doodads and WMOs
+    this.queuedChunks.delete(index);
+    this.chunks.delete(index);
+    this.remove(chunk);
   }
 
   indexFor(chunkX, chunkY) {
@@ -119,63 +123,67 @@ class WorldMap extends THREE.Group {
   }
 
   loadDoodad(entry) {
-    if (!this.queuedDoodads.has(entry.id)) {
-      this.queuedDoodads.set(entry.id, M2.load(entry.filename).then((m2) => {
-        m2.position.set(
-          -(entry.position.z - this.constructor.ZEROPOINT),
-          -(entry.position.x - this.constructor.ZEROPOINT),
-          entry.position.y
-        );
-
-        m2.rotation.set(
-          entry.rotation.x * Math.PI / 180,
-          -entry.rotation.z * Math.PI / 180,
-          entry.rotation.y * Math.PI / 180
-        );
-
-        if (entry.scale !== 1024) {
-          const scale = entry.scale / 1024;
-          m2.scale.set(scale, scale, scale);
-        }
-
-        this.add(m2);
-
-        // TODO: Remove doodad from map on unload
-        this.doodads.set(entry.id, m2);
-
-        // Auto-play animation index 0 in doodad, if animations are present
-        // TODO: Properly manage doodad animations
-        if (m2.isAnimated && m2.animations.length > 0) {
-          m2.animations.play(0);
-        }
-      }));
+    if (this.queuedDoodads.has(entry.id)) {
+      return;
     }
+
+    this.queuedDoodads.set(entry.id, M2.load(entry.filename).then((m2) => {
+      m2.position.set(
+        -(entry.position.z - this.constructor.ZEROPOINT),
+        -(entry.position.x - this.constructor.ZEROPOINT),
+        entry.position.y
+      );
+
+      m2.rotation.set(
+        entry.rotation.x * Math.PI / 180,
+        -entry.rotation.z * Math.PI / 180,
+        entry.rotation.y * Math.PI / 180
+      );
+
+      if (entry.scale !== 1024) {
+        const scale = entry.scale / 1024;
+        m2.scale.set(scale, scale, scale);
+      }
+
+      this.add(m2);
+
+      // TODO: Remove doodad from map on unload
+      this.doodads.set(entry.id, m2);
+
+      // Auto-play animation index 0 in doodad, if animations are present
+      // TODO: Properly manage doodad animations
+      if (m2.isAnimated && m2.animations.length > 0) {
+        m2.animations.play(0);
+      }
+    }));
   }
 
   loadWMO(entry) {
-    if (!this.queuedWMOs.has(entry.id)) {
-      this.queuedWMOs.set(entry.id, WMO.load(entry.filename).then((wmo) => {
-        wmo.position.set(
-          -(entry.position.z - this.constructor.ZEROPOINT),
-          -(entry.position.x - this.constructor.ZEROPOINT),
-          entry.position.y
-        );
-
-        wmo.doodadSet = entry.doodadSet;
-
-        // Provided as (X, Z, -Y)
-        wmo.rotation.set(
-          entry.rotation.x * Math.PI / 180,
-          -entry.rotation.z * Math.PI / 180,
-          entry.rotation.y * Math.PI / 180
-        );
-
-        this.add(wmo);
-
-        // TODO: Remove WMO from map on unload
-        this.wmos.set(entry.id, wmo);
-      }));
+    if (this.queuedWMOs.has(entry.id)) {
+      return;
     }
+
+    this.queuedWMOs.set(entry.id, WMO.load(entry.filename).then((wmo) => {
+      wmo.position.set(
+        -(entry.position.z - this.constructor.ZEROPOINT),
+        -(entry.position.x - this.constructor.ZEROPOINT),
+        entry.position.y
+      );
+
+      wmo.doodadSet = entry.doodadSet;
+
+      // Provided as (X, Z, -Y)
+      wmo.rotation.set(
+        entry.rotation.x * Math.PI / 180,
+        -entry.rotation.z * Math.PI / 180,
+        entry.rotation.y * Math.PI / 180
+      );
+
+      this.add(wmo);
+
+      // TODO: Remove WMO from map on unload
+      this.wmos.set(entry.id, wmo);
+    }));
   }
 
   animate(delta, camera, cameraRotated) {
