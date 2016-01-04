@@ -21,6 +21,8 @@ class WorldMap extends THREE.Group {
     this.wdt = wdt;
 
     this.mapID = this.data.id;
+    this.chunkX = null;
+    this.chunkY = null;
 
     this.queuedChunks = new Map();
     this.chunks = new Map();
@@ -39,6 +41,13 @@ class WorldMap extends THREE.Group {
   render(x, y) {
     const chunkX = Chunk.chunkFor(x);
     const chunkY = Chunk.chunkFor(y);
+
+    if (this.chunkX === chunkX && this.chunkY === chunkY) {
+      return;
+    }
+
+    this.chunkX = chunkX;
+    this.chunkY = chunkY;
 
     const radius = this.constructor.CHUNK_RENDER_RADIUS;
     const indices = this.chunkIndicesAround(chunkX, chunkY, radius);
