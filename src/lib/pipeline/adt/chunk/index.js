@@ -81,6 +81,14 @@ class Chunk extends THREE.Mesh {
     this.material = new Material(data, textureNames);
   }
 
+  get doodadEntries() {
+    return this.data.MCRF.doodadEntries;
+  }
+
+  get wmoEntries() {
+    return this.data.MCRF.wmoEntries;
+  }
+
   isHole(y, x) {
     const column = Math.floor(y / 2);
     const row = Math.floor(x / 2);
