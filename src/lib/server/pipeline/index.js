@@ -33,6 +33,9 @@ class Pipeline {
     req.resource = this.archive.files.get(path);
     if (req.resource) {
       next();
+
+      // Ensure file is closed in StormLib.
+      req.resource.close();
     } else {
       const err = new Error('resource not found');
       err.status = 404;
