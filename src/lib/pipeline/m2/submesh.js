@@ -32,7 +32,9 @@ class Submesh extends THREE.Group {
     this.clearTextureMeshes();
 
     // Create meshes for each texture unit and add to the group.
-    this.textureUnits.forEach((textureUnit) => {
+    for (let tuIndex = 0, tuLen = this.textureUnits.length; tuIndex < tuLen; ++tuIndex) {
+      const textureUnit = this.textureUnits[tuIndex];
+
       const material = this.createMaterial(textureUnit);
       const textureMesh = new THREE.SkinnedMesh(this.geometry, material);
 
@@ -46,7 +48,7 @@ class Submesh extends THREE.Group {
       this.add(textureMesh);
 
       this.registerTextureAnimations(textureMesh, textureUnit);
-    });
+    }
   }
 
   clearTextureAnimations() {
