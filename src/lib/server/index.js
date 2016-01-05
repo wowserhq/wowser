@@ -55,11 +55,11 @@ class Server {
   runMaster() {
     console.log(`> Spawning master`);
 
-    // Count the machine's CPUs
-    const cpuCount = os.cpus().length;
+    // 1 worker per CPU, up to 4 workers in total
+    const workerCount = Math.min(os.cpus().length, 4);
 
-    // Create a worker for each CPU
-    for (let i = 0; i < cpuCount; ++i) {
+    // Fork workers
+    for (let i = 0; i < workerCount; ++i) {
       cluster.fork();
     }
   }
