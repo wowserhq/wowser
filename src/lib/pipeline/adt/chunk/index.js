@@ -1,5 +1,6 @@
 import THREE from 'three';
 
+import ADT from '../';
 import Material from './material';
 
 class Chunk extends THREE.Mesh {
@@ -7,14 +8,17 @@ class Chunk extends THREE.Mesh {
   static SIZE = 33.33333;
   static UNIT_SIZE = 33.33333 / 8;
 
-  constructor(data, textureNames) {
+  constructor(adt, id) {
     super();
+
+    const data = this.data = adt.data.MCNKs[id];
+    const textureNames = adt.textures;
 
     const size = this.constructor.SIZE;
     const unitSize = this.constructor.UNIT_SIZE;
 
-    this.position.y = -(data.indexX * size);
-    this.position.x = -(data.indexY * size);
+    this.position.y = adt.y + -(data.indexX * size);
+    this.position.x = adt.x + -(data.indexY * size);
 
     this.holes = data.holes;
 
@@ -77,12 +81,42 @@ class Chunk extends THREE.Mesh {
     this.material = new Material(data, textureNames);
   }
 
+  get doodadEntries() {
+    return this.data.MCRF.doodadEntries;
+  }
+
+  get wmoEntries() {
+    return this.data.MCRF.wmoEntries;
+  }
+
   isHole(y, x) {
     const column = Math.floor(y / 2);
     const row = Math.floor(x / 2);
 
     const bit = 1 << (column * 4 + row);
     return bit & this.holes;
+  }
+
+  static chunkFor(position) {
+    return 32 * 16 - (position / this.SIZE) | 0;
+  }
+
+  static tileFor(chunk) {
+    return (chunk / 16) | 0;
+  }
+
+  static load(map, chunkX, chunkY) {
+    const tileX = this.tileFor(chunkX);
+    const tileY = this.tileFor(chunkY);
+
+    const offsetX = chunkX - tileX * 16;
+    const offsetY = chunkY - tileY * 16;
+
+    const id = offsetX * 16 + offsetY;
+
+    return ADT.loadTile(map.internalName, tileX, tileY, map.wdt.data.flags).then((adt) => {
+      return new this(adt, id);
+    });
   }
 
 }
