@@ -12,7 +12,7 @@ class WorldMap extends THREE.Group {
   static ZEROPOINT = ADT.SIZE * 32;
 
   static CHUNKS_PER_ROW = 64 * 16;
-  static CHUNK_RENDER_RADIUS = 2;
+  static CHUNK_RENDER_RADIUS = 10;
 
   constructor(data, wdt) {
     super();
