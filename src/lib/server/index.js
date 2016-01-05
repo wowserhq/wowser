@@ -1,3 +1,5 @@
+import cluster from 'cluster';
+import os from 'os';
 import express from 'express';
 import logger from 'morgan';
 
@@ -9,12 +11,6 @@ class Server {
   constructor(root = __dirname) {
     this.isFirstRun = ServerConfig.db.get('isFirstRun');
     this.root = root;
-    this.app = express();
-
-    this.app.set('root', this.root);
-    this.app.use(logger('dev'));
-    this.app.use(express.static('./public'));
-    this.app.use('/pipeline', new Pipeline().router);
   }
 
   start() {
@@ -26,15 +22,52 @@ class Server {
           this.run();
         });
     } else {
-      console.log(`> Settings loaded from ${ServerConfig.db.path}\n` +
-                  "> Use 'npm run reset' to clear settings\n");
       this.run();
     }
   }
 
+  createApp() {
+    const app = express();
+
+    app.set('root', this.root);
+    app.use(logger('dev'));
+    app.use(express.static('./public'));
+    app.use('/pipeline', new Pipeline().router);
+
+    return app;
+  }
+
   run() {
     const serverPort = parseInt(ServerConfig.db.get('serverPort'), 10);
-    console.log(`> Starting server at localhost:${serverPort}`);
+
+    if (cluster.isMaster) {
+      console.log(`> Settings loaded from ${ServerConfig.db.path}\n` +
+                  "> Use 'npm run reset' to clear settings\n");
+
+      console.log(`> Starting server at localhost:${serverPort}`);
+
+      this.runMaster();
+    } else {
+      this.runWorker(serverPort);
+    }
+  }
+
+  runMaster() {
+    console.log(`> Spawning master`);
+
+    // 1 worker per CPU, up to 4 workers in total
+    const workerCount = Math.min(os.cpus().length, 4);
+
+    // Fork workers
+    for (let i = 0; i < workerCount; ++i) {
+      cluster.fork();
+    }
+  }
+
+  runWorker(serverPort) {
+    console.log(`> Spawning worker (#${cluster.worker.id})`);
+
+    this.app = this.createApp();
     this.app.listen(serverPort);
   }
 
