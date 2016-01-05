@@ -65,17 +65,13 @@ class WorldMap extends THREE.Group {
 
   chunkIndicesAround(chunkX, chunkY, radius) {
     const perRow = this.constructor.CHUNKS_PER_ROW;
-    const sqrt = Math.sqrt;
 
     const base = this.indexFor(chunkX, chunkY);
     const indices = [];
 
     for (let y = -radius; y <= radius; ++y) {
       for (let x = -radius; x <= radius; ++x) {
-        const distance = sqrt(y ** 2 + x ** 2);
-        if (distance <= radius) {
-          indices.push(base + y * perRow + x);
-        }
+        indices.push(base + y * perRow + x);
       }
     }
 
