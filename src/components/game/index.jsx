@@ -90,7 +90,7 @@ class GameScreen extends React.Component {
       <game className="game screen">
         <canvas ref="canvas"></canvas>
         <HUD />
-        <Controls ref="controls" for={ session.player } camera={ this.camera }/>
+        <Controls ref="controls" for={ session.player } camera={ this.camera } />
       </game>
     );
   }
