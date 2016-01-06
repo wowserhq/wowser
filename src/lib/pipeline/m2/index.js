@@ -8,8 +8,10 @@ class M2 extends THREE.Group {
 
   static cache = {};
 
-  constructor(path, data, skinData) {
+  constructor(path, data, skinData, sharedOpts) {
     super();
+
+    const shared = sharedOpts || null;
 
     this.name = path.split('\\').slice(-1).pop();
 
@@ -17,6 +19,7 @@ class M2 extends THREE.Group {
     this.data = data;
     this.skinData = skinData;
 
+    this.isInstanced = data.isInstanced;
     this.isAnimated = data.isAnimated;
     this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
@@ -25,13 +28,22 @@ class M2 extends THREE.Group {
     this.submeshes = new Map();
 
     this.geometry = null;
+    this.submeshGeometries = new Map();
 
     this.skeleton = null;
     this.bones = [];
     this.rootBones = [];
 
-    this.createGeometry(data.vertices);
+    // Non-instanced M2s can share geometries
+    if (shared) {
+      this.geometry = shared.geometry;
+      this.submeshGeometries = shared.submeshGeometries;
+    } else {
+      this.createGeometry(data.vertices);
+    }
+
     this.createSkeleton(data.bones);
+
     this.createMesh(this.geometry, this.skeleton, this.rootBones);
     this.createSubmeshes(data, skinData);
   }
@@ -229,15 +241,24 @@ class M2 extends THREE.Group {
     for (let submeshIndex = 0; submeshIndex < subLen; ++submeshIndex) {
       const submeshDef = submeshes[submeshIndex];
       const submeshTextureUnits = textureUnits.get(submeshIndex);
+      const materialCount = submeshTextureUnits.length;
 
-      const submesh = this.createSubmesh(submeshDef, submeshTextureUnits, indices, triangles, vertices);
+      let submeshGeometry = this.submeshGeometries.get(submeshIndex);
+
+      if (!submeshGeometry) {
+        submeshGeometry = this.createSubmeshGeometry(submeshDef, indices, triangles, vertices, materialCount);
+      }
+
+      const submesh = this.createSubmesh(submeshDef, submeshGeometry, submeshTextureUnits);
 
       this.submeshes.set(submesh.userData.partID, submesh);
+      this.submeshGeometries.set(submeshIndex, submeshGeometry);
+
       this.mesh.add(submesh);
     }
   }
 
-  createSubmesh(submeshDef, textureUnits, indices, triangles, vertices) {
+  createSubmeshGeometry(submeshDef, indices, triangles, vertices, materialCount) {
     const geometry = this.geometry.clone();
 
     // TODO: Figure out why this isn't cloned by the line above
@@ -260,9 +281,8 @@ class M2 extends THREE.Group {
       // One face and set of uv coords per texture unit to support multitexturing.
       // TODO: This approach is a workaround to avoid handling texture units with shaders.
       // TODO: This approach depends on render order being preserved for the faces.
-      const tuLen = textureUnits.length;
-      for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
-        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2], null, null, tuIndex);
+      for (let matIndex = 0; matIndex < materialCount; ++matIndex) {
+        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2], null, null, matIndex);
         geometry.faces.push(face);
 
         uvLayer[faceIndex] = [];
@@ -283,11 +303,16 @@ class M2 extends THREE.Group {
     geometry.faceVertexUvs = uvLayers;
 
     const bufferGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+
+    return bufferGeometry;
+  }
+
+  createSubmesh(submeshDef, geometry, textureUnits) {
     const rootBone = this.bones[submeshDef.rootBone];
 
     const opts = {
       skeleton: this.skeleton,
-      geometry: bufferGeometry,
+      geometry: geometry,
       rootBone: rootBone,
       textureUnits: textureUnits,
       animations: this.animations
@@ -354,7 +379,16 @@ class M2 extends THREE.Group {
   }
 
   clone() {
-    return new this.constructor(this.path, this.data, this.skinData);
+    let shared = {};
+
+    if (!this.isInstanced) {
+      shared.geometry = this.geometry;
+      shared.submeshGeometries = this.submeshGeometries;
+    } else {
+      shared = null;
+    }
+
+    return new this.constructor(this.path, this.data, this.skinData, shared);
   }
 
   static load(path) {
@@ -362,7 +396,7 @@ class M2 extends THREE.Group {
     if (!(path in this.cache)) {
       this.cache[path] = WorkerPool.enqueue('M2', path).then((args) => {
         const [data, skinData] = args;
-        return new this(path, data, skinData);
+        return new this(path, data, skinData, null);
       });
     }
     return this.cache[path].then((m2) => {
