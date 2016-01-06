@@ -5,6 +5,7 @@ import './index.styl';
 
 import Controls from './controls';
 import HUD from './hud';
+import Stats from './stats';
 import session from '../wowser/session';
 
 class GameScreen extends React.Component {
@@ -37,6 +38,7 @@ class GameScreen extends React.Component {
       canvas: this.refs.canvas
     });
 
+    this.forceUpdate();
     this.resize();
     this.animate();
 
@@ -73,6 +75,7 @@ class GameScreen extends React.Component {
     }
 
     this.refs.controls.update();
+    this.refs.stats.forceUpdate();
 
     const cameraRotated = this.prevCameraRotation === null ||
       !this.prevCameraRotation.equals(this.camera.quaternion);
@@ -91,6 +94,7 @@ class GameScreen extends React.Component {
         <canvas ref="canvas"></canvas>
         <HUD />
         <Controls ref="controls" for={ session.player } camera={ this.camera } />
+        <Stats ref="stats" renderer={ this.renderer } />
       </game>
     );
   }
