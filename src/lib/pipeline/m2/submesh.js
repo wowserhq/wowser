@@ -2,22 +2,22 @@ import THREE from 'three';
 
 import Material from '../material';
 
-class Submesh extends THREE.Group {
+class Submesh extends THREE.SkinnedMesh {
 
-  constructor(m2, opts) {
-    super();
+  constructor(opts) {
+    super(opts.geometry);
 
-    this.m2 = m2;
-    this.skeleton = m2.skeleton;
+    opts.rootBone.skin = this;
 
-    this.index = opts.index;
-    this.rootBones = opts.rootBones;
-    this.geometry = opts.geometry;
+    this.bind(opts.skeleton);
+
+    this.animations = opts.animations;
+    this.isBillboard = opts.rootBone.userData.isBillboard;
     this.textureUnits = opts.textureUnits;
-    this.isBillboard = opts.isBillboard;
 
-    this.textureMeshes = [];
     this.textureAnimationTrackNames = [];
+
+    this.material = new THREE.MultiMaterial();
 
     this.skin1 = null;
     this.skin2 = null;
@@ -27,44 +27,32 @@ class Submesh extends THREE.Group {
   }
 
   applyTextureUnits() {
-    // Clear out old texture animations and meshes in case we're reapplying texture units.
+    // Clear out old texture animations and materials in case we're reapplying texture units.
     this.clearTextureAnimations();
-    this.clearTextureMeshes();
+    this.clearMaterials();
 
-    // Create meshes for each texture unit and add to the group.
+    // Create materials for each texture unit and add to the group.
     for (let tuIndex = 0, tuLen = this.textureUnits.length; tuIndex < tuLen; ++tuIndex) {
       const textureUnit = this.textureUnits[tuIndex];
 
       const material = this.createMaterial(textureUnit);
-      const textureMesh = new THREE.SkinnedMesh(this.geometry, material);
 
-      this.rootBones.forEach((rootBone) => {
-        textureMesh.add(rootBone);
-      });
+      this.material.materials.push(material);
 
-      textureMesh.bind(this.skeleton);
-
-      this.textureMeshes.push(textureMesh);
-      this.add(textureMesh);
-
-      this.registerTextureAnimations(textureMesh, textureUnit);
+      this.registerTextureAnimations(tuIndex, textureUnit);
     }
   }
 
   clearTextureAnimations() {
     this.textureAnimationTrackNames.forEach((trackName) => {
-      this.m2.animations.unregisterTrack(trackName);
+      this.animations.unregisterTrack(trackName);
     });
 
     this.textureAnimationTrackNames = [];
   }
 
-  clearTextureMeshes() {
-    this.textureMeshes.forEach((textureMesh) => {
-      this.remove(textureMesh);
-    });
-
-    this.textureMeshes = [];
+  clearMaterials() {
+    this.material = new THREE.MultiMaterial();
   }
 
   createMaterial(textureUnit) {
@@ -186,11 +174,11 @@ class Submesh extends THREE.Group {
     }
   }
 
-  registerTextureAnimations(textureMesh, textureUnit) {
+  registerTextureAnimations(tuIndex, textureUnit) {
     if (textureUnit.transparency) {
-      const trackName = this.m2.animations.registerTrack({
-        target: textureMesh,
-        property: 'material.opacity',
+      const trackName = this.animations.registerTrack({
+        target: this,
+        property: 'materials[' + tuIndex + '].opacity',
         animationBlock: textureUnit.transparency,
         trackType: 'NumberKeyframeTrack',
 

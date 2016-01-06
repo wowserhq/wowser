@@ -11,36 +11,49 @@ class M2 extends THREE.Group {
   constructor(path, data, skinData) {
     super();
 
+    this.name = path.split('\\').slice(-1).pop();
+
     this.path = path;
     this.data = data;
     this.skinData = skinData;
 
+    this.isAnimated = data.isAnimated;
+    this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
 
-    this.isAnimated = this.data.isAnimated;
-    this.animations = new AnimationManager(this, this.data.animations);
+    this.mesh = null;
+    this.submeshes = new Map();
 
-    const sharedGeometry = new THREE.Geometry();
+    this.geometry = null;
 
-    // TODO: Potentially move these calculations and mesh generation to worker
+    this.skeleton = null;
+    this.bones = [];
+    this.rootBones = [];
 
-    const bones = [];
+    this.createGeometry(data.vertices);
+    this.createSkeleton(data.bones);
+    this.createMesh(this.geometry, this.skeleton, this.rootBones);
+    this.createSubmeshes(data, skinData);
+  }
+
+  createSkeleton(boneDefs) {
     const rootBones = [];
+    const bones = [];
+    const billboards = [];
 
-    for (let boneIndex = 0, len = this.data.bones.length; boneIndex < len; ++boneIndex) {
-      const joint = this.data.bones[boneIndex];
-
+    for (let boneIndex = 0, len = boneDefs.length; boneIndex < len; ++boneIndex) {
+      const boneDef = boneDefs[boneIndex];
       const bone = new THREE.Bone();
-
-      // M2 bone positioning seems to be inverted on X and Y
-      const { pivotPoint } = joint;
-      const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
-      bone.position.copy(correctedPosition);
 
       bones.push(bone);
 
-      if (joint.parentID > -1) {
-        const parent = bones[joint.parentID];
+      // M2 bone positioning seems to be inverted on X and Y
+      const { pivotPoint } = boneDef;
+      const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
+      bone.position.copy(correctedPosition);
+
+      if (boneDef.parentID > -1) {
+        const parent = bones[boneDef.parentID];
         parent.add(bone);
 
         // Correct bone positioning relative to parent
@@ -49,21 +62,22 @@ class M2 extends THREE.Group {
           bone.position.sub(up.position);
         }
       } else {
+        bone.userData.isRoot = true;
         rootBones.push(bone);
       }
 
-      // Track billboarded bones
-      if (joint.flags & 0x08) {
+      // Tag billboarded bones
+      if (boneDef.flags & 0x08) {
         bone.userData.isBillboard = true;
-        this.billboards.push(bone);
+        billboards.push(bone);
       }
 
       // Bone translation animation block
-      if (joint.translation.isAnimated) {
+      if (boneDef.translation.isAnimated) {
         this.animations.registerTrack({
           target: bone,
           property: 'position',
-          animationBlock: joint.translation,
+          animationBlock: boneDef.translation,
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
@@ -74,11 +88,11 @@ class M2 extends THREE.Group {
       }
 
       // Bone rotation animation block
-      if (joint.rotation.isAnimated) {
+      if (boneDef.rotation.isAnimated) {
         this.animations.registerTrack({
           target: bone,
           property: 'quaternion',
-          animationBlock: joint.rotation,
+          animationBlock: boneDef.rotation,
           trackType: 'QuaternionKeyframeTrack',
 
           valueTransform: function(value) {
@@ -88,11 +102,11 @@ class M2 extends THREE.Group {
       }
 
       // Bone scaling animation block
-      if (joint.scaling.isAnimated) {
+      if (boneDef.scaling.isAnimated) {
         this.animations.registerTrack({
           target: bone,
           property: 'scale',
-          animationBlock: joint.scaling,
+          animationBlock: boneDef.scaling,
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
@@ -102,25 +116,33 @@ class M2 extends THREE.Group {
       }
     }
 
-    this.skeleton = new THREE.Skeleton(bones);
+    // Preserve the bones
+    this.bones = bones;
+    this.rootBones = rootBones;
+    this.billboards = billboards;
 
-    const vertices = data.vertices;
+    // Assemble the skeleton
+    this.skeleton = new THREE.Skeleton(bones);
+  }
+
+  createGeometry(vertices) {
+    const geometry = new THREE.Geometry();
 
     for (let vertexIndex = 0, len = vertices.length; vertexIndex < len; ++vertexIndex) {
       const vertex = vertices[vertexIndex];
 
       const { position } = vertex;
 
-      sharedGeometry.vertices.push(
+      geometry.vertices.push(
         // Provided as (X, Z, -Y)
         new THREE.Vector3(position[0], position[2], -position[1])
       );
 
-      sharedGeometry.skinIndices.push(
+      geometry.skinIndices.push(
         new THREE.Vector4(...vertex.boneIndices)
       );
 
-      sharedGeometry.skinWeights.push(
+      geometry.skinWeights.push(
         new THREE.Vector4(...vertex.boneWeights)
       );
     }
@@ -128,16 +150,46 @@ class M2 extends THREE.Group {
     // Mirror geometry over X and Y axes and rotate
     const matrix = new THREE.Matrix4();
     matrix.makeScale(-1, -1, 1);
-    sharedGeometry.applyMatrix(matrix);
-    sharedGeometry.rotateX(-Math.PI / 2);
+    geometry.applyMatrix(matrix);
+    geometry.rotateX(-Math.PI / 2);
+
+    // Preserve the geometry
+    this.geometry = geometry;
+  }
+
+  createMesh(geometry, skeleton, rootBones) {
+    const mesh = new THREE.SkinnedMesh(geometry);
+
+    // Assign root bones to mesh
+    rootBones.forEach((bone) => {
+      mesh.add(bone);
+      bone.skin = mesh;
+    });
+
+    // Bind mesh to skeleton
+    mesh.bind(skeleton);
+
+    // Add mesh to the group
+    this.add(mesh);
+
+    // Assign as root mesh
+    this.mesh = mesh;
+  }
+
+  // Populates texture unit definitions from skin data with relevant rendering, texture, and
+  // texture animation flags. Returns a map indexed by the submesh with expanded definitions.
+  expandTextureUnits(data, skinData) {
+    const submeshTextureUnits = new Map();
 
     const { textureLookups, textures, renderFlags } = data;
     const { transparencyLookups, transparencies, colors } = data;
-    const { indices, textureUnits, triangles } = skinData;
+    const { textureUnits } = skinData;
 
-    // TODO: Look up colors, render flags and what not
-    for (let tuIndex = 0, len = textureUnits.length; tuIndex < len; ++tuIndex) {
+    const tuLen = textureUnits.length;
+    for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
       const textureUnit = textureUnits[tuIndex];
+
+      const { submeshIndex } = textureUnit;
 
       const textureLookup = textureLookups[textureUnit.textureIndex];
       const texture = textures[textureLookup];
@@ -155,72 +207,97 @@ class M2 extends THREE.Group {
         const color = colors[textureUnit.colorIndex];
         textureUnit.color = color;
       }
+
+      if (!submeshTextureUnits.has(submeshIndex)) {
+        submeshTextureUnits.set(submeshIndex, []);
+      }
+
+      submeshTextureUnits.get(submeshIndex).push(textureUnit);
     }
 
-    const { submeshes } = this.skinData;
+    return submeshTextureUnits;
+  }
 
-    for (let submeshIndex = 0, subLen = submeshes.length; submeshIndex < subLen; ++submeshIndex) {
-      const submesh = submeshes[submeshIndex];
+  createSubmeshes(data, skinData) {
+    const textureUnits = this.expandTextureUnits(data, skinData);
 
-      const geometry = sharedGeometry.clone();
+    const { vertices } = data;
+    const { submeshes, indices, triangles } = skinData;
 
-      // TODO: Figure out why this isn't cloned by the line above
-      geometry.skinIndices = Array.from(sharedGeometry.skinIndices);
-      geometry.skinWeights = Array.from(sharedGeometry.skinWeights);
+    const subLen = submeshes.length;
 
-      const uvs = [];
+    for (let submeshIndex = 0; submeshIndex < subLen; ++submeshIndex) {
+      const submeshDef = submeshes[submeshIndex];
+      const submeshTextureUnits = textureUnits.get(submeshIndex);
 
-      const { startTriangle: start, triangleCount: count } = submesh;
-      for (let i = start, faceIndex = 0; i < start + count; i += 3, ++faceIndex) {
-        const vindices = [
-          indices[triangles[i]],
-          indices[triangles[i + 1]],
-          indices[triangles[i + 2]]
-        ];
+      const submesh = this.createSubmesh(submeshDef, submeshTextureUnits, indices, triangles, vertices);
 
-        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
+      this.submeshes.set(submesh.userData.partID, submesh);
+      this.mesh.add(submesh);
+    }
+  }
 
+  createSubmesh(submeshDef, textureUnits, indices, triangles, vertices) {
+    const geometry = this.geometry.clone();
+
+    // TODO: Figure out why this isn't cloned by the line above
+    geometry.skinIndices = Array.from(this.geometry.skinIndices);
+    geometry.skinWeights = Array.from(this.geometry.skinWeights);
+
+    const uvLayers = [];
+    const uvLayer = [];
+    let faceIndex = 0;
+
+    const { startTriangle: start, triangleCount: count } = submeshDef;
+
+    for (let i = start; i < start + count; i += 3) {
+      const vindices = [
+        indices[triangles[i]],
+        indices[triangles[i + 1]],
+        indices[triangles[i + 2]]
+      ];
+
+      // One face and set of uv coords per texture unit to support multitexturing.
+      // TODO: This approach is a workaround to avoid handling texture units with shaders.
+      // TODO: This approach depends on render order being preserved for the faces.
+      const tuLen = textureUnits.length;
+      for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
+        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2], null, null, tuIndex);
         geometry.faces.push(face);
 
-        uvs[faceIndex] = [];
+        uvLayer[faceIndex] = [];
+
         for (let vinIndex = 0, vinLen = vindices.length; vinIndex < vinLen; ++vinIndex) {
           const index = vindices[vinIndex];
 
           const { textureCoords } = vertices[index];
-          uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+          uvLayer[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
         }
+
+        faceIndex++;
       }
-
-      geometry.faceVertexUvs = [uvs];
-
-      const submeshGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
-
-      const isBillboard = bones[submesh.rootBone].userData.isBillboard === true;
-
-      // Extract texture units associated with this particular submesh, since not all texture units
-      // apply to all submeshes.
-      const submeshTextureUnits = [];
-
-      for (let tuIndex = 0, tuLen = textureUnits.length; tuIndex < tuLen; ++tuIndex) {
-        const textureUnit = textureUnits[tuIndex];
-
-        if (textureUnit.submeshIndex === submeshIndex) {
-          submeshTextureUnits.push(textureUnit);
-        }
-      }
-
-      const submeshOpts = {
-        index: submeshIndex,
-        geometry: submeshGeometry,
-        rootBones: rootBones,
-        textureUnits: submeshTextureUnits,
-        isBillboard: isBillboard
-      };
-
-      const mesh = new Submesh(this, submeshOpts);
-
-      this.add(mesh);
     }
+
+    uvLayers.push(uvLayer);
+
+    geometry.faceVertexUvs = uvLayers;
+
+    const bufferGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+    const rootBone = this.bones[submeshDef.rootBone];
+
+    const opts = {
+      skeleton: this.skeleton,
+      geometry: bufferGeometry,
+      rootBone: rootBone,
+      textureUnits: textureUnits,
+      animations: this.animations
+    };
+
+    const submesh = new Submesh(opts);
+
+    submesh.userData.partID = submeshDef.id;
+
+    return submesh;
   }
 
   applyBillboards(camera) {
@@ -232,9 +309,14 @@ class M2 extends THREE.Group {
 
   applyBillboard(camera, bone) {
     // TODO Is there a better way to get the relevant non-bone parent?
-    let boneRoot = bone.parent;
-    while (boneRoot.type === 'Bone') {
-      boneRoot = boneRoot.parent;
+    let boneRoot = bone.skin;
+
+    if (typeof boneRoot === 'undefined') {
+      boneRoot = bone.parent;
+
+      while (boneRoot.type === 'Bone') {
+        boneRoot = boneRoot.parent;
+      }
     }
 
     const camPos = this.worldToLocal(camera.position.clone());
@@ -265,8 +347,8 @@ class M2 extends THREE.Group {
   }
 
   set displayInfo(displayInfo) {
-    for (let i = 0, len = this.children.length; i < len; ++i) {
-      const submesh = this.children[i];
+    for (let i = 0, len = this.mesh.children.length; i < len; ++i) {
+      const submesh = this.mesh.children[i];
       submesh.displayInfo = displayInfo;
     }
   }
