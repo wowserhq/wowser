@@ -47,7 +47,7 @@ module.exports = {
     })
   ],
   devServer: {
-    contentBase: __dirname + '/public',
+    contentBase: path.join(__dirname, 'public'),
     proxy: {
       '/pipeline/*': {
         target: 'http://localhost:3000',
