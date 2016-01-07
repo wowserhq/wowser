@@ -1,10 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
-  context: __dirname + '/src',
+  context: path.join(__dirname, 'src'),
   entry: './bootstrapper',
   output: {
-    path: __dirname + '/public',
+    path: path.join(__dirname, 'public'),
     filename: 'wowser-[hash].js'
   },
   resolve: {
