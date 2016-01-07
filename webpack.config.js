@@ -30,12 +30,12 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules|blizzardry/
       },
       {
         test: /\.jsx?$/,
         loader: 'eslint-loader',
-        exclude: /node_modules/
+        exclude: /node_modules|blizzardry/
       }
     ]
   },
