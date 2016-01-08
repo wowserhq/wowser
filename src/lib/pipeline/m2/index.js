@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import Submesh from './submesh';
+import M2Material from './material';
 import AnimationManager from './animation-manager';
 import WorkerPool from '../worker/pool';
 
@@ -24,8 +25,11 @@ class M2 extends THREE.Group {
     this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
 
+    this.material = null;
+
     this.mesh = null;
-    this.submeshes = new Map();
+    this.submeshes = [];
+    this.parts = new Map();
 
     this.geometry = null;
     this.submeshGeometries = new Map();
@@ -34,11 +38,13 @@ class M2 extends THREE.Group {
     this.bones = [];
     this.rootBones = [];
 
-    // Non-instanced M2s can share geometries
+    // Non-instanced M2s can share geometries and texture units
     if (shared) {
+      this.textureUnits = shared.textureUnits;
       this.geometry = shared.geometry;
       this.submeshGeometries = shared.submeshGeometries;
     } else {
+      this.createTextureUnits(data, skinData);
       this.createGeometry(data.vertices);
     }
 
@@ -137,6 +143,73 @@ class M2 extends THREE.Group {
     this.skeleton = new THREE.Skeleton(bones);
   }
 
+  // Returns a map of M2Materials indexed by submesh. Each material represents a texture unit,
+  // to be rendered in the order of appearance in the map's entry for the submesh index.
+  createTextureUnits(data, skinData) {
+    const textureUnits = new Map();
+
+    const textureUnitDefs = skinData.textureUnits;
+
+    const { textureLookups, textures, renderFlags } = data;
+    const { transparencyLookups, transparencies, colors } = data;
+
+    const tuLen = textureUnitDefs.length;
+    for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
+      const textureUnit = textureUnitDefs[tuIndex];
+      const { submeshIndex, textureUnitNumber, opCount } = textureUnit;
+
+      if (!textureUnits.has(submeshIndex)) {
+        textureUnits.set(submeshIndex, []);
+      }
+
+      // Array that will contain materials matching each texture unit.
+      const submeshTextureUnits = textureUnits.get(submeshIndex);
+
+      const materialDef = {
+        shaderID: null,
+        opCount: textureUnit.opCount,
+        renderFlags: null,
+        blendingMode: null,
+        textures: [],
+        transparency: null,
+        color: null
+      };
+
+      // Shader ID (needs to be unmasked to get actual shader ID)
+      materialDef.shaderID = textureUnit.shaderID;
+
+      // Render flags and blending mode
+      const renderFlagsIndex = textureUnit.renderFlagsIndex;
+      materialDef.renderFlags = renderFlags[renderFlagsIndex].flags;
+      materialDef.blendingMode = renderFlags[renderFlagsIndex].blendingMode;
+
+      // Color animation block
+      if (textureUnit.colorIndex > -1) {
+        materialDef.color = colors[textureUnit.colorIndex];
+      }
+
+      // Transparency animation block
+      if (textureUnit.transparencyIndex > -1) {
+        const transparencyLookup = textureUnit.transparencyIndex;
+        const transparencyIndex = transparencyLookups[transparencyLookup];
+        materialDef.transparency = transparencies[transparencyIndex];
+      }
+
+      for (let opIndex = 0; opIndex < opCount; ++opIndex) {
+        const textureLookup = textureUnit.textureIndex + opIndex;
+        const textureIndex = textureLookups[textureLookup];
+        const texture = textures[textureIndex];
+        materialDef.textures[opIndex] = texture;
+      }
+
+      const tuMaterial = new M2Material(materialDef);
+
+      submeshTextureUnits[textureUnitNumber] = tuMaterial;
+    }
+
+    this.textureUnits = textureUnits;
+  }
+
   createGeometry(vertices) {
     const geometry = new THREE.Geometry();
 
@@ -188,51 +261,7 @@ class M2 extends THREE.Group {
     this.mesh = mesh;
   }
 
-  // Populates texture unit definitions from skin data with relevant rendering, texture, and
-  // texture animation flags. Returns a map indexed by the submesh with expanded definitions.
-  expandTextureUnits(data, skinData) {
-    const submeshTextureUnits = new Map();
-
-    const { textureLookups, textures, renderFlags } = data;
-    const { transparencyLookups, transparencies, colors } = data;
-    const { textureUnits } = skinData;
-
-    const tuLen = textureUnits.length;
-    for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
-      const textureUnit = textureUnits[tuIndex];
-
-      const { submeshIndex } = textureUnit;
-
-      const textureLookup = textureLookups[textureUnit.textureIndex];
-      const texture = textures[textureLookup];
-      textureUnit.texture = texture;
-
-      textureUnit.renderFlags = renderFlags[textureUnit.renderFlagsIndex];
-
-      if (textureUnit.transparencyIndex > -1) {
-        const transparencyLookup = transparencyLookups[textureUnit.transparencyIndex];
-        const transparency = transparencies[transparencyLookup];
-        textureUnit.transparency = transparency;
-      }
-
-      if (textureUnit.colorIndex > -1) {
-        const color = colors[textureUnit.colorIndex];
-        textureUnit.color = color;
-      }
-
-      if (!submeshTextureUnits.has(submeshIndex)) {
-        submeshTextureUnits.set(submeshIndex, []);
-      }
-
-      submeshTextureUnits.get(submeshIndex).push(textureUnit);
-    }
-
-    return submeshTextureUnits;
-  }
-
   createSubmeshes(data, skinData) {
-    const textureUnits = this.expandTextureUnits(data, skinData);
-
     const { vertices } = data;
     const { submeshes, indices, triangles } = skinData;
 
@@ -240,67 +269,56 @@ class M2 extends THREE.Group {
 
     for (let submeshIndex = 0; submeshIndex < subLen; ++submeshIndex) {
       const submeshDef = submeshes[submeshIndex];
-      const submeshTextureUnits = textureUnits.get(submeshIndex);
-      const materialCount = submeshTextureUnits.length;
 
-      let submeshGeometry = this.submeshGeometries.get(submeshIndex);
-
-      if (!submeshGeometry) {
-        submeshGeometry = this.createSubmeshGeometry(submeshDef, indices, triangles, vertices, materialCount);
-      }
+      // Bring up relevant texture units and geometry.
+      const submeshTextureUnits = this.textureUnits.get(submeshIndex);
+      const submeshGeometry = this.submeshGeometries.get(submeshIndex) ||
+        this.createSubmeshGeometry(submeshDef, indices, triangles, vertices);
 
       const submesh = this.createSubmesh(submeshDef, submeshGeometry, submeshTextureUnits);
 
-      this.submeshes.set(submesh.userData.partID, submesh);
+      this.parts.set(submesh.userData.partID, submesh);
+      this.submeshes.push(submesh);
+
       this.submeshGeometries.set(submeshIndex, submeshGeometry);
 
       this.mesh.add(submesh);
     }
   }
 
-  createSubmeshGeometry(submeshDef, indices, triangles, vertices, materialCount) {
+  createSubmeshGeometry(submeshDef, indices, triangles, vertices) {
     const geometry = this.geometry.clone();
 
     // TODO: Figure out why this isn't cloned by the line above
     geometry.skinIndices = Array.from(this.geometry.skinIndices);
     geometry.skinWeights = Array.from(this.geometry.skinWeights);
 
-    const uvLayers = [];
-    const uvLayer = [];
-    let faceIndex = 0;
+    const uvs = [];
 
     const { startTriangle: start, triangleCount: count } = submeshDef;
-
-    for (let i = start; i < start + count; i += 3) {
+    for (let i = start, faceIndex = 0; i < start + count; i += 3, ++faceIndex) {
       const vindices = [
         indices[triangles[i]],
         indices[triangles[i + 1]],
         indices[triangles[i + 2]]
       ];
 
-      // One face and set of uv coords per texture unit to support multitexturing.
-      // TODO: This approach is a workaround to avoid handling texture units with shaders.
-      // TODO: This approach depends on render order being preserved for the faces.
-      for (let matIndex = 0; matIndex < materialCount; ++matIndex) {
-        const face = new THREE.Face3(vindices[0], vindices[1], vindices[2], null, null, matIndex);
-        geometry.faces.push(face);
+      // TODO: Handle normal vectors.
+      const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
 
-        uvLayer[faceIndex] = [];
+      geometry.faces.push(face);
 
-        for (let vinIndex = 0, vinLen = vindices.length; vinIndex < vinLen; ++vinIndex) {
-          const index = vindices[vinIndex];
+      uvs[faceIndex] = [];
+      for (let vinIndex = 0, vinLen = vindices.length; vinIndex < vinLen; ++vinIndex) {
+        const index = vindices[vinIndex];
 
-          const { textureCoords } = vertices[index];
-          uvLayer[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
-        }
+        const { textureCoords } = vertices[index];
 
-        faceIndex++;
+        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
       }
     }
 
-    uvLayers.push(uvLayer);
-
-    geometry.faceVertexUvs = uvLayers;
+    geometry.faceVertexUvs = [uvs];
 
     const bufferGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
 
@@ -313,12 +331,12 @@ class M2 extends THREE.Group {
     const opts = {
       skeleton: this.skeleton,
       geometry: geometry,
-      rootBone: rootBone,
-      textureUnits: textureUnits,
-      animations: this.animations
+      rootBone: rootBone
     };
 
     const submesh = new Submesh(opts);
+
+    submesh.applyTextureUnits(textureUnits);
 
     submesh.userData.partID = submeshDef.id;
 
@@ -333,15 +351,10 @@ class M2 extends THREE.Group {
   }
 
   applyBillboard(camera, bone) {
-    // TODO Is there a better way to get the relevant non-bone parent?
-    let boneRoot = bone.skin;
+    const boneRoot = bone.skin;
 
-    if (typeof boneRoot === 'undefined') {
-      boneRoot = bone.parent;
-
-      while (boneRoot.type === 'Bone') {
-        boneRoot = boneRoot.parent;
-      }
+    if (!boneRoot) {
+      return;
     }
 
     const camPos = this.worldToLocal(camera.position.clone());
@@ -349,8 +362,6 @@ class M2 extends THREE.Group {
     const modelForward = new THREE.Vector3(camPos.x, camPos.y, camPos.z);
     modelForward.normalize();
 
-    // TODO Why is the bone's mvm always set to identity? It would be better if we could pull
-    // modelRight out of the bone's mvm.
     const modelVmEl = boneRoot.modelViewMatrix.elements;
     const modelRight = new THREE.Vector3(modelVmEl[0], modelVmEl[4], modelVmEl[8]);
     modelRight.multiplyScalar(-1);
@@ -372,9 +383,8 @@ class M2 extends THREE.Group {
   }
 
   set displayInfo(displayInfo) {
-    for (let i = 0, len = this.mesh.children.length; i < len; ++i) {
-      const submesh = this.mesh.children[i];
-      submesh.displayInfo = displayInfo;
+    for (let i = 0, len = this.submeshes.length; i < len; ++i) {
+      this.submeshes[i].displayInfo = displayInfo;
     }
   }
 
@@ -384,6 +394,7 @@ class M2 extends THREE.Group {
     if (!this.isInstanced) {
       shared.geometry = this.geometry;
       shared.submeshGeometries = this.submeshGeometries;
+      shared.textureUnits = this.textureUnits;
     } else {
       shared = null;
     }
