@@ -1,10 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
-  context: __dirname + '/src',
+  context: path.join(__dirname, 'src'),
   entry: './bootstrapper',
   output: {
-    path: __dirname + '/public',
+    path: path.join(__dirname, 'public'),
     filename: 'wowser-[hash].js'
   },
   resolve: {
@@ -12,6 +13,10 @@ module.exports = {
   },
   module: {
     loaders: [
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
       {
         test: /\.(png|jpg)$/,
         loader: 'url-loader?limit=100000'
@@ -29,12 +34,12 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules|blizzardry/
       },
       {
         test: /\.jsx?$/,
         loader: 'eslint-loader',
-        exclude: /node_modules/
+        exclude: /node_modules|blizzardry/
       }
     ]
   },
@@ -46,7 +51,7 @@ module.exports = {
     })
   ],
   devServer: {
-    contentBase: __dirname + '/public',
+    contentBase: path.join(__dirname, 'public'),
     proxy: {
       '/pipeline/*': {
         target: 'http://localhost:3000',
