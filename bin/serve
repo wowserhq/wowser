@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
-const Server = require('../lib/server');
+const Cluster = require('../lib/server/cluster');
+const ServerConfig = require('../lib/server/config');
 
-(new Server(__dirname + '/..')).start();
+ServerConfig.verify().then(function() {
+  const cluster = new Cluster();
+  cluster.start();
+});
