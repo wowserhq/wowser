@@ -33,8 +33,6 @@ class M2 extends THREE.Group {
     // three.js.
     this.useSkinning = false;
 
-    this.material = null;
-
     this.mesh = null;
     this.submeshes = [];
     this.parts = new Map();
