@@ -13,9 +13,10 @@ const config = {
   specs: 'spec/**/*.js'
 };
 
-gulp.task('reset', function() {
+gulp.task('reset', function(done) {
   config.db.clear();
-  return process.stdout.write(`\n> Settings deleted from ${config.db.path}\n`);
+  process.stdout.write(`\n> Settings deleted from ${config.db.path}\n\n`);
+  done();
 });
 
 gulp.task('clean', function(cb) {
