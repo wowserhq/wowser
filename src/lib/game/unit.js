@@ -73,6 +73,9 @@ class Unit extends Entity {
       this.view.remove(this._model);
     }
 
+    // TODO: Figure out whether this 180 degree rotation is correct
+    m2.rotation.z = Math.PI;
+
     this.view.add(m2);
 
     // Auto-play animation index 0 in unit model, if present
