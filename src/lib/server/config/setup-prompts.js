@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 
 export default [
   {
@@ -30,5 +31,11 @@ export default [
     name: 'serverPort',
     message: 'Server port',
     default: '3000'
+  },
+  {
+    type: 'input',
+    name: 'clusterWorkerCount',
+    message: 'Number of cluster workers',
+    default: Math.ceil(os.cpus().length / 2)
   }
 ];
