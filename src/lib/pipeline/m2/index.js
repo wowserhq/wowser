@@ -9,10 +9,10 @@ class M2 extends THREE.Group {
 
   static cache = {};
 
-  constructor(path, data, skinData, sharedOpts) {
+  constructor(path, data, skinData, instanceOpts) {
     super();
 
-    const shared = sharedOpts || null;
+    const instance = instanceOpts || null;
 
     this.name = path.split('\\').slice(-1).pop();
 
@@ -20,7 +20,9 @@ class M2 extends THREE.Group {
     this.data = data;
     this.skinData = skinData;
 
-    this.isInstanced = data.isInstanced;
+    // Instanceable M2s can share geometry and texture units.
+    this.canInstance = data.canInstance;
+
     this.isAnimated = data.isAnimated;
     this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
@@ -46,11 +48,11 @@ class M2 extends THREE.Group {
 
     this.createSkeleton(data.bones);
 
-    // Non-instanced M2s can share geometries and texture units
-    if (shared) {
-      this.textureUnits = shared.textureUnits;
-      this.geometry = shared.geometry;
-      this.submeshGeometries = shared.submeshGeometries;
+    // Instanced M2s can share geometries and texture units.
+    if (instance) {
+      this.textureUnits = instance.textureUnits;
+      this.geometry = instance.geometry;
+      this.submeshGeometries = instance.submeshGeometries;
     } else {
       this.createTextureUnits(data, skinData);
       this.createGeometry(data.vertices);
@@ -410,17 +412,17 @@ class M2 extends THREE.Group {
   }
 
   clone() {
-    let shared = {};
+    let instance = {};
 
-    if (!this.isInstanced) {
-      shared.geometry = this.geometry;
-      shared.submeshGeometries = this.submeshGeometries;
-      shared.textureUnits = this.textureUnits;
+    if (this.canInstance) {
+      instance.geometry = this.geometry;
+      instance.submeshGeometries = this.submeshGeometries;
+      instance.textureUnits = this.textureUnits;
     } else {
-      shared = null;
+      instance = null;
     }
 
-    return new this.constructor(this.path, this.data, this.skinData, shared);
+    return new this.constructor(this.path, this.data, this.skinData, instance);
   }
 
   static load(path) {
