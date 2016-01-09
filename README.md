@@ -97,9 +97,9 @@ npm run serve
 
 On first run you will be prompted to specify the following:
 
-1. Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
-
-2. Server port (default is `3000`)
+- Path to client data folder (e.g. `C:/Program Files (x86)/World of Warcraft/Data`)
+- Server port (default is `3000`)
+- Number of cluster workers (default depends on amount of CPUs)
 
 Clear these settings by running `npm run reset`
 
