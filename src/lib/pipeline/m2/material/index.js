@@ -7,7 +7,11 @@ import fragmentShader from './shader.frag';
 class M2Material extends THREE.ShaderMaterial {
 
   constructor(def) {
-    super({ skinning: true });
+    if (def.useSkinning) {
+      super({ skinning: true });
+    } else {
+      super({ skinning: false });
+    }
 
     const vertexShaderMode = this.vertexShaderModeFromID(def.shaderID, def.opCount);
     const fragmentShaderMode = this.fragmentShaderModeFromID(def.shaderID, def.opCount);

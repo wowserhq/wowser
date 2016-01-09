@@ -25,6 +25,12 @@ class M2 extends THREE.Group {
     this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
 
+    // Keep track of whether or not to use skinning. If the M2 has bone animations, useSkinning is
+    // set to true, and all meshes and materials used in the M2 will be skinning enabled. Otherwise,
+    // skinning will not be enabled. Skinning has a very significant impact on the render loop in
+    // three.js.
+    this.useSkinning = false;
+
     this.material = null;
 
     this.mesh = null;
@@ -38,6 +44,8 @@ class M2 extends THREE.Group {
     this.bones = [];
     this.rootBones = [];
 
+    this.createSkeleton(data.bones);
+
     // Non-instanced M2s can share geometries and texture units
     if (shared) {
       this.textureUnits = shared.textureUnits;
@@ -47,8 +55,6 @@ class M2 extends THREE.Group {
       this.createTextureUnits(data, skinData);
       this.createGeometry(data.vertices);
     }
-
-    this.createSkeleton(data.bones);
 
     this.createMesh(this.geometry, this.skeleton, this.rootBones);
     this.createSubmeshes(data, skinData);
@@ -84,9 +90,14 @@ class M2 extends THREE.Group {
         rootBones.push(bone);
       }
 
-      // Tag billboarded bones
-      if (boneDef.flags & 0x08) {
-        bone.userData.isBillboard = true;
+      // Enable skinning support on this M2 if we have bone animations.
+      if (boneDef.isAnimated) {
+        this.useSkinning = true;
+      }
+
+      // Flag billboarded bones
+      if (boneDef.isBillboarded) {
+        bone.userData.isBillboarded = true;
         billboards.push(bone);
       }
 
@@ -202,6 +213,9 @@ class M2 extends THREE.Group {
         materialDef.textures[opIndex] = texture;
       }
 
+      // Observe the M2's skinning flag in the M2Material.
+      materialDef.useSkinning = this.useSkinning;
+
       const tuMaterial = new M2Material(materialDef);
 
       submeshTextureUnits[textureUnitNumber] = tuMaterial;
@@ -243,16 +257,22 @@ class M2 extends THREE.Group {
   }
 
   createMesh(geometry, skeleton, rootBones) {
-    const mesh = new THREE.SkinnedMesh(geometry);
+    let mesh;
 
-    // Assign root bones to mesh
-    rootBones.forEach((bone) => {
-      mesh.add(bone);
-      bone.skin = mesh;
-    });
+    if (this.useSkinning) {
+      mesh = new THREE.SkinnedMesh(geometry);
 
-    // Bind mesh to skeleton
-    mesh.bind(skeleton);
+      // Assign root bones to mesh
+      rootBones.forEach((bone) => {
+        mesh.add(bone);
+        bone.skin = mesh;
+      });
+
+      // Bind mesh to skeleton
+      mesh.bind(skeleton);
+    } else {
+      mesh = new THREE.Mesh(geometry);
+    }
 
     // Add mesh to the group
     this.add(mesh);
@@ -331,7 +351,8 @@ class M2 extends THREE.Group {
     const opts = {
       skeleton: this.skeleton,
       geometry: geometry,
-      rootBone: rootBone
+      rootBone: rootBone,
+      useSkinning: this.useSkinning
     };
 
     const submesh = new Submesh(opts);

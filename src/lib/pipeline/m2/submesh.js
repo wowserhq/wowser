@@ -5,13 +5,22 @@ class Submesh extends THREE.Group {
   constructor(opts) {
     super();
 
-    // Preserve the rootBone for the submesh such that its skin property can be assigned to the
-    // first child texture unit mesh.
-    this.rootBone = opts.rootBone;
-    this.isBillboard = opts.rootBone.userData.isBillboard;
+    this.useSkinning = opts.useSkinning;
 
-    // Preserve the skeleton and geometry for the submesh.
-    this.skeleton = opts.skeleton;
+    this.rootBone = null;
+    this.isBillboarded = false;
+
+    if (this.useSkinning) {
+      // Preserve the rootBone for the submesh such that its skin property can be assigned to the
+      // first child texture unit mesh.
+      this.rootBone = opts.rootBone;
+      this.isBillboarded = opts.rootBone.userData.isBillboarded;
+
+      // Preserve the skeleton for use in applying texture units.
+      this.skeleton = opts.skeleton;
+    }
+
+    // Preserve the geometry for use in applying texture units.
     this.geometry = opts.geometry;
   }
 
@@ -30,19 +39,27 @@ class Submesh extends THREE.Group {
     for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
       const tuMaterial = textureUnits[tuIndex];
 
-      // Ensure billboarding is handled correctly in the vertex shader.
-      if (this.isBillboard) {
+      // If the submesh is billboarded, flag the material as billboarded.
+      if (this.isBillboarded) {
         tuMaterial.enableBillboarding();
       }
 
-      const tuMesh = new THREE.SkinnedMesh(this.geometry, tuMaterial);
+      let tuMesh;
 
-      tuMesh.bind(this.skeleton);
+      // Only use a skinned mesh if the submesh uses skinning.
+      if (this.useSkinning) {
+        tuMesh = new THREE.SkinnedMesh(this.geometry, tuMaterial);
+        tuMesh.bind(this.skeleton);
+      } else {
+        tuMesh = new THREE.Mesh(this.geometry, tuMaterial);
+      }
 
       this.add(tuMesh);
     }
 
-    this.rootBone.skin = this.children[0];
+    if (this.useSkinning) {
+      this.rootBone.skin = this.children[0];
+    }
   }
 
   // Remove any existing texture unit child meshes.
@@ -53,9 +70,11 @@ class Submesh extends THREE.Group {
       this.remove(child);
     }
 
-    // If all texture unit meshes are cleared, there is no longer a skin to associate with the
-    // root bone.
-    this.rootBone.skin = null;
+    if (this.useSkinning) {
+      // If all texture unit meshes are cleared, there is no longer a skin to associate with the
+      // root bone.
+      this.rootBone.skin = null;
+    }
   }
 
   // Update all existing texture unit mesh materials to point to the new skins (textures).
