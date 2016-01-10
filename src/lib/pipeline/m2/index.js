@@ -323,7 +323,6 @@ class M2 extends THREE.Group {
         indices[triangles[i + 2]]
       ];
 
-      // TODO: Handle normal vectors.
       const face = new THREE.Face3(vindices[0], vindices[1], vindices[2]);
 
       geometry.faces.push(face);
@@ -332,9 +331,11 @@ class M2 extends THREE.Group {
       for (let vinIndex = 0, vinLen = vindices.length; vinIndex < vinLen; ++vinIndex) {
         const index = vindices[vinIndex];
 
-        const { textureCoords } = vertices[index];
+        const { textureCoords, normal } = vertices[index];
 
         uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+
+        face.vertexNormals.push(new THREE.Vector3(normal[0], normal[1], normal[2]));
       }
     }
 
