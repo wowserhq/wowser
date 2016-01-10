@@ -1,12 +1,17 @@
 precision highp float;
 
-varying vec2 vUv;
-varying vec2 texture0Coord;
 varying vec2 texture1Coord;
+varying vec2 texture2Coord;
 
-varying vec3 vertexNormal;
-varying vec3 vertexWorldPosition;
 varying float cameraDistance;
+
+varying vec3 vertexWorldNormal;
+
+varying vec4 vertexColor;
+uniform vec3 animatedVertexColor;
+uniform float animatedVertexAlpha;
+
+uniform float animatedTransparencies[4];
 
 uniform float billboarded;
 
@@ -49,15 +54,22 @@ uniform float billboarded;
 #endif
 
 void main() {
-  vUv = uv;
+  // For some reason, V is inverted?!
+  // TODO: Use vertexShaderMode to determine coordinates
+  texture1Coord = vec2(uv[0], -uv[1]);
+  texture2Coord = vec2(uv[0], -uv[1]);
 
-  vertexNormal = normal;
-  vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+  // TODO: Will this be needed in the fragment shader at some point?
+  vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+
   cameraDistance = distance(cameraPosition, vertexWorldPosition);
 
-  // TODO: Use vertexShaderMode to determine coordinates
-  vec2 texture0Coord = vec2(vUv[0], -vUv[1]);
-  vec2 texture1Coord = vec2(vUv[0], -vUv[1]);
+  // Account for adjustments (eg. model rotation) in world space
+  // TODO: Do we need to account for skinning?
+  vertexWorldNormal = (modelMatrix * vec4(normal, 0.0)).xyz;
+
+  vertexColor.rgb = animatedVertexColor.rgb * 0.5;
+  vertexColor.a = animatedVertexAlpha;
 
   vec3 transformed = vec3(position);
 

@@ -25,6 +25,15 @@ class M2Material extends THREE.ShaderMaterial {
 
       billboarded: { type: 'f', value: 0.0 },
 
+      // Animated vertex color, uses vector 4 since it can contain alpha channels
+      // TODO: Actually implement vertex color animation
+      animatedVertexColor: { type: 'c', value: new THREE.Color(1.0, 1.0, 1.0) },
+      animatedVertexAlpha: { type: 'f', value: 1.0 },
+
+      // Animated transparencies; these apply per-texture
+      // TODO: Actually implement transparency animation
+      animatedTransparencies: { type: '1fv', value: [1.0, 1.0, 1.0, 1.0] },
+
       // Managed by light manager
       lightModifier: { type: 'f', value: '1.0' },
       ambientLight: { type: 'c', value: new THREE.Color(0.5, 0.5, 0.5) },
