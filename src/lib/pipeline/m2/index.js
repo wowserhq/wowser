@@ -181,9 +181,9 @@ class M2 extends THREE.Group {
         opCount: textureUnit.opCount,
         renderFlags: null,
         blendingMode: null,
+        color: null,
         textures: [],
-        transparency: null,
-        color: null
+        transparencies: []
       };
 
       // Shader ID (needs to be unmasked to get actual shader ID)
@@ -194,23 +194,25 @@ class M2 extends THREE.Group {
       materialDef.renderFlags = renderFlags[renderFlagsIndex].flags;
       materialDef.blendingMode = renderFlags[renderFlagsIndex].blendingMode;
 
-      // Color animation block
+      // Vertex color animation block
       if (textureUnit.colorIndex > -1) {
         materialDef.color = colors[textureUnit.colorIndex];
       }
 
-      // Transparency animation block
-      if (textureUnit.transparencyIndex > -1) {
-        const transparencyLookup = textureUnit.transparencyIndex;
-        const transparencyIndex = transparencyLookups[transparencyLookup];
-        materialDef.transparency = transparencies[transparencyIndex];
-      }
-
       for (let opIndex = 0; opIndex < opCount; ++opIndex) {
+        // Texture
         const textureLookup = textureUnit.textureIndex + opIndex;
         const textureIndex = textureLookups[textureLookup];
         const texture = textures[textureIndex];
         materialDef.textures[opIndex] = texture;
+
+        // Texture transparency animation block
+        const transparencyLookup = textureUnit.transparencyIndex + opIndex;
+        const transparencyIndex = transparencyLookups[transparencyLookup];
+        const transparency = transparencies[transparencyIndex];
+        if (transparency) {
+          materialDef.transparencies[opIndex] = transparency;
+        }
       }
 
       // Observe the M2's skinning flag in the M2Material.
