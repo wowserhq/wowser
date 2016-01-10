@@ -8,13 +8,13 @@ class Submesh extends THREE.Group {
     this.useSkinning = opts.useSkinning;
 
     this.rootBone = null;
-    this.isBillboarded = false;
+    this.billboarded = false;
 
     if (this.useSkinning) {
       // Preserve the rootBone for the submesh such that its skin property can be assigned to the
       // first child texture unit mesh.
       this.rootBone = opts.rootBone;
-      this.isBillboarded = opts.rootBone.userData.isBillboarded;
+      this.billboarded = opts.rootBone.userData.billboarded;
 
       // Preserve the skeleton for use in applying texture units.
       this.skeleton = opts.skeleton;
@@ -40,7 +40,7 @@ class Submesh extends THREE.Group {
       const tuMaterial = textureUnits[tuIndex];
 
       // If the submesh is billboarded, flag the material as billboarded.
-      if (this.isBillboarded) {
+      if (this.billboarded) {
         tuMaterial.enableBillboarding();
       }
 

@@ -23,7 +23,7 @@ class M2 extends THREE.Group {
     // Instanceable M2s can share geometry and texture units.
     this.canInstance = data.canInstance;
 
-    this.isAnimated = data.isAnimated;
+    this.animated = data.animated;
     this.animations = new AnimationManager(this, data.animations);
     this.billboards = [];
 
@@ -91,18 +91,18 @@ class M2 extends THREE.Group {
       }
 
       // Enable skinning support on this M2 if we have bone animations.
-      if (boneDef.isAnimated) {
+      if (boneDef.animated) {
         this.useSkinning = true;
       }
 
       // Flag billboarded bones
-      if (boneDef.isBillboarded) {
-        bone.userData.isBillboarded = true;
+      if (boneDef.billboarded) {
+        bone.userData.billboarded = true;
         billboards.push(bone);
       }
 
       // Bone translation animation block
-      if (boneDef.translation.isAnimated) {
+      if (boneDef.translation.animated) {
         this.animations.registerTrack({
           target: bone,
           property: 'position',
@@ -117,7 +117,7 @@ class M2 extends THREE.Group {
       }
 
       // Bone rotation animation block
-      if (boneDef.rotation.isAnimated) {
+      if (boneDef.rotation.animated) {
         this.animations.registerTrack({
           target: bone,
           property: 'quaternion',
@@ -131,7 +131,7 @@ class M2 extends THREE.Group {
       }
 
       // Bone scaling animation block
-      if (boneDef.scaling.isAnimated) {
+      if (boneDef.scaling.animated) {
         this.animations.registerTrack({
           target: bone,
           property: 'scale',
