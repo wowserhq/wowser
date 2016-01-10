@@ -148,7 +148,7 @@ class WorldMap extends THREE.Group {
 
       // Auto-play animation index 0 in doodad, if animations are present
       // TODO: Properly manage doodad animations
-      if (m2.isAnimated && m2.animations.length > 0) {
+      if (m2.animated && m2.animations.length > 0) {
         m2.animations.play(0);
       }
     }));
@@ -188,7 +188,7 @@ class WorldMap extends THREE.Group {
 
   animateDoodads(delta, camera, cameraRotated) {
     this.doodads.forEach((doodad) => {
-      if (!doodad.isAnimated) {
+      if (!doodad.animated) {
         return;
       }
 
