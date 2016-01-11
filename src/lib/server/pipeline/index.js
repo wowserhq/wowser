@@ -6,7 +6,7 @@ import express from 'express';
 import find from 'array-find';
 
 import Archive from './archive';
-import ServerConfig from '../utils/server-config';
+import ServerConfig from '../config';
 
 class Pipeline {
 
