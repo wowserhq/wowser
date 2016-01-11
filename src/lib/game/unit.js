@@ -80,7 +80,7 @@ class Unit extends Entity {
 
     // Auto-play animation index 0 in unit model, if present
     // TODO: Properly manage unit animations
-    if (m2.isAnimated && m2.animations.length > 0) {
+    if (m2.animated && m2.animations.length > 0) {
       m2.animations.play(0);
     }
 
