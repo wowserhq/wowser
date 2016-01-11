@@ -25,6 +25,7 @@ class Chunk extends THREE.Mesh {
     const vertexCount = data.MCVT.heights.length;
 
     const positions = new Float32Array(vertexCount * 3);
+    const normals = new Float32Array(vertexCount * 3);
     const uvs = new Float32Array(vertexCount * 2);
     const uvsAlpha = new Float32Array(vertexCount * 2);
 
@@ -48,6 +49,12 @@ class Chunk extends THREE.Mesh {
 
       uvsAlpha[index * 2] = x / 8;
       uvsAlpha[index * 2 + 1] = y / 8;
+    });
+
+    data.MCNR.normals.forEach(function(normal, index) {
+      normals[index * 3] = normal.x;
+      normals[index * 3 + 1] = normal.z;
+      normals[index * 3 + 2] = normal.y;
     });
 
     const indices = new Uint32Array(8 * 8 * 4 * 3);
@@ -75,6 +82,7 @@ class Chunk extends THREE.Mesh {
     const geometry = this.geometry = new THREE.BufferGeometry();
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
     geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geometry.addAttribute('uvAlpha', new THREE.BufferAttribute(uvsAlpha, 2));
 
