@@ -1,218 +1,95 @@
 import THREE from 'three';
 
-import Material from '../material';
-
 class Submesh extends THREE.Group {
 
-  constructor(m2, opts) {
+  constructor(opts) {
     super();
 
-    this.m2 = m2;
-    this.skeleton = m2.skeleton;
+    this.useSkinning = opts.useSkinning;
 
-    this.index = opts.index;
-    this.rootBones = opts.rootBones;
+    this.rootBone = null;
+    this.billboarded = false;
+
+    if (this.useSkinning) {
+      // Preserve the rootBone for the submesh such that its skin property can be assigned to the
+      // first child texture unit mesh.
+      this.rootBone = opts.rootBone;
+      this.billboarded = opts.rootBone.userData.billboarded;
+
+      // Preserve the skeleton for use in applying texture units.
+      this.skeleton = opts.skeleton;
+    }
+
+    // Preserve the geometry for use in applying texture units.
     this.geometry = opts.geometry;
-    this.textureUnits = opts.textureUnits;
-    this.isBillboard = opts.isBillboard;
-
-    this.textureMeshes = [];
-    this.textureAnimationTrackNames = [];
-
-    this.skin1 = null;
-    this.skin2 = null;
-    this.skin3 = null;
-
-    this.applyTextureUnits();
   }
 
-  applyTextureUnits() {
-    // Clear out old texture animations and meshes in case we're reapplying texture units.
-    this.clearTextureAnimations();
-    this.clearTextureMeshes();
+  // Submeshes get one mesh per texture unit, which allows them to effectively simulate multiple
+  // render passes. Texture unit mesh rendering order should be handled properly by the three.js
+  // renderer.
+  //
+  // For clarity's sake, a texture unit is represented in three.js by a 1:1 coupling of a
+  // SkinnedMesh and a ShaderMaterial. We call them texture units to maintain consistency with
+  // other World of Warcraft projects.
+  //
+  applyTextureUnits(textureUnits) {
+    this.clearTextureUnits();
 
-    // Create meshes for each texture unit and add to the group.
-    for (let tuIndex = 0, tuLen = this.textureUnits.length; tuIndex < tuLen; ++tuIndex) {
-      const textureUnit = this.textureUnits[tuIndex];
+    const tuLen = textureUnits.length;
+    for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
+      const tuMaterial = textureUnits[tuIndex];
 
-      const material = this.createMaterial(textureUnit);
-      const textureMesh = new THREE.SkinnedMesh(this.geometry, material);
+      // If the submesh is billboarded, flag the material as billboarded.
+      if (this.billboarded) {
+        tuMaterial.enableBillboarding();
+      }
 
-      this.rootBones.forEach((rootBone) => {
-        textureMesh.add(rootBone);
-      });
+      let tuMesh;
 
-      textureMesh.bind(this.skeleton);
+      // Only use a skinned mesh if the submesh uses skinning.
+      if (this.useSkinning) {
+        tuMesh = new THREE.SkinnedMesh(this.geometry, tuMaterial);
+        tuMesh.bind(this.skeleton);
+      } else {
+        tuMesh = new THREE.Mesh(this.geometry, tuMaterial);
+      }
 
-      this.textureMeshes.push(textureMesh);
-      this.add(textureMesh);
+      this.add(tuMesh);
+    }
 
-      this.registerTextureAnimations(textureMesh, textureUnit);
+    if (this.useSkinning) {
+      this.rootBone.skin = this.children[0];
     }
   }
 
-  clearTextureAnimations() {
-    this.textureAnimationTrackNames.forEach((trackName) => {
-      this.m2.animations.unregisterTrack(trackName);
-    });
+  // Remove any existing texture unit child meshes.
+  clearTextureUnits() {
+    const childrenLength = this.children.length;
+    for (let childIndex = 0; childIndex < childrenLength; ++childIndex) {
+      const child = this.children[childIndex];
+      this.remove(child);
+    }
 
-    this.textureAnimationTrackNames = [];
-  }
-
-  clearTextureMeshes() {
-    this.textureMeshes.forEach((textureMesh) => {
-      this.remove(textureMesh);
-    });
-
-    this.textureMeshes = [];
-  }
-
-  createMaterial(textureUnit) {
-    const { texture, renderFlags } = textureUnit;
-
-    const material = new Material({ skinning: true });
-
-    this.applyTexture(material, texture);
-    this.applyRenderFlags(material, renderFlags.flags);
-    this.applyBlendingMode(material, renderFlags.blendingMode);
-
-    return material;
-  }
-
-  applyTexture(material, texture) {
-    switch (texture.type) {
-      case 0:
-        // Hardcoded texture
-        material.texture = texture.filename;
-        break;
-      case 11:
-        if (this.skin1) {
-          material.texture = this.skin1;
-        }
-        break;
-      case 12:
-        if (this.skin2) {
-          material.texture = this.skin2;
-        }
-        break;
-      case 13:
-        if (this.skin3) {
-          material.texture = this.skin3;
-        }
-        break;
-      default:
-        break;
+    if (this.useSkinning) {
+      // If all texture unit meshes are cleared, there is no longer a skin to associate with the
+      // root bone.
+      this.rootBone.skin = null;
     }
   }
 
-  applyRenderFlags(material, renderFlags) {
-    // Flag 0x04 (no backface culling) and all billboards need double side rendering.
-    if (renderFlags & 0x04 || this.isBillboard) {
-      material.side = THREE.DoubleSide;
-    }
-
-    // Flag 0x04 (no backface culling) and anything with blending mode >= 1 need to obey
-    // alpha values in the material texture.
-    if (renderFlags & 0x04) {
-      material.transparent = true;
-    }
-
-    // Flag 0x10 (no z-buffer write)
-    if (renderFlags & 0x10) {
-      material.depthWrite = false;
-    }
-  }
-
-  applyBlendingMode(material, blendingMode) {
-    if (blendingMode >= 1) {
-      material.transparent = true;
-      material.blending = THREE.CustomBlending;
-    }
-
-    switch (blendingMode) {
-      case 0:
-        material.blending = THREE.NoBlending;
-        material.blendSrc = THREE.OneFactor;
-        material.blendDst = THREE.ZeroFactor;
-        break;
-
-      case 1:
-        material.alphaTest = 0.5;
-        material.side = THREE.DoubleSide;
-
-        material.blendSrc = THREE.OneFactor;
-        material.blendDst = THREE.ZeroFactor;
-        material.blendSrcAlpha = THREE.OneFactor;
-        material.blendDstAlpha = THREE.ZeroFactor;
-        break;
-
-      case 2:
-        material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneMinusSrcAlphaFactor;
-        material.blendSrcAlpha = THREE.SrcAlphaFactor;
-        material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
-        break;
-
-      case 3:
-        material.blendSrc = THREE.SrcColorFactor;
-        material.blendDst = THREE.DstColorFactor;
-        material.blendSrcAlpha = THREE.SrcAlphaFactor;
-        material.blendDstAlpha = THREE.DstAlphaFactor;
-        break;
-
-      case 4:
-        material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneFactor;
-        material.blendSrcAlpha = THREE.SrcAlphaFactor;
-        material.blendDstAlpha = THREE.OneFactor;
-        break;
-
-      case 5:
-        material.blendSrc = THREE.DstColorFactor;
-        material.blendDst = THREE.ZeroFactor;
-        material.blendSrcAlpha = THREE.DstAlphaFactor;
-        material.blendDstAlpha = THREE.ZeroFactor;
-        break;
-
-      case 6:
-        material.blendSrc = THREE.DstColorFactor;
-        material.blendDst = THREE.SrcColorFactor;
-        material.blendSrcAlpha = THREE.DstAlphaFactor;
-        material.blendDstAlpha = THREE.SrcAlphaFactor;
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  registerTextureAnimations(textureMesh, textureUnit) {
-    if (textureUnit.transparency) {
-      const trackName = this.m2.animations.registerTrack({
-        target: textureMesh,
-        property: 'material.opacity',
-        animationBlock: textureUnit.transparency,
-        trackType: 'NumberKeyframeTrack',
-
-        valueTransform: function(value) {
-          return value / 32767.0;
-        }
-      });
-
-      this.textureAnimationTrackNames.push(trackName);
-    }
-  }
-
-  reapplyTextureUnits() {
-    this.applyTextureUnits(this.textureUnits);
-  }
-
+  // Update all existing texture unit mesh materials to point to the new skins (textures).
   set displayInfo(displayInfo) {
     const { path } = displayInfo.modelData;
-    this.skin1 = `${path}${displayInfo.skin1}.blp`;
-    this.skin2 = `${path}${displayInfo.skin2}.blp`;
-    this.skin3 = `${path}${displayInfo.skin3}.blp`;
-    this.reapplyTextureUnits();
+
+    const skin1 = `${path}${displayInfo.skin1}.blp`;
+    const skin2 = `${path}${displayInfo.skin2}.blp`;
+    const skin3 = `${path}${displayInfo.skin3}.blp`;
+
+    const childrenLength = this.children.length;
+    for (let childIndex = 0; childIndex < childrenLength; ++childIndex) {
+      const child = this.children[childIndex];
+      child.material.updateSkinTextures(skin1, skin2, skin3);
+    }
   }
 
 }
