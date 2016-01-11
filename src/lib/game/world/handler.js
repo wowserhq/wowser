@@ -140,7 +140,7 @@ class WorldHandler extends EventEmitter {
     this.entities.forEach((entity) => {
       const { model } = entity;
 
-      if (model === null || !model.isAnimated) {
+      if (model === null || !model.animated) {
         return;
       }
 
@@ -157,6 +157,7 @@ class WorldHandler extends EventEmitter {
       }
     });
   }
+
 }
 
 export default WorldHandler;
