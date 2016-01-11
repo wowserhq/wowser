@@ -21,7 +21,18 @@ class Material extends THREE.ShaderMaterial {
     this.uniforms = {
       layerCount: { type: 'i', value: this.layers.length },
       alphaMaps: { type: 'tv', value: this.alphaMaps },
-      textures: { type: 'tv', value: this.textures }
+      textures: { type: 'tv', value: this.textures },
+
+      // Managed by light manager
+      lightModifier: { type: 'f', value: '1.0' },
+      ambientLight: { type: 'c', value: new THREE.Color(0.5, 0.5, 0.5) },
+      diffuseLight: { type: 'c', value: new THREE.Color(0.25, 0.5, 1.0) },
+
+      // Managed by light manager
+      fogModifier: { type: 'f', value: '1.0' },
+      fogColor: { type: 'c', value: new THREE.Color(0.25, 0.5, 1.0) },
+      fogStart: { type: 'f', value: 5.0 },
+      fogEnd: { type: 'f', value: 400.0 }
     };
   }
 
