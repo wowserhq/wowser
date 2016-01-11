@@ -9,10 +9,8 @@ class M2 extends THREE.Group {
 
   static cache = {};
 
-  constructor(path, data, skinData, instanceOpts) {
+  constructor(path, data, skinData, instance = null) {
     super();
-
-    const instance = instanceOpts || null;
 
     this.name = path.split('\\').slice(-1).pop();
 
