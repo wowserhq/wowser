@@ -68,12 +68,6 @@ vec4 applyFog(vec4 color) {
 }
 
 vec4 lightIndoor(vec4 color, vec4 vertexColor, vec3 light) {
-  // Avoid nuking the light on groups flagged as indoor, but lacking MOCV chunks.
-  if (vertexColor.r == 0.0 && vertexColor.g == 0.0 && vertexColor.b == 0.0) {
-    color.rgb *= light;
-    return color;
-  }
-
   vec3 groupColor = vertexColor.rgb;
 
   vec3 indoorLight;

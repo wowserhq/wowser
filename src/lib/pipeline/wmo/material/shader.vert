@@ -38,7 +38,7 @@ void main() {
 
   if (indoor == 1 && useBaseColor == 1) {
     vertexColor.rgb = saturate(vertexColor.rgb + baseColor.rgb);
-    vertexColor.a = saturate(vertexColor.a + (1.0 - baseAlpha));
+    vertexColor.a = saturate(mod(vertexColor.a, 1.0) + (1.0 - baseAlpha));
   }
 
   vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
