@@ -45,6 +45,14 @@ class WMOGroup extends THREE.Mesh {
         colors[index * 3 + 2] = color.b / 255.0;
         alphas[index] = color.a / 255.0;
       });
+    } else if (this.indoor) {
+      // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
+      data.MOVT.vertices.forEach(function(vertex, index) {
+        colors[index * 3] = 127.0/255.0;
+        colors[index * 3 + 1] = 127.0/255.0;
+        colors[index * 3 + 2] = 127.0/255.0;
+        alphas[index] = 1.0;
+      });
     }
 
     const indices = new Uint32Array(data.MOVI.triangles);
