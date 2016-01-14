@@ -59,7 +59,10 @@ class WMO extends THREE.Group {
           entry.position.z
         );
 
-        m2.quaternion.copy(entry.rotation);
+        // Doodad entry rotations appear to be inverted on z and w.
+        const quaternion = new THREE.Quaternion();
+        quaternion.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
+        m2.quaternion.copy(quaternion);
 
         const scale = entry.scale;
         m2.scale.set(scale, scale, scale);
