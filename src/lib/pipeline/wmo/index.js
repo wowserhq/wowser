@@ -1,7 +1,7 @@
 import THREE from 'three';
 
 import Group from './group';
-import Material from '../material';
+import WMOMaterial from './material';
 import M2 from '../m2';
 import WorkerPool from '../worker/pool';
 
@@ -15,31 +15,66 @@ class WMO extends THREE.Group {
     this.path = path;
     this.data = data;
 
-    const textures = this.data.MOTX.filenames;
-    const mats = this.data.MOMT.materials.map(function(materialData) {
-      const material = new Material();
-
-      // TODO: Handle multiple textures
-      material.texture = textures[materialData.textures[0].offset];
-
-      // Transparent blending
-      if (materialData.blendMode === 1) {
-        material.transparent = true;
-        material.alphaTest = 0.5;
-        material.side = THREE.DoubleSide;
-      }
-
-      return material;
-    });
-
-    this.materials = new THREE.MeshFaceMaterial(mats);
+    const materialDefs = this.data.MOMT.materials;
+    const texturePaths = this.data.MOTX.filenames;
 
     for (let i = 0; i < data.MOHD.groupCount; ++i) {
       Group.loadWithID(path, i).then((group) => {
-        group.material = this.materials;
-        this.add(group);
+        this.renderGroup(group, materialDefs, texturePaths);
       });
     }
+  }
+
+  createMaterial(materialDef, texturePaths) {
+    const textureDefs = [];
+
+    materialDef.textures.forEach((textureDef) => {
+      const texturePath = texturePaths[textureDef.offset];
+
+      if (texturePath !== undefined) {
+        textureDef.path = texturePath;
+        textureDefs.push(textureDef);
+      } else {
+        textureDefs.push(null);
+      }
+    });
+
+    const material = new WMOMaterial(materialDef, textureDefs);
+
+    return material;
+  }
+
+  renderGroup(group, materialDefs, texturePaths) {
+    // Obtain materials used in group. Can't recycle materials, as indoor/outdoor shading modes are
+    // assigned per group, but materials may be shared across multiple groups with different
+    // indoor/outdoor flags each use.
+    const groupMaterial = new THREE.MultiMaterial();
+
+    group.materialIDs.forEach((materialID) => {
+      const materialDef = materialDefs[materialID];
+
+      if (group.indoor) {
+        materialDef.indoor = true;
+      } else {
+        materialDef.indoor = false;
+      }
+
+      if (!this.data.MOHD.skipBaseColor) {
+        materialDef.useBaseColor = true;
+        materialDef.baseColor = this.data.MOHD.baseColor;
+      } else {
+        materialDef.useBaseColor = false;
+      }
+
+      const material = this.createMaterial(materialDefs[materialID], texturePaths);
+
+      groupMaterial.materials[materialID] = material;
+    });
+
+    group.material = groupMaterial;
+
+    // Finally, add the group to the WMO.
+    this.add(group);
   }
 
   set doodadSet(doodadSet) {
