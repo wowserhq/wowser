@@ -131,10 +131,14 @@ class WorldMap extends THREE.Group {
       );
 
       m2.rotation.set(
-        entry.rotation.x * Math.PI / 180,
         -entry.rotation.z * Math.PI / 180,
+        entry.rotation.x * Math.PI / 180,
         entry.rotation.y * Math.PI / 180
       );
+
+      // Adjust M2 rotation to match Wowser's axes.
+      const quat = m2.quaternion;
+      quat.set(-quat.x, quat.y, -quat.z, -quat.w);
 
       if (entry.scale !== 1024) {
         const scale = entry.scale / 1024;
@@ -170,10 +174,14 @@ class WorldMap extends THREE.Group {
 
       // Provided as (X, Z, -Y)
       wmo.rotation.set(
-        entry.rotation.x * Math.PI / 180,
         -entry.rotation.z * Math.PI / 180,
+        entry.rotation.x * Math.PI / 180,
         entry.rotation.y * Math.PI / 180
       );
+
+      // Adjust WMO rotation to match Wowser's axes.
+      const quat = wmo.quaternion;
+      quat.set(-quat.x, quat.y, -quat.z, -quat.w);
 
       this.add(wmo);
 
