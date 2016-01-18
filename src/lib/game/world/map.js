@@ -130,11 +130,16 @@ class WorldMap extends THREE.Group {
         entry.position.y
       );
 
+      // Provided as (Z, X, -Y)
       m2.rotation.set(
+        entry.rotation.z * Math.PI / 180,
         entry.rotation.x * Math.PI / 180,
-        -entry.rotation.z * Math.PI / 180,
-        entry.rotation.y * Math.PI / 180
+        -entry.rotation.y * Math.PI / 180
       );
+
+      // Adjust M2 rotation to match Wowser's axes.
+      const quat = m2.quaternion;
+      quat.set(quat.x, quat.y, quat.z, -quat.w);
 
       if (entry.scale !== 1024) {
         const scale = entry.scale / 1024;
@@ -168,12 +173,16 @@ class WorldMap extends THREE.Group {
 
       wmo.doodadSet = entry.doodadSet;
 
-      // Provided as (X, Z, -Y)
+      // Provided as (Z, X, -Y)
       wmo.rotation.set(
+        entry.rotation.z * Math.PI / 180,
         entry.rotation.x * Math.PI / 180,
-        -entry.rotation.z * Math.PI / 180,
-        entry.rotation.y * Math.PI / 180
+        -entry.rotation.y * Math.PI / 180
       );
+
+      // Adjust WMO rotation to match Wowser's axes.
+      const quat = wmo.quaternion;
+      quat.set(quat.x, quat.y, quat.z, -quat.w);
 
       this.add(wmo);
 
