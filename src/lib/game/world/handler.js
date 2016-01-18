@@ -11,6 +11,8 @@ class WorldHandler extends EventEmitter {
     this.player = this.session.player;
 
     this.scene = new THREE.Scene();
+    this.scene.matrixAutoUpdate = false;
+
     this.map = null;
 
     this.changeMap = ::this.changeMap;

@@ -12,6 +12,8 @@ class WMO extends THREE.Group {
   constructor(path, data) {
     super();
 
+    this.matrixAutoUpdate = false;
+
     this.path = path;
     this.data = data;
 
@@ -75,6 +77,7 @@ class WMO extends THREE.Group {
 
     // Finally, add the group to the WMO.
     this.add(group);
+    group.updateMatrix();
   }
 
   set doodadSet(doodadSet) {
@@ -102,6 +105,7 @@ class WMO extends THREE.Group {
         m2.scale.set(scale, scale, scale);
 
         this.add(m2);
+        m2.updateMatrix();
       });
     });
   }

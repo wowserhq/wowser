@@ -9,6 +9,8 @@ class WMOGroup extends THREE.Mesh {
   constructor(data) {
     super();
 
+    this.matrixAutoUpdate = false;
+
     this.data = data;
 
     this.indoor = data.indoor;

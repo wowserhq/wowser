@@ -12,6 +12,8 @@ class M2 extends THREE.Group {
   constructor(path, data, skinData, instance = null) {
     super();
 
+    this.matrixAutoUpdate = false;
+
     this.name = path.split('\\').slice(-1).pop();
 
     this.path = path;
@@ -91,6 +93,7 @@ class M2 extends THREE.Group {
       // Enable skinning support on this M2 if we have bone animations.
       if (boneDef.animated) {
         this.useSkinning = true;
+        this.matrixAutoUpdate = true;
       }
 
       // Flag billboarded bones
@@ -150,6 +153,8 @@ class M2 extends THREE.Group {
 
     // Assemble the skeleton
     this.skeleton = new THREE.Skeleton(bones);
+
+    this.skeleton.matrixAutoUpdate = this.matrixAutoUpdate;
   }
 
   // Returns a map of M2Materials indexed by submesh. Each material represents a texture unit,
@@ -274,6 +279,8 @@ class M2 extends THREE.Group {
       mesh = new THREE.Mesh(geometry);
     }
 
+    mesh.matrixAutoUpdate = this.matrixAutoUpdate;
+
     // Add mesh to the group
     this.add(mesh);
 
@@ -353,7 +360,8 @@ class M2 extends THREE.Group {
       skeleton: this.skeleton,
       geometry: geometry,
       rootBone: rootBone,
-      useSkinning: this.useSkinning
+      useSkinning: this.useSkinning,
+      matrixAutoUpdate: this.matrixAutoUpdate
     };
 
     const submesh = new Submesh(opts);

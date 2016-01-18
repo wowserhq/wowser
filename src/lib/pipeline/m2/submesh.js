@@ -5,6 +5,8 @@ class Submesh extends THREE.Group {
   constructor(opts) {
     super();
 
+    this.matrixAutoUpdate = opts.matrixAutoUpdate;
+
     this.useSkinning = opts.useSkinning;
 
     this.rootBone = null;
@@ -53,6 +55,8 @@ class Submesh extends THREE.Group {
       } else {
         tuMesh = new THREE.Mesh(this.geometry, tuMaterial);
       }
+
+      tuMesh.matrixAutoUpdate = this.matrixAutoUpdate;
 
       this.add(tuMesh);
     }
