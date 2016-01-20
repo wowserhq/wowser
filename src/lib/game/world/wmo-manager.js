@@ -36,9 +36,6 @@ class WMOManager {
     this.map = map;
     this.chunkRefs = new Map();
 
-    this.chunkX = null;
-    this.chunkY = null;
-
     this.groupsPendingLoadCount = 0;
     this.groupCount = 0;
     this.doodadsPendingLoadCount = 0;
