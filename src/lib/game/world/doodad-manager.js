@@ -3,7 +3,6 @@ import M2 from '../../pipeline/m2';
 class DoodadManager {
 
   // Proportion of pending doodads to load or unload in a given tick.
-  // Ex: 1 / 15 aims to have all currently pending doodads loaded within a quarter second.
   static LOAD_FACTOR = 1 / 15;
 
   // Number of milliseconds to wait before loading another portion of doodads.
