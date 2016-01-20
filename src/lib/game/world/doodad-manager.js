@@ -2,13 +2,9 @@ import M2 from '../../pipeline/m2';
 
 class DoodadManager {
 
-  // Radius in chunks for which doodads should appear.
-  // TODO: Even worth the bother to implement this?
-  static VISIBILITY_RADIUS = 12;
-
   // Proportion of pending doodads to load or unload in a given tick.
-  // Ex: 1 / 30 aims to have all currently pending doodads loaded within a half second.
-  static LOAD_FACTOR = 1 / 30;
+  // Ex: 1 / 15 aims to have all currently pending doodads loaded within a quarter second.
+  static LOAD_FACTOR = 1 / 15;
 
   // Number of milliseconds to wait before loading another portion of doodads.
   static LOAD_INTERVAL = (1 / 60) * 1000;
@@ -16,12 +12,6 @@ class DoodadManager {
   constructor(map) {
     this.map = map;
     this.chunkRefs = new Map();
-
-    this.chunkX = null;
-    this.chunkY = null;
-
-    this.visibleChunks = [];
-    this.visibleDoodadCount = 0;
 
     this.doodads = new Map();
     this.animatedDoodads = new Map();
@@ -34,23 +24,8 @@ class DoodadManager {
     this.loadDoodads = ::this.loadDoodads;
     this.unloadDoodads = ::this.unloadDoodads;
 
-    setInterval(this.loadDoodads, 1);
-    setInterval(this.unloadDoodads, 1);
-  }
-
-  updateCurrentChunk(chunkX, chunkY) {
-    this.chunkX = chunkX;
-    this.chunkY = chunkY;
-
-    this.calculateVisibleChunks();
-  }
-
-  calculateVisibleChunks() {
-    this.visibleChunks = this.map.chunkIndicesAround(
-      this.chunkX,
-      this.chunkY,
-      this.constructor.VISIBILITY_RADIUS
-    );
+    setInterval(this.loadDoodads, this.constructor.LOAD_INTERVAL);
+    setInterval(this.unloadDoodads, this.constructor.LOAD_INTERVAL);
   }
 
   // Process a set of doodad entries for a given chunk index of the world map.
@@ -141,12 +116,12 @@ class DoodadManager {
       this.placeDoodad(doodad, entry.position, entry.rotation, entry.scale);
 
       if (doodad.animated) {
-        this.animateDoodad(entry, doodad);
+        this.enableDoodadAnimations(entry, doodad);
       }
     });
   }
 
-  animateDoodad(entry, doodad) {
+  enableDoodadAnimations(entry, doodad) {
     // Maintain separate entries for animated doodads to avoid excessive iterations on each
     // call to animate() during the render loop.
     this.animatedDoodads.set(entry.id, doodad);
