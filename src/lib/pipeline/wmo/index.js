@@ -17,14 +17,36 @@ class WMO extends THREE.Group {
     this.path = path;
     this.data = data;
 
-    const materialDefs = this.data.MOMT.materials;
-    const texturePaths = this.data.MOTX.filenames;
+    this.groupCount = data.MOHD.groupCount;
+    this.indoorGroupIndices = [];
+    this.outdoorGroupIndices = [];
 
-    for (let i = 0; i < data.MOHD.groupCount; ++i) {
-      Group.loadWithID(path, i).then((group) => {
-        this.renderGroup(group, materialDefs, texturePaths);
-      });
+    // Separate group indices by indoor/outdoor flag. This allows us to queue outdoor groups to
+    // load before indoor groups.
+    for (let i = 0; i < this.groupCount; ++i) {
+      const group = data.MOGI.groups[i];
+
+      if (group.indoor) {
+        this.indoorGroupIndices.push(i);
+      } else {
+        this.outdoorGroupIndices.push(i);
+      }
     }
+  }
+
+  loadAllGroups() {
+    for (let i = 0; i < this.groupCount; ++i) {
+      this.loadGroup(i);
+    }
+  }
+
+  loadGroup(index) {
+    Group.loadWithID(this.path, index).then((group) => {
+      const materialDefs = this.data.MOMT.materials;
+      const texturePaths = this.data.MOTX.filenames;
+
+      this.renderGroup(group, materialDefs, texturePaths);
+    });
   }
 
   createMaterial(materialDef, texturePaths) {
@@ -80,33 +102,40 @@ class WMO extends THREE.Group {
     group.updateMatrix();
   }
 
-  set doodadSet(doodadSet) {
+  doodadSetEntries(doodadSet) {
     const set = this.data.MODS.sets[doodadSet];
     const { startIndex: start, doodadCount: count  } = set;
 
-    const doodads = this.data.MODD.doodads.slice(start, start + count);
-    this.renderDoodads(doodads);
+    const entries = this.data.MODD.doodads.slice(start, start + count);
+
+    return entries;
   }
 
-  renderDoodads(entries) {
+  set doodadSet(doodadSet) {
+    const entries = this.doodadSetEntries(doodadSet);
+
     entries.forEach((entry) => {
-      M2.load(entry.filename).then((m2) => {
-        m2.position.set(
-          -entry.position.x,
-          -entry.position.y,
-          entry.position.z
-        );
+      this.renderDoodad(entry);
+    });
+  }
 
-        // Adjust M2 rotation to match Wowser's axes.
-        const quat = m2.quaternion;
-        quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
+  renderDoodad(entry) {
+    M2.load(entry.filename).then((m2) => {
+      m2.position.set(
+        -entry.position.x,
+        -entry.position.y,
+        entry.position.z
+      );
 
-        const scale = entry.scale;
-        m2.scale.set(scale, scale, scale);
+      // Adjust M2 rotation to match Wowser's axes.
+      const quat = m2.quaternion;
+      quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
 
-        this.add(m2);
-        m2.updateMatrix();
-      });
+      const scale = entry.scale;
+      m2.scale.set(scale, scale, scale);
+
+      this.add(m2);
+      m2.updateMatrix();
     });
   }
 
