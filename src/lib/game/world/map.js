@@ -66,10 +66,6 @@ class WorldMap extends THREE.Group {
         this.unloadChunkByIndex(index);
       }
     });
-
-    this.terrainManager.updateCurrentChunk(chunkX, chunkY);
-    this.doodadManager.updateCurrentChunk(chunkX, chunkY);
-    this.wmoManager.updateCurrentChunk(chunkX, chunkY);
   }
 
   chunkIndicesAround(chunkX, chunkY, radius) {

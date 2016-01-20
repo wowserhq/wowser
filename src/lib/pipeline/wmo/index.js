@@ -17,6 +17,9 @@ class WMO extends THREE.Group {
     this.path = path;
     this.data = data;
 
+    this.loadedGroupCount = 0;
+    this.loadedDoodadCount = 0;
+
     this.groupCount = data.MOHD.groupCount;
     this.indoorGroupIndices = [];
     this.outdoorGroupIndices = [];
@@ -69,6 +72,8 @@ class WMO extends THREE.Group {
   }
 
   renderGroup(group, materialDefs, texturePaths) {
+    ++this.loadedGroupCount;
+
     // Obtain materials used in group. Can't recycle materials, as indoor/outdoor shading modes are
     // assigned per group, but materials may be shared across multiple groups with different
     // indoor/outdoor flags each use.
@@ -120,6 +125,8 @@ class WMO extends THREE.Group {
   }
 
   renderDoodad(entry) {
+    ++this.loadedDoodadCount;
+
     M2.load(entry.filename).then((m2) => {
       m2.position.set(
         -entry.position.x,

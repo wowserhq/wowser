@@ -2,32 +2,35 @@ import WMO from '../../pipeline/wmo';
 
 class WMOManager {
 
-  // Radius in chunks for which WMOs should appear.
-  // TODO: Even worth the bother to implement this?
-  static VISIBILITY_RADIUS = 12;
-
   // Determines if regular or slow loading will be used to ingress WMO groups to the map. Used
   // to prevent very large WMOs from killing performance when the player navigates nearby.
-  static LARGE_THRESHOLD = 60;
+  static LARGE_GROUP_THRESHOLD = 60;
 
-  // Proportion of pending WMO groups to load or unload in a given tick.
-  // Ex: 1 / 120 aims to have all currently pending WMO groups loaded within 2 seconds.
-  static LOAD_FACTOR = 1 / 120;
+  // Proportion of pending WMO roots to load or unload in a given tick.
+  static ROOT_LOAD_FACTOR = 1 / 10;
+
+  // Proportion of pending WMO groups to load in a given tick.
+  static GROUP_LOAD_FACTOR = 1 / 20;
 
   // Same as above, but used for WMOs with more than LARGE_THRESHOLD groups.
-  // Ex: 1 / 900 aims to have all currently pending large WMO groups loaded within 15 seconds.
-  static LARGE_LOAD_FACTOR = 1 / 900;
+  static LARGE_GROUP_LOAD_FACTOR = 1 / 30;
+
+  // Proportion of pending WMO doodads to load in a given tick.
+  static DOODAD_LOAD_FACTOR = 1 / 100;
+
+  // Number of milliseconds to wait before loading or unloading another portion of WMO roots.
+  static ROOT_LOAD_INTERVAL = (1 / 60) * 1000;
 
   // Number of milliseconds to wait before loading another portion of WMO groups.
-  static LOAD_INTERVAL = (1 / 60) * 1000;
-
-  // Number of milliseconds to wait before unloading a root WMO (and its groups).
-  static ROOT_UNLOAD_DELAY = 30 * 1000;
-
-  static DOODAD_LOAD_FACTOR = 1 / 300;
+  static GROUP_LOAD_INTERVAL = (1 / 60) * 1000;
 
   // Number of milliseconds to wait before loading another portion of WMO doodads.
   static DOODAD_LOAD_INTERVAL = (1 / 60) * 1000;
+
+  // Number of milliseconds to wait before unloading a root WMO (and its groups). Used to prevent
+  // rapid toggling of the loading and unloading of large WMOs when the last chunk reference is
+  // removed.
+  static ROOT_UNLOAD_DELAY = 30 * 1000;
 
   constructor(map) {
     this.map = map;
@@ -36,7 +39,6 @@ class WMOManager {
     this.chunkX = null;
     this.chunkY = null;
 
-    this.visibleWMOCount = 0;
     this.groupsPendingLoadCount = 0;
     this.groupCount = 0;
     this.doodadsPendingLoadCount = 0;
@@ -65,26 +67,11 @@ class WMOManager {
     this.addPendingUnload = ::this.addPendingUnload;
     this.unloadWMOs = ::this.unloadWMOs;
 
-    setInterval(this.loadWMOs, 1);
-    setInterval(this.unloadWMOs, this.constructor.LOAD_INTERVAL);
-    setInterval(this.loadWMOGroups, this.constructor.LOAD_INTERVAL);
-    setInterval(this.loadLargeWMOGroups, this.constructor.LOAD_INTERVAL);
+    setInterval(this.loadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
+    setInterval(this.unloadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
+    setInterval(this.loadWMOGroups, this.constructor.GROUP_LOAD_INTERVAL);
+    setInterval(this.loadLargeWMOGroups, this.constructor.GROUP_LOAD_INTERVAL);
     setInterval(this.loadWMODoodads, this.constructor.DOODAD_LOAD_INTERVAL);
-  }
-
-  updateCurrentChunk(chunkX, chunkY) {
-    this.chunkX = chunkX;
-    this.chunkY = chunkY;
-
-    this.calculateVisibleChunks();
-  }
-
-  calculateVisibleChunks() {
-    this.visibleChunks = this.map.chunkIndicesAround(
-      this.chunkX,
-      this.chunkY,
-      this.constructor.VISIBILITY_RADIUS
-    );
   }
 
   // Process a set of WMO entries for a given chunk index of the world map.
@@ -114,6 +101,11 @@ class WMOManager {
       if (this.entriesDelayingUnload.has(entry.id)) {
         clearTimeout(this.entriesDelayingUnload.get(entry.id));
         this.entriesDelayingUnload.delete(entry.id);
+      }
+
+      // Already loaded, nothing more to be done.
+      if (this.wmos.has(entry.id)) {
+        continue;
       }
 
       // Add to pending loads. Actual loading is done by interval.
@@ -170,7 +162,7 @@ class WMOManager {
 
       ++count;
 
-      if (count > this.entriesPendingLoad.size * this.constructor.LOAD_FACTOR) {
+      if (count > this.entriesPendingLoad.size * this.constructor.ROOT_LOAD_FACTOR) {
         return;
       }
     }
@@ -192,7 +184,7 @@ class WMOManager {
 
       let groupsPendingLoad;
 
-      if (wmo.groupCount > this.constructor.LARGE_THRESHOLD) {
+      if (wmo.groupCount > this.constructor.LARGE_GROUP_THRESHOLD) {
         if (!this.largeGroupsPendingLoad.has(entry.id)) {
           this.largeGroupsPendingLoad.set(entry.id, new Set());
         }
@@ -243,22 +235,24 @@ class WMOManager {
 
   // Every tick of the load interval, load a portion of any WMO groups pending load.
   loadWMOGroups() {
-    this.loadWMOGroupsInternal(this.groupsPendingLoad, this.constructor.LOAD_FACTOR);
+    this.loadWMOGroupsInternal(this.groupsPendingLoad, this.constructor.GROUP_LOAD_FACTOR);
   }
 
   loadLargeWMOGroups() {
-    this.loadWMOGroupsInternal(this.largeGroupsPendingLoad, this.constructor.LARGE_LOAD_FACTOR);
+    this.loadWMOGroupsInternal(this.largeGroupsPendingLoad, this.constructor.LARGE_GROUP_LOAD_FACTOR);
   }
 
   loadWMOGroupsInternal(groupsPendingLoad, loadFactor) {
     let count = 0;
 
     for (const entryID of groupsPendingLoad.keys()) {
-      const wmo = this.wmos.get(entryID);
-
-      if (!wmo) {
+      // An unload was triggered before we managed to load this group.
+      if (!this.wmos.has(entryID) || this.entriesPendingUnload.has(entryID)) {
+        groupsPendingLoad.delete(entryID);
         continue;
       }
+
+      const wmo = this.wmos.get(entryID);
 
       const groupIndexes = groupsPendingLoad.get(entryID);
 
@@ -348,7 +342,7 @@ class WMOManager {
 
       ++count;
 
-      if (count > this.entriesPendingUnload.size * this.constructor.LOAD_FACTOR) {
+      if (count > this.entriesPendingUnload.size * this.constructor.ROOT_LOAD_FACTOR) {
         return;
       }
     }
@@ -358,8 +352,23 @@ class WMOManager {
     const wmo = this.wmos.get(entry.id);
     this.wmos.delete(entry.id);
 
-    this.groupCount -= wmo.groupCount;
-    this.doodadCount -= wmo.doodadSetEntries(wmo.requestedDoodadSet).length;
+    this.groupCount -= wmo.loadedGroupCount;
+    this.doodadCount -= wmo.loadedDoodadCount;
+
+    if (this.groupsPendingLoad.has(entry.id)) {
+      this.groupsPendingLoadCount -= this.groupsPendingLoad.get(entry.id).size;
+      this.groupsPendingLoad.delete(entry.id);
+    }
+
+    if (this.largeGroupsPendingLoad.has(entry.id)) {
+      this.groupsPendingLoadCount -= this.largeGroupsPendingLoad.get(entry.id).size;
+      this.largeGroupsPendingLoad.delete(entry.id);
+    }
+
+    if (this.doodadsPendingLoad.has(entry.id)) {
+      this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(entry.id).size;
+      this.doodadsPendingLoad.delete(entry.id);
+    }
 
     this.map.remove(wmo);
   }
