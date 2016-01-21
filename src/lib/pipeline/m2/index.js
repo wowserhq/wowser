@@ -93,7 +93,6 @@ class M2 extends THREE.Group {
       // Enable skinning support on this M2 if we have bone animations.
       if (boneDef.animated) {
         this.useSkinning = true;
-        this.matrixAutoUpdate = true;
       }
 
       // Flag billboarded bones
