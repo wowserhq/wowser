@@ -111,8 +111,11 @@ class M2 extends THREE.Group {
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
-            const translation = new THREE.Vector3(-value.x, -value.y, value.z);
-            return bone.position.clone().add(translation);
+            return new THREE.Vector3(
+              bone.position.x + -value.x,
+              bone.position.y + -value.y,
+              bone.position.z + value.z
+            );
           }
         });
       }
@@ -126,7 +129,7 @@ class M2 extends THREE.Group {
           trackType: 'QuaternionKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Quaternion(value.x, value.y, -value.z, value.w).inverse();
+            return new THREE.Quaternion(value.x, value.y, -value.z, -value.w);
           }
         });
       }
