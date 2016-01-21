@@ -75,6 +75,7 @@ class Unit extends Entity {
 
     // TODO: Figure out whether this 180 degree rotation is correct
     m2.rotation.z = Math.PI;
+    m2.updateMatrix();
 
     this.view.add(m2);
 
