@@ -4,12 +4,12 @@ class TerrainManager {
     this.map = map;
   }
 
-  loadChunk(index, terrain) {
+  loadChunk(_index, terrain) {
     this.map.add(terrain);
     terrain.updateMatrix();
   }
 
-  unloadChunk(index, terrain) {
+  unloadChunk(_index, terrain) {
     this.map.remove(terrain);
   }
 

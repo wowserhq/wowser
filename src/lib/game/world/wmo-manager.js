@@ -13,19 +13,19 @@ class WMOManager {
   static GROUP_LOAD_FACTOR = 1 / 20;
 
   // Same as above, but used for WMOs with more than LARGE_THRESHOLD groups.
-  static LARGE_GROUP_LOAD_FACTOR = 1 / 30;
+  static LARGE_GROUP_LOAD_FACTOR = 1 / 40;
 
   // Proportion of pending WMO doodads to load in a given tick.
   static DOODAD_LOAD_FACTOR = 1 / 100;
 
   // Number of milliseconds to wait before loading or unloading another portion of WMO roots.
-  static ROOT_LOAD_INTERVAL = (1 / 60) * 1000;
+  static ROOT_LOAD_INTERVAL = 1;
 
   // Number of milliseconds to wait before loading another portion of WMO groups.
-  static GROUP_LOAD_INTERVAL = (1 / 60) * 1000;
+  static GROUP_LOAD_INTERVAL = 1;
 
   // Number of milliseconds to wait before loading another portion of WMO doodads.
-  static DOODAD_LOAD_INTERVAL = (1 / 60) * 1000;
+  static DOODAD_LOAD_INTERVAL = 1;
 
   // Number of milliseconds to wait before unloading a root WMO (and its groups). Used to prevent
   // rapid toggling of the loading and unloading of large WMOs when the last chunk reference is
@@ -58,17 +58,16 @@ class WMOManager {
     this.unloadChunk = ::this.unloadChunk;
     this.loadWMOs = ::this.loadWMOs;
     this.loadWMOGroups = ::this.loadWMOGroups;
-    this.loadLargeWMOGroups = ::this.loadLargeWMOGroups;
     this.loadWMOGroup = ::this.loadWMOGroup;
     this.loadWMODoodads = ::this.loadWMODoodads;
     this.addPendingUnload = ::this.addPendingUnload;
     this.unloadWMOs = ::this.unloadWMOs;
 
-    setInterval(this.loadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
-    setInterval(this.unloadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
-    setInterval(this.loadWMOGroups, this.constructor.GROUP_LOAD_INTERVAL);
-    setInterval(this.loadLargeWMOGroups, this.constructor.GROUP_LOAD_INTERVAL);
-    setInterval(this.loadWMODoodads, this.constructor.DOODAD_LOAD_INTERVAL);
+    // Kick off intervals.
+    this.loadWMOs();
+    this.unloadWMOs();
+    this.loadWMOGroups();
+    this.loadWMODoodads();
   }
 
   // Process a set of WMO entries for a given chunk index of the world map.
@@ -159,10 +158,15 @@ class WMOManager {
 
       ++count;
 
-      if (count > this.entriesPendingLoad.size * this.constructor.ROOT_LOAD_FACTOR) {
+      const shouldYield = count > this.entriesPendingLoad.size * this.constructor.ROOT_LOAD_FACTOR;
+
+      if (shouldYield) {
+        setTimeout(this.loadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
         return;
       }
     }
+
+    setTimeout(this.loadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
   }
 
   loadWMO(entry) {
@@ -233,10 +237,9 @@ class WMOManager {
   // Every tick of the load interval, load a portion of any WMO groups pending load.
   loadWMOGroups() {
     this.loadWMOGroupsInternal(this.groupsPendingLoad, this.constructor.GROUP_LOAD_FACTOR);
-  }
-
-  loadLargeWMOGroups() {
     this.loadWMOGroupsInternal(this.largeGroupsPendingLoad, this.constructor.LARGE_GROUP_LOAD_FACTOR);
+
+    setTimeout(this.loadWMOGroups, this.constructor.GROUP_LOAD_INTERVAL);
   }
 
   loadWMOGroupsInternal(groupsPendingLoad, loadFactor) {
@@ -303,7 +306,10 @@ class WMOManager {
 
         ++count;
 
-        if (count > this.doodadsPendingLoadCount * this.constructor.DOODAD_LOAD_FACTOR) {
+        const shouldYield = count > this.doodadsPendingLoadCount * this.constructor.DOODAD_LOAD_FACTOR;
+
+        if (shouldYield) {
+          setTimeout(this.loadWMODoodads, this.constructor.DOODAD_LOAD_INTERVAL);
           return;
         }
       }
@@ -313,6 +319,8 @@ class WMOManager {
         this.doodadsPendingLoad.delete(entryID);
       }
     }
+
+    setTimeout(this.loadWMODoodads, this.constructor.DOODAD_LOAD_INTERVAL);
   }
 
   loadWMODoodad(wmo, entry) {
@@ -339,10 +347,15 @@ class WMOManager {
 
       ++count;
 
-      if (count > this.entriesPendingUnload.size * this.constructor.ROOT_LOAD_FACTOR) {
+      const shouldYield = count > this.entriesPendingUnload.size * this.constructor.ROOT_LOAD_FACTOR;
+
+      if (shouldYield) {
+        setTimeout(this.unloadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
         return;
       }
     }
+
+    setTimeout(this.unloadWMOs, this.constructor.ROOT_LOAD_INTERVAL);
   }
 
   unloadWMO(entry) {
@@ -370,7 +383,7 @@ class WMOManager {
     this.map.remove(wmo);
   }
 
-  animate(delta, camera, cameraRotated) {
+  animate(_delta, _camera, _cameraRotated) {
   }
 
 }

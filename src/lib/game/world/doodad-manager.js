@@ -3,10 +3,13 @@ import M2 from '../../pipeline/m2';
 class DoodadManager {
 
   // Proportion of pending doodads to load or unload in a given tick.
-  static LOAD_FACTOR = 1 / 15;
+  static LOAD_FACTOR = 1 / 40;
+
+  // Minimum number of pending doodads to load or unload in a given tick.
+  static MINIMUM_LOAD_THRESHOLD = 2;
 
   // Number of milliseconds to wait before loading another portion of doodads.
-  static LOAD_INTERVAL = (1 / 60) * 1000;
+  static LOAD_INTERVAL = 1;
 
   constructor(map) {
     this.map = map;
@@ -23,8 +26,9 @@ class DoodadManager {
     this.loadDoodads = ::this.loadDoodads;
     this.unloadDoodads = ::this.unloadDoodads;
 
-    setInterval(this.loadDoodads, this.constructor.LOAD_INTERVAL);
-    setInterval(this.unloadDoodads, this.constructor.LOAD_INTERVAL);
+    // Kick off intervals.
+    this.loadDoodads();
+    this.unloadDoodads();
   }
 
   // Process a set of doodad entries for a given chunk index of the world map.
@@ -96,10 +100,16 @@ class DoodadManager {
 
       ++count;
 
-      if (count > this.entriesPendingLoad.size * this.constructor.LOAD_FACTOR) {
+      const shouldYield = count >= this.constructor.MINIMUM_LOAD_THRESHOLD &&
+        count > this.entriesPendingLoad.size * this.constructor.LOAD_FACTOR;
+
+      if (shouldYield) {
+        setTimeout(this.loadDoodads, this.constructor.LOAD_INTERVAL);
         return;
       }
     }
+
+    setTimeout(this.loadDoodads, this.constructor.LOAD_INTERVAL);
   }
 
   loadDoodad(entry) {
@@ -149,10 +159,17 @@ class DoodadManager {
 
       ++count;
 
-      if (count > this.entriesPendingUnload.size * this.constructor.LOAD_FACTOR) {
+      const shouldYield = count >= this.constructor.MINIMUM_LOAD_THRESHOLD &&
+        count > this.entriesPendingUnload.size * this.constructor.LOAD_FACTOR;
+
+      if (shouldYield) {
+        setTimeout(this.unloadDoodads, this.constructor.LOAD_INTERVAL);
         return;
       }
     }
+
+    setTimeout(this.unloadDoodads, this.constructor.LOAD_INTERVAL);
+    return;
   }
 
   unloadDoodad(entry) {
