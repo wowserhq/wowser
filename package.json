@@ -23,7 +23,7 @@
     "web-dev": "webpack-dev-server",
     "web-release": "webpack --optimize --progress"
   },
-  "repository": "timkurvers/wowser",
+  "repository": "wowserhq/wowser",
   "author": "Tim Kurvers <tim@moonsphere.net>",
   "license": "MIT",
   "keywords": [
