@@ -11,6 +11,7 @@ class TerrainManager {
 
   unloadChunk(_index, terrain) {
     this.map.remove(terrain);
+    terrain.dispose();
   }
 
 }

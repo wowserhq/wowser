@@ -107,6 +107,16 @@ class Chunk extends THREE.Mesh {
     return bit & this.holes;
   }
 
+  dispose() {
+    this.geometry.dispose();
+
+    this.material.textures.forEach((texture) => {
+      texture.dispose();
+    });
+
+    this.material.dispose();
+  }
+
   static chunkFor(position) {
     return 32 * 16 - (position / this.SIZE) | 0;
   }
