@@ -18,6 +18,8 @@ class DoodadManager {
     this.doodads = new Map();
     this.animatedDoodads = new Map();
 
+    this.doodadPlacements = new Map();
+
     this.entriesPendingLoad = new Map();
     this.entriesPendingUnload = new Map();
 
@@ -177,6 +179,24 @@ class DoodadManager {
     this.doodads.delete(entry.id);
     this.animatedDoodads.delete(entry.id);
     this.map.remove(doodad);
+
+    const placementCount = this.doodadPlacements.get(doodad.path) || 1;
+
+    if (placementCount - 1 === 0) {
+      this.doodadPlacements.delete(doodad.path);
+
+      // Instanced doodads are only disposed when the last placement of the doodad is removed
+      // from the map.
+      doodad.dispose();
+    } else {
+      this.doodadPlacements.set(doodad.path, placementCount - 1);
+
+      // Non-instanced doodads need to be disposed immediately, as each instance has a separate
+      // copy of the doodad's geometries, materials, and textures.
+      if (!doodad.canInstance) {
+        doodad.dispose();
+      }
+    }
   }
 
   // Place a doodad on the world map, adhereing to a provided position, rotation, and scale.
@@ -202,6 +222,14 @@ class DoodadManager {
       const scaleFloat = scale / 1024;
       doodad.scale.set(scaleFloat, scaleFloat, scaleFloat);
     }
+
+    let placementCount = 0;
+
+    // Keep track of doodad placements for eventual cleanup when unloaded.
+    if (this.doodadPlacements.has(doodad.path)) {
+      placementCount = this.doodadPlacements.get(doodad.path);
+    }
+    this.doodadPlacements.set(doodad.path, placementCount + 1);
 
     // Add doodad to world map.
     this.map.add(doodad);

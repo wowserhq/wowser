@@ -420,6 +420,24 @@ class M2 extends THREE.Group {
     }
   }
 
+  dispose() {
+    this.geometry.dispose();
+    this.mesh.geometry.dispose();
+
+    this.submeshes.forEach((submesh) => {
+      submesh.geometry.dispose();
+
+      submesh.children.forEach((child) => {
+        child.geometry.dispose();
+        child.material.dispose();
+
+        child.material.textures.forEach((texture) => {
+          texture.dispose();
+        });
+      });
+    });
+  }
+
   clone() {
     let instance = {};
 
