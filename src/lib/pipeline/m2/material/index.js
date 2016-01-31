@@ -61,6 +61,7 @@ class M2Material extends THREE.ShaderMaterial {
     this.skins.skin2 = null;
     this.skins.skin3 = null;
 
+    this.textures = [];
     this.textureDefs = def.textures;
     this.loadTextures();
   }
@@ -203,6 +204,8 @@ class M2Material extends THREE.ShaderMaterial {
     textureDefs.forEach((textureDef) => {
       textures.push(this.loadTexture(textureDef));
     });
+
+    this.textures = textures;
 
     // Update shader uniforms to reflect loaded textures.
     this.uniforms.textures = { type: 'tv', value: textures };
