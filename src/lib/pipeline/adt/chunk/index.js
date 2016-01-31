@@ -114,6 +114,10 @@ class Chunk extends THREE.Mesh {
       texture.dispose();
     });
 
+    this.material.alphaMaps.forEach((alphaMap) => {
+      alphaMap.dispose();
+    });
+
     this.material.dispose();
   }
 
