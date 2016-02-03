@@ -2,6 +2,7 @@ import THREE from 'three';
 
 import ADT from '../';
 import Material from './material';
+import TextureLoader from '../../texture-loader';
 
 class Chunk extends THREE.Mesh {
 
@@ -109,16 +110,15 @@ class Chunk extends THREE.Mesh {
 
   dispose() {
     this.geometry.dispose();
+    this.material.dispose();
 
     this.material.textures.forEach((texture) => {
-      texture.dispose();
+      TextureLoader.unload(texture.sourceFile);
     });
 
     this.material.alphaMaps.forEach((alphaMap) => {
       alphaMap.dispose();
     });
-
-    this.material.dispose();
   }
 
   static chunkFor(position) {

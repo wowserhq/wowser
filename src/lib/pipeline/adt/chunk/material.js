@@ -18,8 +18,14 @@ class Material extends THREE.ShaderMaterial {
 
     this.side = THREE.BackSide;
 
+    this.layerCount = 0;
+    this.textures = [];
+    this.alphaMaps = [];
+
+    this.loadLayers();
+
     this.uniforms = {
-      layerCount: { type: 'i', value: this.layers.length },
+      layerCount: { type: 'i', value: this.layerCount },
       alphaMaps: { type: 'tv', value: this.alphaMaps },
       textures: { type: 'tv', value: this.textures },
 
@@ -36,23 +42,40 @@ class Material extends THREE.ShaderMaterial {
     };
   }
 
-  get alphaMaps() {
-    return this.rawAlphaMaps.map((raw) => {
+  loadLayers() {
+    this.layerCount = this.layers.length;
+
+    this.loadAlphaMaps();
+    this.loadTextures();
+  }
+
+  loadAlphaMaps() {
+    const alphaMaps = [];
+
+    this.rawAlphaMaps.forEach((raw) => {
       const texture = new THREE.DataTexture(raw, 64, 64);
       texture.format = THREE.LuminanceFormat;
       texture.minFilter = texture.magFilter = THREE.LinearFilter;
       texture.needsUpdate = true;
-      return texture;
+
+      alphaMaps.push(texture);
     });
+
+    this.alphaMaps = alphaMaps;
   }
 
-  get textures() {
-    return this.layers.map((layer) => {
+  loadTextures() {
+    const textures = [];
+
+    this.layers.forEach((layer) => {
       const filename = this.textureNames[layer.textureID];
       const texture = TextureLoader.load(filename);
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      return texture;
+
+      textures.push(texture);
     });
+
+    this.textures = textures;
   }
 
 }

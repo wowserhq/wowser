@@ -4,6 +4,7 @@ import Submesh from './submesh';
 import M2Material from './material';
 import AnimationManager from './animation-manager';
 import WorkerPool from '../worker/pool';
+import TextureLoader from '../texture-loader';
 
 class M2 extends THREE.Group {
 
@@ -432,7 +433,7 @@ class M2 extends THREE.Group {
         child.material.dispose();
 
         child.material.textures.forEach((texture) => {
-          texture.dispose();
+          TextureLoader.unload(texture.sourceFile);
         });
       });
     });
