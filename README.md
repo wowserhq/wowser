@@ -1,11 +1,11 @@
 # Wowser
 
 [![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
-[![Join chat](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat)](https://gitter.im/timkurvers/wowser)
-[![Build Status](https://img.shields.io/travis/timkurvers/wowser.svg?style=flat)](https://travis-ci.org/timkurvers/wowser)
-[![Dependency Status](https://img.shields.io/gemnasium/timkurvers/wowser.svg?style=flat)](https://gemnasium.com/timkurvers/wowser)
-[![Code Climate](https://img.shields.io/codeclimate/github/timkurvers/wowser.svg?style=flat)](https://codeclimate.com/github/timkurvers/wowser)
-[![Coverage](https://img.shields.io/codeclimate/coverage/github/timkurvers/wowser.svg?style=flat)](https://codeclimate.com/github/timkurvers/wowser)
+[![Join chat](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat)](https://gitter.im/wowserhq/wowser)
+[![Build Status](https://img.shields.io/travis/wowserhq/wowser.svg?style=flat)](https://travis-ci.org/wowserhq/wowser)
+[![Dependency Status](https://img.shields.io/gemnasium/wowserhq/wowser.svg?style=flat)](https://gemnasium.com/wowserhq/wowser)
+[![Code Climate](https://img.shields.io/codeclimate/github/wowserhq/wowser.svg?style=flat)](https://codeclimate.com/github/wowserhq/wowser)
+[![Coverage](https://img.shields.io/codeclimate/coverage/github/wowserhq/wowser.svg?style=flat)](https://codeclimate.com/github/wowserhq/wowser)
 
 World of Warcraft in the browser using JavaScript and WebGL.
 
@@ -55,7 +55,7 @@ Wowser is written in [ES2015], developed with [webpack] and [Gulp], compiled by
 1. Clone the repository:
 
    ```shell
-   git clone git://github.com/timkurvers/wowser.git
+   git clone git://github.com/wowserhq/wowser.git
    ```
 
 2. Download and install [Node.js] – including `npm` – for your platform.
@@ -130,13 +130,13 @@ When contributing, please:
 - Open a pull request (preferably on a separate branch)
 
 [Babel]: https://babeljs.io/
-[BLPConverter]: https://github.com/timkurvers/blizzardry#blp
+[BLPConverter]: https://github.com/wowserhq/blizzardry#blp
 [ES2015]: https://babeljs.io/docs/learn-es2015/
 [Gulp]: http://gulpjs.com/
 [JavaScript's typed arrays]: http://caniuse.com/#search=typed%20arrays
 [Mocha]: http://mochajs.org/
 [Node.js]: http://nodejs.org/#download
-[StormLib]: https://github.com/timkurvers/blizzardry#mpq
+[StormLib]: https://github.com/wowserhq/blizzardry#mpq
 [Websockify]: https://github.com/kanaka/websockify/
 [soon™]: http://www.wowwiki.com/Soon
 [webpack]: http://webpack.github.io/
