@@ -128,6 +128,16 @@ class WMO extends THREE.Group {
     });
   }
 
+  dispose() {
+    this.groups.forEach((group) => {
+      group.geometry.dispose();
+
+      group.material.materials.forEach((material) => {
+        material.dispose();
+      });
+    });
+  }
+
   clone() {
     return new this.constructor(this.path, this.data);
   }

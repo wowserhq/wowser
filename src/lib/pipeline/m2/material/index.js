@@ -254,6 +254,13 @@ class M2Material extends THREE.ShaderMaterial {
     this.loadTextures();
   }
 
+  dispose() {
+    super.dispose();
+
+    this.textures.forEach((texture) => {
+      TextureLoader.unload(texture.sourceFile);
+    });
+  }
 }
 
 export default M2Material;

@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import DBC from '../pipeline/dbc';
 import Entity from './entity';
-import M2 from '../pipeline/m2';
+import M2Blueprint from '../pipeline/m2/blueprint';
 
 class Unit extends Entity {
 
@@ -51,7 +51,7 @@ class Unit extends Entity {
         this.modelData.path = this.modelData.file.match(/^(.+?)(?:[^\\]+)$/)[1];
         this.displayInfo.modelData = this.modelData;
 
-        M2.load(this.modelData.file).then((m2) => {
+        M2Blueprint.load(this.modelData.file).then((m2) => {
           m2.displayInfo = this.displayInfo;
           this.model = m2;
         });

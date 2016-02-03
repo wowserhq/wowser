@@ -9,6 +9,8 @@ class WMOMaterial extends THREE.ShaderMaterial {
   constructor(def, textureDefs) {
     super();
 
+    this.textures = [];
+
     this.uniforms = {
       textures: { type: 'tv', value: [] },
       textureCount: { type: 'i', value: 0 },
@@ -98,11 +100,20 @@ class WMOMaterial extends THREE.ShaderMaterial {
       }
     });
 
+    this.textures = textures;
+
     // Update shader uniforms to reflect loaded textures.
     this.uniforms.textures = { type: 'tv', value: textures };
     this.uniforms.textureCount = { type: 'i', value: textures.length };
   }
 
+  dispose() {
+    super.dispose();
+
+    this.textures.forEach((texture) => {
+      TextureLoader.unload(texture.sourceFile);
+    });
+  }
 }
 
 export default WMOMaterial;

@@ -395,6 +395,8 @@ class WMOManager {
     });
 
     this.map.remove(wmo);
+
+    wmo.dispose();
   }
 
   unloadWMOGroup(group) {
@@ -402,6 +404,8 @@ class WMOManager {
       this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(group).size;
       this.doodadsPendingLoad.delete(group);
     }
+
+    group.unloadDoodads();
 
     group.parent.remove(group);
   }

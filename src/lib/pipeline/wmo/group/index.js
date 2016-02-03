@@ -1,6 +1,6 @@
 import THREE from 'three';
 
-import M2 from '../../m2';
+import M2Blueprint from '../../m2/blueprint';
 import WorkerPool from '../../worker/pool';
 
 class WMOGroup extends THREE.Mesh {
@@ -15,6 +15,8 @@ class WMOGroup extends THREE.Mesh {
     this.data = data;
 
     this.indoor = data.indoor;
+
+    this.doodads = new Set();
 
     const vertexCount = data.MOVT.vertices.length;
     const textureCoords = data.MOTV.textureCoords;
@@ -92,7 +94,7 @@ class WMOGroup extends THREE.Mesh {
   loadDoodad(entry) {
     ++this.parent.loadedDoodadCount;
 
-    M2.load(entry.filename).then((m2) => {
+    M2Blueprint.load(entry.filename).then((m2) => {
       m2.position.set(
         -entry.position.x,
         -entry.position.y,
@@ -108,6 +110,15 @@ class WMOGroup extends THREE.Mesh {
 
       this.add(m2);
       m2.updateMatrix();
+
+      this.doodads.add(m2);
+    });
+  }
+
+  unloadDoodads() {
+    this.doodads.forEach((m2) => {
+      M2Blueprint.unload(m2);
+      this.doodads.delete(m2);
     });
   }
 

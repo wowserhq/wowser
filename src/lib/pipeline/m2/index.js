@@ -3,8 +3,6 @@ import THREE from 'three';
 import Submesh from './submesh';
 import M2Material from './material';
 import AnimationManager from './animation-manager';
-import WorkerPool from '../worker/pool';
-import TextureLoader from '../texture-loader';
 
 class M2 extends THREE.Group {
 
@@ -431,10 +429,6 @@ class M2 extends THREE.Group {
       submesh.children.forEach((child) => {
         child.geometry.dispose();
         child.material.dispose();
-
-        child.material.textures.forEach((texture) => {
-          TextureLoader.unload(texture.sourceFile);
-        });
       });
     });
   }
@@ -451,19 +445,6 @@ class M2 extends THREE.Group {
     }
 
     return new this.constructor(this.path, this.data, this.skinData, instance);
-  }
-
-  static load(path) {
-    path = path.replace(/\.md(x|l)/i, '.m2');
-    if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('M2', path).then((args) => {
-        const [data, skinData] = args;
-        return new this(path, data, skinData, null);
-      });
-    }
-    return this.cache[path].then((m2) => {
-      return m2.clone();
-    });
   }
 
 }
