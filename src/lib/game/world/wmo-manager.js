@@ -257,7 +257,7 @@ class WMOManager {
       const groupIndexes = groupsPendingLoad.get(entryID);
 
       for (const groupIndex of groupIndexes.values()) {
-        this.loadWMOGroup(wmo, groupIndex);
+        this.loadWMOGroup(wmo, entryID, groupIndex);
 
         groupIndexes.delete(groupIndex);
 
@@ -271,36 +271,51 @@ class WMOManager {
       // We've loaded all groups for this root WMO entry.
       if (groupIndexes.size === 0) {
         groupsPendingLoad.delete(entryID);
-
-        // Now that groups are all accounted for, it's time to bring in the appropriate doodads.
-        const doodadsPendingLoad = new Set(wmo.doodadSetEntries(wmo.requestedDoodadSet));
-        this.doodadsPendingLoadCount += doodadsPendingLoad.size;
-        this.doodadsPendingLoad.set(entryID, doodadsPendingLoad);
       }
     }
   }
 
-  loadWMOGroup(wmo, groupIndex) {
+  loadWMOGroup(wmo, entryID, groupIndex) {
     --this.groupsPendingLoadCount;
     ++this.groupCount;
 
-    wmo.loadGroup(groupIndex);
+    wmo.loadGroup(groupIndex).then((group) => {
+      if (!group.data.MODR) {
+        return;
+      }
+
+      group.wmoEntryID = entryID;
+
+      const doodadSetEntries = wmo.doodadSetEntries(wmo.requestedDoodadSet);
+
+      const groupDoodadEntries = new Set();
+
+      group.data.MODR.doodadIndices.forEach((doodadIndex) => {
+        if (doodadSetEntries[doodadIndex]) {
+          groupDoodadEntries.add(doodadSetEntries[doodadIndex]);
+        }
+      });
+
+      this.doodadsPendingLoadCount += groupDoodadEntries.size;
+
+      this.doodadsPendingLoad.set(group, groupDoodadEntries);
+    });
   }
 
   loadWMODoodads() {
     let count = 0;
 
-    for (const entryID of this.doodadsPendingLoad.keys()) {
-      const wmo = this.wmos.get(entryID);
+    for (const group of this.doodadsPendingLoad.keys()) {
+      const wmo = this.wmos.get(group.wmoEntryID);
 
       if (!wmo) {
         continue;
       }
 
-      const doodadEntries = this.doodadsPendingLoad.get(entryID);
+      const doodadEntries = this.doodadsPendingLoad.get(group);
 
       for (const doodadEntry of doodadEntries.values()) {
-        this.loadWMODoodad(wmo, doodadEntry);
+        this.loadWMODoodad(group, doodadEntry);
 
         doodadEntries.delete(doodadEntry);
 
@@ -316,18 +331,18 @@ class WMOManager {
 
       // We've loaded all doodads for this root WMO entry.
       if (doodadEntries.size === 0) {
-        this.doodadsPendingLoad.delete(entryID);
+        this.doodadsPendingLoad.delete(group);
       }
     }
 
     setTimeout(this.loadWMODoodads, this.constructor.DOODAD_LOAD_INTERVAL);
   }
 
-  loadWMODoodad(wmo, entry) {
+  loadWMODoodad(group, entry) {
     --this.doodadsPendingLoadCount;
     ++this.doodadCount;
 
-    wmo.renderDoodad(entry);
+    group.loadDoodad(entry);
   }
 
   // Every tick of the load interval, unload a portion of any root WMOs pending unload.
@@ -375,12 +390,20 @@ class WMOManager {
       this.largeGroupsPendingLoad.delete(entry.id);
     }
 
-    if (this.doodadsPendingLoad.has(entry.id)) {
-      this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(entry.id).size;
-      this.doodadsPendingLoad.delete(entry.id);
-    }
+    wmo.groups.forEach((group) => {
+      this.unloadWMOGroup(group);
+    });
 
     this.map.remove(wmo);
+  }
+
+  unloadWMOGroup(group) {
+    if (this.doodadsPendingLoad.has(group)) {
+      this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(group).size;
+      this.doodadsPendingLoad.delete(group);
+    }
+
+    group.parent.remove(group);
   }
 
   animate(_delta, _camera, _cameraRotated) {

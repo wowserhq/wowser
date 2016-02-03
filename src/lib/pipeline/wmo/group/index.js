@@ -1,5 +1,6 @@
 import THREE from 'three';
 
+import M2 from '../../m2';
 import WorkerPool from '../../worker/pool';
 
 class WMOGroup extends THREE.Mesh {
@@ -86,6 +87,28 @@ class WMOGroup extends THREE.Mesh {
     });
 
     this.materialIDs = materialIDs;
+  }
+
+  loadDoodad(entry) {
+    ++this.parent.loadedDoodadCount;
+
+    M2.load(entry.filename).then((m2) => {
+      m2.position.set(
+        -entry.position.x,
+        -entry.position.y,
+        entry.position.z
+      );
+
+      // Adjust M2 rotation to match Wowser's axes.
+      const quat = m2.quaternion;
+      quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
+
+      const scale = entry.scale;
+      m2.scale.set(scale, scale, scale);
+
+      this.add(m2);
+      m2.updateMatrix();
+    });
   }
 
   clone() {

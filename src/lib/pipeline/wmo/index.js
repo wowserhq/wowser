@@ -2,7 +2,6 @@ import THREE from 'three';
 
 import Group from './group';
 import WMOMaterial from './material';
-import M2 from '../m2';
 import WorkerPool from '../worker/pool';
 
 class WMO extends THREE.Group {
@@ -20,6 +19,7 @@ class WMO extends THREE.Group {
     this.loadedGroupCount = 0;
     this.loadedDoodadCount = 0;
 
+    this.groups = new Map();
     this.groupCount = data.MOHD.groupCount;
     this.indoorGroupIndices = [];
     this.outdoorGroupIndices = [];
@@ -44,11 +44,15 @@ class WMO extends THREE.Group {
   }
 
   loadGroup(index) {
-    Group.loadWithID(this.path, index).then((group) => {
+    return Group.loadWithID(this.path, index).then((group) => {
+      this.groups.set(index, group);
+
       const materialDefs = this.data.MOMT.materials;
       const texturePaths = this.data.MOTX.filenames;
 
       this.renderGroup(group, materialDefs, texturePaths);
+
+      return group;
     });
   }
 
@@ -121,28 +125,6 @@ class WMO extends THREE.Group {
 
     entries.forEach((entry) => {
       this.renderDoodad(entry);
-    });
-  }
-
-  renderDoodad(entry) {
-    ++this.loadedDoodadCount;
-
-    M2.load(entry.filename).then((m2) => {
-      m2.position.set(
-        -entry.position.x,
-        -entry.position.y,
-        entry.position.z
-      );
-
-      // Adjust M2 rotation to match Wowser's axes.
-      const quat = m2.quaternion;
-      quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
-
-      const scale = entry.scale;
-      m2.scale.set(scale, scale, scale);
-
-      this.add(m2);
-      m2.updateMatrix();
     });
   }
 
