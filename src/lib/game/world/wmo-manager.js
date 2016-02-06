@@ -1,4 +1,6 @@
 import WMO from '../../pipeline/wmo';
+import WMOBlueprint from '../../pipeline/wmo/blueprint';
+import WMOGroupBlueprint from '../../pipeline/wmo/group/blueprint';
 
 class WMOManager {
 
@@ -170,7 +172,7 @@ class WMOManager {
   }
 
   loadWMO(entry) {
-    WMO.load(entry.filename).then((wmo) => {
+    WMOBlueprint.load(entry.filename).then((wmo) => {
       if (this.wmos.has(entry.id)) {
         return;
       }
@@ -329,7 +331,7 @@ class WMOManager {
         }
       }
 
-      // We've loaded all doodads for this root WMO entry.
+      // We've loaded all doodads for this WMO group.
       if (doodadEntries.size === 0) {
         this.doodadsPendingLoad.delete(group);
       }
@@ -390,24 +392,26 @@ class WMOManager {
       this.largeGroupsPendingLoad.delete(entry.id);
     }
 
+    this.map.remove(wmo);
+
     wmo.groups.forEach((group) => {
       this.unloadWMOGroup(group);
     });
 
-    this.map.remove(wmo);
-
-    wmo.dispose();
+    WMOBlueprint.unload(wmo);
   }
 
   unloadWMOGroup(group) {
     if (this.doodadsPendingLoad.has(group)) {
-      this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(group).size;
       this.doodadsPendingLoad.delete(group);
+      this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(group).size;
     }
+
+    group.parent.remove(group);
 
     group.unloadDoodads();
 
-    group.parent.remove(group);
+    WMOGroupBlueprint.unload(group);
   }
 
   animate(_delta, _camera, _cameraRotated) {

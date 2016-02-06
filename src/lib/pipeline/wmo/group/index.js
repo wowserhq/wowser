@@ -1,17 +1,21 @@
 import THREE from 'three';
 
+import WMOMaterial from '../material';
 import M2Blueprint from '../../m2/blueprint';
-import WorkerPool from '../../worker/pool';
 
 class WMOGroup extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data) {
+  constructor(wmo, path, data) {
     super();
+
+    this.dispose = ::this.dispose;
 
     this.matrixAutoUpdate = false;
 
+    this.wmo = wmo;
+    this.path = path;
     this.data = data;
 
     this.indoor = data.indoor;
@@ -88,7 +92,56 @@ class WMOGroup extends THREE.Mesh {
       geometry.addGroup(batch.firstIndex, batch.indexCount, batch.materialID);
     });
 
-    this.materialIDs = materialIDs;
+    const materialDefs = this.wmo.data.MOMT.materials;
+    const texturePaths = this.wmo.data.MOTX.filenames;
+
+    this.material = this.createMultiMaterial(materialIDs, materialDefs, texturePaths);
+  }
+
+  createMultiMaterial(materialIDs, materialDefs, texturePaths) {
+    const multiMaterial = new THREE.MultiMaterial();
+
+    materialIDs.forEach((materialID) => {
+      const materialDef = materialDefs[materialID];
+
+      if (this.indoor) {
+        materialDef.indoor = true;
+      } else {
+        materialDef.indoor = false;
+      }
+
+      if (!this.wmo.data.MOHD.skipBaseColor) {
+        materialDef.useBaseColor = true;
+        materialDef.baseColor = this.wmo.data.MOHD.baseColor;
+      } else {
+        materialDef.useBaseColor = false;
+      }
+
+      const material = this.createMaterial(materialDefs[materialID], texturePaths);
+
+      multiMaterial.materials[materialID] = material;
+    });
+
+    return multiMaterial;
+  }
+
+  createMaterial(materialDef, texturePaths) {
+    const textureDefs = [];
+
+    materialDef.textures.forEach((textureDef) => {
+      const texturePath = texturePaths[textureDef.offset];
+
+      if (texturePath !== undefined) {
+        textureDef.path = texturePath;
+        textureDefs.push(textureDef);
+      } else {
+        textureDefs.push(null);
+      }
+    });
+
+    const material = new WMOMaterial(materialDef, textureDefs);
+
+    return material;
   }
 
   loadDoodad(entry) {
@@ -123,24 +176,14 @@ class WMOGroup extends THREE.Mesh {
   }
 
   clone() {
-    return new this.constructor(this.data);
+    return new this.constructor(this.wmo, this.path, this.data);
   }
 
-  static loadWithID(path, id) {
-    const suffix = `000${id}`.slice(-3);
-    const group = path.replace(/\.wmo/i, `_${suffix}.wmo`);
-    return this.load(group);
-  }
+  dispose() {
+    this.geometry.dispose();
 
-  static load(path) {
-    if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('WMOGroup', path).then((args) => {
-        const [data] = args;
-        return new this(data);
-      });
-    }
-    return this.cache[path].then((wmoGroup) => {
-      return wmoGroup.clone();
+    this.material.materials.forEach((material) => {
+      material.dispose();
     });
   }
 

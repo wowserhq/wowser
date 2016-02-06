@@ -1,8 +1,6 @@
 import THREE from 'three';
 
-import Group from './group';
-import WMOMaterial from './material';
-import WorkerPool from '../worker/pool';
+import WMOGroupBlueprint from './group/blueprint';
 
 class WMO extends THREE.Group {
 
@@ -44,69 +42,18 @@ class WMO extends THREE.Group {
   }
 
   loadGroup(index) {
-    return Group.loadWithID(this.path, index).then((group) => {
+    return WMOGroupBlueprint.loadWithID(this, this.path, index).then((group) => {
+      this.renderGroup(group);
+
       this.groups.set(index, group);
-
-      const materialDefs = this.data.MOMT.materials;
-      const texturePaths = this.data.MOTX.filenames;
-
-      this.renderGroup(group, materialDefs, texturePaths);
 
       return group;
     });
   }
 
-  createMaterial(materialDef, texturePaths) {
-    const textureDefs = [];
-
-    materialDef.textures.forEach((textureDef) => {
-      const texturePath = texturePaths[textureDef.offset];
-
-      if (texturePath !== undefined) {
-        textureDef.path = texturePath;
-        textureDefs.push(textureDef);
-      } else {
-        textureDefs.push(null);
-      }
-    });
-
-    const material = new WMOMaterial(materialDef, textureDefs);
-
-    return material;
-  }
-
-  renderGroup(group, materialDefs, texturePaths) {
+  renderGroup(group) {
     ++this.loadedGroupCount;
 
-    // Obtain materials used in group. Can't recycle materials, as indoor/outdoor shading modes are
-    // assigned per group, but materials may be shared across multiple groups with different
-    // indoor/outdoor flags each use.
-    const groupMaterial = new THREE.MultiMaterial();
-
-    group.materialIDs.forEach((materialID) => {
-      const materialDef = materialDefs[materialID];
-
-      if (group.indoor) {
-        materialDef.indoor = true;
-      } else {
-        materialDef.indoor = false;
-      }
-
-      if (!this.data.MOHD.skipBaseColor) {
-        materialDef.useBaseColor = true;
-        materialDef.baseColor = this.data.MOHD.baseColor;
-      } else {
-        materialDef.useBaseColor = false;
-      }
-
-      const material = this.createMaterial(materialDefs[materialID], texturePaths);
-
-      groupMaterial.materials[materialID] = material;
-    });
-
-    group.material = groupMaterial;
-
-    // Finally, add the group to the WMO.
     this.add(group);
     group.updateMatrix();
   }
@@ -128,30 +75,8 @@ class WMO extends THREE.Group {
     });
   }
 
-  dispose() {
-    this.groups.forEach((group) => {
-      group.geometry.dispose();
-
-      group.material.materials.forEach((material) => {
-        material.dispose();
-      });
-    });
-  }
-
   clone() {
     return new this.constructor(this.path, this.data);
-  }
-
-  static load(path) {
-    if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('WMO', path).then((args) => {
-        const [data] = args;
-        return new this(path, data);
-      });
-    }
-    return this.cache[path].then((wmo) => {
-      return wmo.clone();
-    });
   }
 
 }
