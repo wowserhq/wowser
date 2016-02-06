@@ -12,8 +12,6 @@ class M2Blueprint {
   static UNLOAD_INTERVAL = 15000;
 
   static load(rawPath) {
-    window.m2bp = this;
-
     const path = rawPath.replace(/\.md(x|l)/i, '.m2').toUpperCase();
 
     // Prevent unintended unloading.
