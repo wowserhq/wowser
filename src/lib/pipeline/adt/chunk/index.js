@@ -111,14 +111,6 @@ class Chunk extends THREE.Mesh {
   dispose() {
     this.geometry.dispose();
     this.material.dispose();
-
-    this.material.textures.forEach((texture) => {
-      TextureLoader.unload(texture.sourceFile);
-    });
-
-    this.material.alphaMaps.forEach((alphaMap) => {
-      alphaMap.dispose();
-    });
   }
 
   static chunkFor(position) {

@@ -96,6 +96,15 @@ class Submesh extends THREE.Group {
     }
   }
 
+  dispose() {
+    this.geometry.dispose();
+
+    this.children.forEach((child) => {
+      child.geometry.dispose();
+      child.material.dispose();
+    });
+  }
+
 }
 
 export default Submesh;

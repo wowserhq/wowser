@@ -424,12 +424,7 @@ class M2 extends THREE.Group {
     this.mesh.geometry.dispose();
 
     this.submeshes.forEach((submesh) => {
-      submesh.geometry.dispose();
-
-      submesh.children.forEach((child) => {
-        child.geometry.dispose();
-        child.material.dispose();
-      });
+      submesh.dispose();
     });
   }
 

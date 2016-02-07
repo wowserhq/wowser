@@ -78,6 +78,17 @@ class Material extends THREE.ShaderMaterial {
     this.textures = textures;
   }
 
+  dispose() {
+    super.dispose();
+
+    this.textures.forEach((texture) => {
+      TextureLoader.unload(texture.sourceFile);
+    });
+
+    this.alphaMaps.forEach((alphaMap) => {
+      alphaMap.dispose();
+    });
+  }
 }
 
 export default Material;
