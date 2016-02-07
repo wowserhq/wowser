@@ -26,8 +26,6 @@ class WorldMap extends THREE.Group {
     this.doodadManager = new DoodadManager(this);
     this.wmoManager = new WMOManager(this);
 
-    window.wmoManager = this.wmoManager;
-
     this.data = data;
     this.wdt = wdt;
 
