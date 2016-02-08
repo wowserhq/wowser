@@ -19,8 +19,10 @@ class WMOGroup extends THREE.Mesh {
     this.data = data;
 
     this.indoor = data.indoor;
+    this.animated = false;
 
     this.doodads = new Set();
+    this.animatedDoodads = new Set();
 
     const vertexCount = data.MOVT.vertices.length;
     const textureCoords = data.MOTV.textureCoords;
@@ -147,7 +149,7 @@ class WMOGroup extends THREE.Mesh {
   loadDoodad(entry) {
     ++this.parent.loadedDoodadCount;
 
-    M2Blueprint.load(entry.filename).then((m2) => {
+    return M2Blueprint.load(entry.filename).then((m2) => {
       m2.position.set(
         -entry.position.x,
         -entry.position.y,
@@ -165,6 +167,16 @@ class WMOGroup extends THREE.Mesh {
       m2.updateMatrix();
 
       this.doodads.add(m2);
+
+      if (m2.animated) {
+        this.animated = true;
+        this.animatedDoodads.add(m2);
+
+        // TODO: Which WMO doodad animation should be playing?
+        m2.animations.play(0);
+      }
+
+      return m2;
     });
   }
 
@@ -172,6 +184,7 @@ class WMOGroup extends THREE.Mesh {
     this.doodads.forEach((m2) => {
       M2Blueprint.unload(m2);
       this.doodads.delete(m2);
+      this.animatedDoodads.delete(m2);
     });
   }
 
