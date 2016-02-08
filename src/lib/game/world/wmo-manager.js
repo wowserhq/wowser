@@ -1,4 +1,3 @@
-import WMO from '../../pipeline/wmo';
 import WMOBlueprint from '../../pipeline/wmo/blueprint';
 import WMOGroupBlueprint from '../../pipeline/wmo/group/blueprint';
 

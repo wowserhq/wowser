@@ -2,7 +2,6 @@ import THREE from 'three';
 
 import ADT from '../';
 import Material from './material';
-import TextureLoader from '../../texture-loader';
 
 class Chunk extends THREE.Mesh {
 
