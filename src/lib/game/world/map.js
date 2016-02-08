@@ -3,19 +3,28 @@ import THREE from 'three';
 import ADT from '../../pipeline/adt';
 import Chunk from '../../pipeline/adt/chunk';
 import DBC from '../../pipeline/dbc';
-import M2 from '../../pipeline/m2';
 import WDT from '../../pipeline/wdt';
-import WMO from '../../pipeline/wmo';
+import DoodadManager from './doodad-manager';
+import WMOManager from './wmo-manager';
+import TerrainManager from './terrain-manager';
 
 class WorldMap extends THREE.Group {
 
   static ZEROPOINT = ADT.SIZE * 32;
 
   static CHUNKS_PER_ROW = 64 * 16;
-  static CHUNK_RENDER_RADIUS = 10;
+
+  // Controls when ADT chunks are loaded and unloaded from the map.
+  static CHUNK_RENDER_RADIUS = 12;
 
   constructor(data, wdt) {
     super();
+
+    this.matrixAutoUpdate = false;
+
+    this.terrainManager = new TerrainManager(this);
+    this.doodadManager = new DoodadManager(this);
+    this.wmoManager = new WMOManager(this);
 
     this.data = data;
     this.wdt = wdt;
@@ -26,12 +35,6 @@ class WorldMap extends THREE.Group {
 
     this.queuedChunks = new Map();
     this.chunks = new Map();
-
-    this.queuedDoodads = new Map();
-    this.doodads = new Map();
-
-    this.queuedWMOs = new Map();
-    this.wmos = new Map();
   }
 
   get internalName() {
@@ -90,15 +93,9 @@ class WorldMap extends THREE.Group {
     this.queuedChunks.set(index, Chunk.load(this, chunkX, chunkY).then((chunk) => {
       this.chunks.set(index, chunk);
 
-      chunk.doodadEntries.forEach((entry) => {
-        this.loadDoodad(entry);
-      });
-
-      chunk.wmoEntries.forEach((entry) => {
-        this.loadWMO(entry);
-      });
-
-      this.add(chunk);
+      this.terrainManager.loadChunk(index, chunk);
+      this.doodadManager.loadChunk(index, chunk.doodadEntries);
+      this.wmoManager.loadChunk(index, chunk.wmoEntries);
     }));
   }
 
@@ -108,111 +105,21 @@ class WorldMap extends THREE.Group {
       return;
     }
 
-    // TODO: Unload doodads and WMOs
+    this.terrainManager.unloadChunk(index, chunk);
+    this.doodadManager.unloadChunk(index, chunk.doodadEntries);
+    this.wmoManager.unloadChunk(index, chunk.wmoEntries);
+
     this.queuedChunks.delete(index);
     this.chunks.delete(index);
-    this.remove(chunk);
   }
 
   indexFor(chunkX, chunkY) {
     return chunkX * 64 * 16 + chunkY;
   }
 
-  loadDoodad(entry) {
-    if (this.queuedDoodads.has(entry.id)) {
-      return;
-    }
-
-    this.queuedDoodads.set(entry.id, M2.load(entry.filename).then((m2) => {
-      m2.position.set(
-        -(entry.position.z - this.constructor.ZEROPOINT),
-        -(entry.position.x - this.constructor.ZEROPOINT),
-        entry.position.y
-      );
-
-      // Provided as (Z, X, -Y)
-      m2.rotation.set(
-        entry.rotation.z * Math.PI / 180,
-        entry.rotation.x * Math.PI / 180,
-        -entry.rotation.y * Math.PI / 180
-      );
-
-      // Adjust M2 rotation to match Wowser's axes.
-      const quat = m2.quaternion;
-      quat.set(quat.x, quat.y, quat.z, -quat.w);
-
-      if (entry.scale !== 1024) {
-        const scale = entry.scale / 1024;
-        m2.scale.set(scale, scale, scale);
-      }
-
-      this.add(m2);
-
-      // TODO: Remove doodad from map on unload
-      this.doodads.set(entry.id, m2);
-
-      // Auto-play animation index 0 in doodad, if animations are present
-      // TODO: Properly manage doodad animations
-      if (m2.animated && m2.animations.length > 0) {
-        m2.animations.play(0);
-      }
-    }));
-  }
-
-  loadWMO(entry) {
-    if (this.queuedWMOs.has(entry.id)) {
-      return;
-    }
-
-    this.queuedWMOs.set(entry.id, WMO.load(entry.filename).then((wmo) => {
-      wmo.position.set(
-        -(entry.position.z - this.constructor.ZEROPOINT),
-        -(entry.position.x - this.constructor.ZEROPOINT),
-        entry.position.y
-      );
-
-      wmo.doodadSet = entry.doodadSet;
-
-      // Provided as (Z, X, -Y)
-      wmo.rotation.set(
-        entry.rotation.z * Math.PI / 180,
-        entry.rotation.x * Math.PI / 180,
-        -entry.rotation.y * Math.PI / 180
-      );
-
-      // Adjust WMO rotation to match Wowser's axes.
-      const quat = wmo.quaternion;
-      quat.set(quat.x, quat.y, quat.z, -quat.w);
-
-      this.add(wmo);
-
-      // TODO: Remove WMO from map on unload
-      this.wmos.set(entry.id, wmo);
-    }));
-  }
-
   animate(delta, camera, cameraRotated) {
-    this.animateDoodads(delta, camera, cameraRotated);
-  }
-
-  animateDoodads(delta, camera, cameraRotated) {
-    this.doodads.forEach((doodad) => {
-      if (!doodad.animated) {
-        return;
-      }
-
-      if (doodad.animations.length > 0) {
-        doodad.animations.update(delta);
-      }
-
-      if (cameraRotated && doodad.billboards.length > 0) {
-        doodad.applyBillboards(camera);
-      }
-
-      if (doodad.skeletonHelper) {
-        doodad.skeletonHelper.update();
-      }
-    });
+    this.doodadManager.animate(delta, camera, cameraRotated);
+    this.wmoManager.animate(delta, camera, cameraRotated);
   }
 
   static load(id) {

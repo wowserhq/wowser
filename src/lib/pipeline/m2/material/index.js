@@ -61,6 +61,7 @@ class M2Material extends THREE.ShaderMaterial {
     this.skins.skin2 = null;
     this.skins.skin3 = null;
 
+    this.textures = [];
     this.textureDefs = def.textures;
     this.loadTextures();
   }
@@ -204,6 +205,8 @@ class M2Material extends THREE.ShaderMaterial {
       textures.push(this.loadTexture(textureDef));
     });
 
+    this.textures = textures;
+
     // Update shader uniforms to reflect loaded textures.
     this.uniforms.textures = { type: 'tv', value: textures };
     this.uniforms.textureCount = { type: 'i', value: textures.length };
@@ -251,6 +254,13 @@ class M2Material extends THREE.ShaderMaterial {
     this.loadTextures();
   }
 
+  dispose() {
+    super.dispose();
+
+    this.textures.forEach((texture) => {
+      TextureLoader.unload(texture.sourceFile);
+    });
+  }
 }
 
 export default M2Material;

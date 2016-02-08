@@ -1,10 +1,10 @@
-import THREE from 'three';
+import WorkerPool from '../worker/pool';
+import WMO from './';
 
-const loader = new THREE.TextureLoader();
-
-class TextureLoader {
+class WMOBlueprint {
 
   static cache = new Map();
+
   static references = new Map();
   static pendingUnload = new Set();
   static unloaderRunning = false;
@@ -30,23 +30,24 @@ class TextureLoader {
     ++refCount;
     this.references.set(path, refCount);
 
-    const encodedPath = encodeURI(`pipeline/${path}.png`);
-
     if (!this.cache.has(path)) {
-      // TODO: Promisify THREE's TextureLoader callbacks
-      this.cache.set(path, loader.load(encodedPath, function(texture) {
-        texture.sourceFile = path;
-        texture.needsUpdate = true;
+      this.cache.set(path, WorkerPool.enqueue('WMO', path).then((args) => {
+        const [data] = args;
+
+        return new WMO(path, data);
       }));
     }
 
-    return this.cache.get(path);
+    return this.cache.get(path).then((wmo) => {
+      return wmo.clone();
+    });
   }
 
-  static unload(rawPath) {
-    const path = rawPath.toUpperCase();
+  static unload(wmo) {
+    const path = wmo.path.toUpperCase();
 
     let refCount = this.references.get(path) || 1;
+
     --refCount;
 
     if (refCount === 0) {
@@ -58,10 +59,6 @@ class TextureLoader {
 
   static backgroundUnload() {
     this.pendingUnload.forEach((path) => {
-      if (this.cache.has(path)) {
-        this.cache.get(path).dispose();
-      }
-
       this.cache.delete(path);
       this.references.delete(path);
       this.pendingUnload.delete(path);
@@ -72,4 +69,4 @@ class TextureLoader {
 
 }
 
-export default TextureLoader;
+export default WMOBlueprint;

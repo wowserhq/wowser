@@ -3,7 +3,6 @@ import THREE from 'three';
 import Submesh from './submesh';
 import M2Material from './material';
 import AnimationManager from './animation-manager';
-import WorkerPool from '../worker/pool';
 
 class M2 extends THREE.Group {
 
@@ -11,6 +10,8 @@ class M2 extends THREE.Group {
 
   constructor(path, data, skinData, instance = null) {
     super();
+
+    this.matrixAutoUpdate = false;
 
     this.name = path.split('\\').slice(-1).pop();
 
@@ -108,8 +109,11 @@ class M2 extends THREE.Group {
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
-            const translation = new THREE.Vector3(-value.x, -value.y, value.z);
-            return bone.position.clone().add(translation);
+            return new THREE.Vector3(
+              bone.position.x + -value.x,
+              bone.position.y + -value.y,
+              bone.position.z + value.z
+            );
           }
         });
       }
@@ -123,7 +127,7 @@ class M2 extends THREE.Group {
           trackType: 'QuaternionKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Quaternion(value.x, value.y, -value.z, value.w).inverse();
+            return new THREE.Quaternion(value.x, value.y, -value.z, -value.w);
           }
         });
       }
@@ -150,6 +154,8 @@ class M2 extends THREE.Group {
 
     // Assemble the skeleton
     this.skeleton = new THREE.Skeleton(bones);
+
+    this.skeleton.matrixAutoUpdate = this.matrixAutoUpdate;
   }
 
   // Returns a map of M2Materials indexed by submesh. Each material represents a texture unit,
@@ -274,6 +280,8 @@ class M2 extends THREE.Group {
       mesh = new THREE.Mesh(geometry);
     }
 
+    mesh.matrixAutoUpdate = this.matrixAutoUpdate;
+
     // Add mesh to the group
     this.add(mesh);
 
@@ -353,7 +361,8 @@ class M2 extends THREE.Group {
       skeleton: this.skeleton,
       geometry: geometry,
       rootBone: rootBone,
-      useSkinning: this.useSkinning
+      useSkinning: this.useSkinning,
+      matrixAutoUpdate: this.matrixAutoUpdate
     };
 
     const submesh = new Submesh(opts);
@@ -410,6 +419,15 @@ class M2 extends THREE.Group {
     }
   }
 
+  dispose() {
+    this.geometry.dispose();
+    this.mesh.geometry.dispose();
+
+    this.submeshes.forEach((submesh) => {
+      submesh.dispose();
+    });
+  }
+
   clone() {
     let instance = {};
 
@@ -422,19 +440,6 @@ class M2 extends THREE.Group {
     }
 
     return new this.constructor(this.path, this.data, this.skinData, instance);
-  }
-
-  static load(path) {
-    path = path.replace(/\.md(x|l)/i, '.m2');
-    if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('M2', path).then((args) => {
-        const [data, skinData] = args;
-        return new this(path, data, skinData, null);
-      });
-    }
-    return this.cache[path].then((m2) => {
-      return m2.clone();
-    });
   }
 
 }

@@ -94,7 +94,7 @@ class GameScreen extends React.Component {
         <canvas ref="canvas"></canvas>
         <HUD />
         <Controls ref="controls" for={ session.player } camera={ this.camera } />
-        <Stats ref="stats" renderer={ this.renderer } />
+        <Stats ref="stats" renderer={ this.renderer } map={ session.world.map } />
       </game>
     );
   }

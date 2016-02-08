@@ -1,17 +1,26 @@
 import THREE from 'three';
 
-import WorkerPool from '../../worker/pool';
+import WMOMaterial from '../material';
+import M2Blueprint from '../../m2/blueprint';
 
 class WMOGroup extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(data) {
+  constructor(wmo, path, data) {
     super();
 
+    this.dispose = ::this.dispose;
+
+    this.matrixAutoUpdate = false;
+
+    this.wmo = wmo;
+    this.path = path;
     this.data = data;
 
     this.indoor = data.indoor;
+
+    this.doodads = new Set();
 
     const vertexCount = data.MOVT.vertices.length;
     const textureCoords = data.MOTV.textureCoords;
@@ -83,28 +92,98 @@ class WMOGroup extends THREE.Mesh {
       geometry.addGroup(batch.firstIndex, batch.indexCount, batch.materialID);
     });
 
-    this.materialIDs = materialIDs;
+    const materialDefs = this.wmo.data.MOMT.materials;
+    const texturePaths = this.wmo.data.MOTX.filenames;
+
+    this.material = this.createMultiMaterial(materialIDs, materialDefs, texturePaths);
+  }
+
+  createMultiMaterial(materialIDs, materialDefs, texturePaths) {
+    const multiMaterial = new THREE.MultiMaterial();
+
+    materialIDs.forEach((materialID) => {
+      const materialDef = materialDefs[materialID];
+
+      if (this.indoor) {
+        materialDef.indoor = true;
+      } else {
+        materialDef.indoor = false;
+      }
+
+      if (!this.wmo.data.MOHD.skipBaseColor) {
+        materialDef.useBaseColor = true;
+        materialDef.baseColor = this.wmo.data.MOHD.baseColor;
+      } else {
+        materialDef.useBaseColor = false;
+      }
+
+      const material = this.createMaterial(materialDefs[materialID], texturePaths);
+
+      multiMaterial.materials[materialID] = material;
+    });
+
+    return multiMaterial;
+  }
+
+  createMaterial(materialDef, texturePaths) {
+    const textureDefs = [];
+
+    materialDef.textures.forEach((textureDef) => {
+      const texturePath = texturePaths[textureDef.offset];
+
+      if (texturePath !== undefined) {
+        textureDef.path = texturePath;
+        textureDefs.push(textureDef);
+      } else {
+        textureDefs.push(null);
+      }
+    });
+
+    const material = new WMOMaterial(materialDef, textureDefs);
+
+    return material;
+  }
+
+  loadDoodad(entry) {
+    ++this.parent.loadedDoodadCount;
+
+    M2Blueprint.load(entry.filename).then((m2) => {
+      m2.position.set(
+        -entry.position.x,
+        -entry.position.y,
+        entry.position.z
+      );
+
+      // Adjust M2 rotation to match Wowser's axes.
+      const quat = m2.quaternion;
+      quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
+
+      const scale = entry.scale;
+      m2.scale.set(scale, scale, scale);
+
+      this.add(m2);
+      m2.updateMatrix();
+
+      this.doodads.add(m2);
+    });
+  }
+
+  unloadDoodads() {
+    this.doodads.forEach((m2) => {
+      M2Blueprint.unload(m2);
+      this.doodads.delete(m2);
+    });
   }
 
   clone() {
-    return new this.constructor(this.data);
+    return new this.constructor(this.wmo, this.path, this.data);
   }
 
-  static loadWithID(path, id) {
-    const suffix = `000${id}`.slice(-3);
-    const group = path.replace(/\.wmo/i, `_${suffix}.wmo`);
-    return this.load(group);
-  }
+  dispose() {
+    this.geometry.dispose();
 
-  static load(path) {
-    if (!(path in this.cache)) {
-      this.cache[path] = WorkerPool.enqueue('WMOGroup', path).then((args) => {
-        const [data] = args;
-        return new this(data);
-      });
-    }
-    return this.cache[path].then((wmoGroup) => {
-      return wmoGroup.clone();
+    this.material.materials.forEach((material) => {
+      material.dispose();
     });
   }
 

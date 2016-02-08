@@ -11,6 +11,8 @@ class WorldHandler extends EventEmitter {
     this.player = this.session.player;
 
     this.scene = new THREE.Scene();
+    this.scene.matrixAutoUpdate = false;
+
     this.map = null;
 
     this.changeMap = ::this.changeMap;
@@ -112,16 +114,7 @@ class WorldHandler extends EventEmitter {
     });
   }
 
-  changeModel(_unit, oldModel, newModel) {
-    // Only need to handle skeleton helper changes here
-    if (oldModel && oldModel.skeletonHelper) {
-      this.scene.remove(oldModel.skeletonHelper);
-    }
-
-    if (newModel) {
-      newModel.skeletonHelper = new THREE.SkeletonHelper(newModel);
-      this.scene.add(newModel.skeletonHelper);
-    }
+  changeModel(_unit, _oldModel, _newModel) {
   }
 
   changePosition(player) {

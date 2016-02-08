@@ -11,6 +11,8 @@ class Chunk extends THREE.Mesh {
   constructor(adt, id) {
     super();
 
+    this.matrixAutoUpdate = false;
+
     const data = this.data = adt.data.MCNKs[id];
     const textureNames = adt.textures;
 
@@ -103,6 +105,11 @@ class Chunk extends THREE.Mesh {
 
     const bit = 1 << (column * 4 + row);
     return bit & this.holes;
+  }
+
+  dispose() {
+    this.geometry.dispose();
+    this.material.dispose();
   }
 
   static chunkFor(position) {

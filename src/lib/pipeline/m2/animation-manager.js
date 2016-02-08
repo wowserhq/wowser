@@ -97,7 +97,6 @@ class AnimationManager {
 
       clip.tracks.push(track);
 
-      clip.trim();
       clip.optimize();
     });
 

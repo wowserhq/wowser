@@ -1,17 +1,17 @@
-import THREE from 'three';
+import WorkerPool from '../../worker/pool';
+import WMOGroup from './';
 
-const loader = new THREE.TextureLoader();
-
-class TextureLoader {
+class WMOGroupBlueprint {
 
   static cache = new Map();
+
   static references = new Map();
   static pendingUnload = new Set();
   static unloaderRunning = false;
 
   static UNLOAD_INTERVAL = 15000;
 
-  static load(rawPath) {
+  static load(wmo, rawPath) {
     const path = rawPath.toUpperCase();
 
     // Prevent unintended unloading.
@@ -30,21 +30,30 @@ class TextureLoader {
     ++refCount;
     this.references.set(path, refCount);
 
-    const encodedPath = encodeURI(`pipeline/${path}.png`);
-
     if (!this.cache.has(path)) {
-      // TODO: Promisify THREE's TextureLoader callbacks
-      this.cache.set(path, loader.load(encodedPath, function(texture) {
-        texture.sourceFile = path;
-        texture.needsUpdate = true;
+      this.cache.set(path, WorkerPool.enqueue('WMOGroup', path).then((args) => {
+        const [data] = args;
+
+        return new WMOGroup(wmo, path, data);
       }));
     }
 
-    return this.cache.get(path);
+    return this.cache.get(path).then((wmoGroup) => {
+      return wmoGroup.clone();
+    });
   }
 
-  static unload(rawPath) {
-    const path = rawPath.toUpperCase();
+  static loadWithID(wmo, path, id) {
+    const suffix = `000${id}`.slice(-3);
+    const groupPath = path.replace(/\.wmo/i, `_${suffix}.wmo`);
+
+    return this.load(wmo, groupPath);
+  }
+
+  static unload(wmoGroup) {
+    wmoGroup.dispose();
+
+    const path = wmoGroup.path.toUpperCase();
 
     let refCount = this.references.get(path) || 1;
     --refCount;
@@ -59,7 +68,9 @@ class TextureLoader {
   static backgroundUnload() {
     this.pendingUnload.forEach((path) => {
       if (this.cache.has(path)) {
-        this.cache.get(path).dispose();
+        this.cache.get(path).then((wmoGroup) => {
+          wmoGroup.dispose();
+        });
       }
 
       this.cache.delete(path);
@@ -72,4 +83,4 @@ class TextureLoader {
 
 }
 
-export default TextureLoader;
+export default WMOGroupBlueprint;

@@ -1,10 +1,10 @@
-import THREE from 'three';
+import WorkerPool from '../worker/pool';
+import M2 from './';
 
-const loader = new THREE.TextureLoader();
-
-class TextureLoader {
+class M2Blueprint {
 
   static cache = new Map();
+
   static references = new Map();
   static pendingUnload = new Set();
   static unloaderRunning = false;
@@ -12,7 +12,7 @@ class TextureLoader {
   static UNLOAD_INTERVAL = 15000;
 
   static load(rawPath) {
-    const path = rawPath.toUpperCase();
+    const path = rawPath.replace(/\.md(x|l)/i, '.m2').toUpperCase();
 
     // Prevent unintended unloading.
     if (this.pendingUnload.has(path)) {
@@ -30,23 +30,29 @@ class TextureLoader {
     ++refCount;
     this.references.set(path, refCount);
 
-    const encodedPath = encodeURI(`pipeline/${path}.png`);
-
     if (!this.cache.has(path)) {
-      // TODO: Promisify THREE's TextureLoader callbacks
-      this.cache.set(path, loader.load(encodedPath, function(texture) {
-        texture.sourceFile = path;
-        texture.needsUpdate = true;
+      this.cache.set(path, WorkerPool.enqueue('M2', path).then((args) => {
+        const [data, skinData] = args;
+
+        return new M2(path, data, skinData);
       }));
     }
 
-    return this.cache.get(path);
+    return this.cache.get(path).then((m2) => {
+      return m2.clone();
+    });
   }
 
-  static unload(rawPath) {
-    const path = rawPath.toUpperCase();
+  static unload(m2) {
+    const path = m2.path.replace(/\.md(x|l)/i, '.m2').toUpperCase();
+
+    // Immediately dispose any non-instanced M2s.
+    if (!m2.canInstance) {
+      m2.dispose();
+    }
 
     let refCount = this.references.get(path) || 1;
+
     --refCount;
 
     if (refCount === 0) {
@@ -58,8 +64,11 @@ class TextureLoader {
 
   static backgroundUnload() {
     this.pendingUnload.forEach((path) => {
+      // Handle disposal for instanced M2s.
       if (this.cache.has(path)) {
-        this.cache.get(path).dispose();
+        this.cache.get(path).then((m2) => {
+          m2.dispose();
+        });
       }
 
       this.cache.delete(path);
@@ -72,4 +81,4 @@ class TextureLoader {
 
 }
 
-export default TextureLoader;
+export default M2Blueprint;
