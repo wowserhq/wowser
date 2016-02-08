@@ -345,6 +345,8 @@ class WMOManager {
     --this.doodadsPendingLoadCount;
     ++this.doodadCount;
 
+    // It's not possible to know if a group has animated doodads within until after the doodad is
+    // fully loaded-- hence the use of a callback.
     group.loadDoodad(entry).then((_doodad) => {
       if (group.animated) {
         this.animatedGroups.set(group.path, group);
