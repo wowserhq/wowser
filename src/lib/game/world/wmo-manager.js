@@ -55,6 +55,8 @@ class WMOManager {
 
     this.doodadsPendingLoad = new Map();
 
+    this.animatedGroups = new Map();
+
     this.loadChunk = ::this.loadChunk;
     this.unloadChunk = ::this.unloadChunk;
     this.loadWMOs = ::this.loadWMOs;
@@ -343,7 +345,13 @@ class WMOManager {
     --this.doodadsPendingLoadCount;
     ++this.doodadCount;
 
-    group.loadDoodad(entry);
+    // It's not possible to know if a group has animated doodads within until after the doodad is
+    // fully loaded-- hence the use of a callback.
+    group.loadDoodad(entry).then((_doodad) => {
+      if (group.animated) {
+        this.animatedGroups.set(group.path, group);
+      }
+    });
   }
 
   // Every tick of the load interval, unload a portion of any root WMOs pending unload.
@@ -410,10 +418,31 @@ class WMOManager {
 
     group.unloadDoodads();
 
+    this.animatedGroups.delete(group);
+
     WMOGroupBlueprint.unload(group);
   }
 
-  animate(_delta, _camera, _cameraRotated) {
+  animate(delta, camera, cameraRotated) {
+    this.animatedGroups.forEach((group) => {
+      group.animatedDoodads.forEach((doodad) => {
+        if (!doodad.visible) {
+          return;
+        }
+
+        if (doodad.animations.length > 0) {
+          doodad.animations.update(delta);
+        }
+
+        if (cameraRotated && doodad.billboards.length > 0) {
+          doodad.applyBillboards(camera);
+        }
+
+        if (doodad.skeletonHelper) {
+          doodad.skeletonHelper.update();
+        }
+      });
+    });
   }
 
 }
