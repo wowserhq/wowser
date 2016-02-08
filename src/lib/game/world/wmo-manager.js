@@ -402,8 +402,8 @@ class WMOManager {
 
   unloadWMOGroup(group) {
     if (this.doodadsPendingLoad.has(group)) {
-      this.doodadsPendingLoad.delete(group);
       this.doodadsPendingLoadCount -= this.doodadsPendingLoad.get(group).size;
+      this.doodadsPendingLoad.delete(group);
     }
 
     group.parent.remove(group);
