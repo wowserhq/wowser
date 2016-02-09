@@ -56,8 +56,8 @@ uniform float billboarded;
 void main() {
   // For some reason, V is inverted?!
   // TODO: Use vertexShaderMode to determine coordinates
-  texture1Coord = vec2(uv[0], -uv[1]);
-  texture2Coord = vec2(uv[0], -uv[1]);
+  texture1Coord = vec2(uv[0], uv[1]);
+  texture2Coord = vec2(uv[0], uv[1]);
 
   // TODO: Will this be needed in the fragment shader at some point?
   vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;

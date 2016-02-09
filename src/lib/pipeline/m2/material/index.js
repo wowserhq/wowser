@@ -215,24 +215,28 @@ class M2Material extends THREE.ShaderMaterial {
   loadTexture(textureDef) {
     let loaded = null;
 
+    const wrapS = THREE.RepeatWrapping;
+    const wrapT = THREE.RepeatWrapping;
+    const flipY = false;
+
     switch (textureDef.type) {
       case 0:
         // Hardcoded texture
-        loaded = TextureLoader.load(textureDef.filename);
+        loaded = TextureLoader.load(textureDef.filename, wrapS, wrapT, flipY);
         break;
       case 11:
         if (this.skins.skin1) {
-          loaded = TextureLoader.load(this.skins.skin1);
+          loaded = TextureLoader.load(this.skins.skin1, wrapS, wrapT, flipY);
         }
         break;
       case 12:
         if (this.skins.skin2) {
-          loaded = TextureLoader.load(this.skins.skin2);
+          loaded = TextureLoader.load(this.skins.skin2, wrapS, wrapT, flipY);
         }
         break;
       case 13:
         if (this.skins.skin3) {
-          loaded = TextureLoader.load(this.skins.skin3);
+          loaded = TextureLoader.load(this.skins.skin3, wrapS, wrapT, flipY);
         }
         break;
       default:
