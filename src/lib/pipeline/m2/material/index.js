@@ -219,24 +219,20 @@ class M2Material extends THREE.ShaderMaterial {
       case 0:
         // Hardcoded texture
         loaded = TextureLoader.load(textureDef.filename);
-        loaded.wrapS = loaded.wrapT = THREE.RepeatWrapping;
         break;
       case 11:
         if (this.skins.skin1) {
           loaded = TextureLoader.load(this.skins.skin1);
-          loaded.wrapS = loaded.wrapT = THREE.RepeatWrapping;
         }
         break;
       case 12:
         if (this.skins.skin2) {
           loaded = TextureLoader.load(this.skins.skin2);
-          loaded.wrapS = loaded.wrapT = THREE.RepeatWrapping;
         }
         break;
       case 13:
         if (this.skins.skin3) {
           loaded = TextureLoader.load(this.skins.skin3);
-          loaded.wrapS = loaded.wrapT = THREE.RepeatWrapping;
         }
         break;
       default:
@@ -258,7 +254,7 @@ class M2Material extends THREE.ShaderMaterial {
     super.dispose();
 
     this.textures.forEach((texture) => {
-      TextureLoader.unload(texture.sourceFile);
+      TextureLoader.unload(texture);
     });
   }
 }
