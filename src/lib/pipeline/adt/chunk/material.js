@@ -61,6 +61,11 @@ class Material extends THREE.ShaderMaterial {
       alphaMaps.push(texture);
     });
 
+    // Texture array uniforms must have at least one value present to be considered valid.
+    if (alphaMaps.length === 0) {
+      alphaMaps.push(new THREE.Texture());
+    }
+
     this.alphaMaps = alphaMaps;
   }
 
