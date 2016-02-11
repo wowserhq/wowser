@@ -75,7 +75,6 @@ class Material extends THREE.ShaderMaterial {
     this.layers.forEach((layer) => {
       const filename = this.textureNames[layer.textureID];
       const texture = TextureLoader.load(filename);
-      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
       textures.push(texture);
     });
@@ -87,7 +86,7 @@ class Material extends THREE.ShaderMaterial {
     super.dispose();
 
     this.textures.forEach((texture) => {
-      TextureLoader.unload(texture.sourceFile);
+      TextureLoader.unload(texture);
     });
 
     this.alphaMaps.forEach((alphaMap) => {
