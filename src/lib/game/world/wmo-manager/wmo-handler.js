@@ -136,9 +136,13 @@ class WMOHandler {
       // Assign the index as an id property on the entry.
       wmoDoodadEntry.id = doodadIndex;
 
-      this.addDoodadRef(wmoDoodadEntry, wmoGroup);
+      const refCount = this.addDoodadRef(wmoDoodadEntry, wmoGroup);
 
-      this.enqueueLoadDoodad(wmoDoodadEntry);
+      // Only enqueue load on the first reference, since it'll already have been enqueued on
+      // subsequent references.
+      if (refCount === 1) {
+        this.enqueueLoadDoodad(wmoDoodadEntry);
+      }
     });
   }
 
