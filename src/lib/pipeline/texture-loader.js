@@ -11,12 +11,15 @@ class TextureLoader {
 
   static UNLOAD_INTERVAL = 15000;
 
-  static load(rawPath) {
+  static load(rawPath, wrapS = THREE.RepeatWrapping, wrapT = THREE.RepeatWrapping, flipY = true) {
     const path = rawPath.toUpperCase();
 
+    // Ensure we cache based on texture settings. Some textures are reused with different settings.
+    const textureKey = `${path};ws:${wrapS.toString()};wt:${wrapT.toString()};fy:${flipY}}`;
+
     // Prevent unintended unloading.
-    if (this.pendingUnload.has(path)) {
-      this.pendingUnload.delete(path);
+    if (this.pendingUnload.has(textureKey)) {
+      this.pendingUnload.delete(textureKey);
     }
 
     // Background unloader might need to be started.
@@ -26,45 +29,51 @@ class TextureLoader {
     }
 
     // Keep track of references.
-    let refCount = this.references.get(path) || 0;
+    let refCount = this.references.get(textureKey) || 0;
     ++refCount;
-    this.references.set(path, refCount);
+    this.references.set(textureKey, refCount);
 
     const encodedPath = encodeURI(`pipeline/${path}.png`);
 
-    if (!this.cache.has(path)) {
+    if (!this.cache.has(textureKey)) {
       // TODO: Promisify THREE's TextureLoader callbacks
-      this.cache.set(path, loader.load(encodedPath, function(texture) {
+      this.cache.set(textureKey, loader.load(encodedPath, function(texture) {
         texture.sourceFile = path;
+        texture.textureKey = textureKey;
+
+        texture.wrapS = wrapS;
+        texture.wrapT = wrapT;
+        texture.flipY = flipY;
+
         texture.needsUpdate = true;
       }));
     }
 
-    return this.cache.get(path);
+    return this.cache.get(textureKey);
   }
 
-  static unload(rawPath) {
-    const path = rawPath.toUpperCase();
+  static unload(texture) {
+    const textureKey = texture.textureKey;
 
-    let refCount = this.references.get(path) || 1;
+    let refCount = this.references.get(textureKey) || 1;
     --refCount;
 
     if (refCount === 0) {
-      this.pendingUnload.add(path);
+      this.pendingUnload.add(textureKey);
     } else {
-      this.references.set(path, refCount);
+      this.references.set(textureKey, refCount);
     }
   }
 
   static backgroundUnload() {
-    this.pendingUnload.forEach((path) => {
-      if (this.cache.has(path)) {
-        this.cache.get(path).dispose();
+    this.pendingUnload.forEach((textureKey) => {
+      if (this.cache.has(textureKey)) {
+        this.cache.get(textureKey).dispose();
       }
 
-      this.cache.delete(path);
-      this.references.delete(path);
-      this.pendingUnload.delete(path);
+      this.cache.delete(textureKey);
+      this.references.delete(textureKey);
+      this.pendingUnload.delete(textureKey);
     });
 
     setTimeout(this.backgroundUnload.bind(this), this.UNLOAD_INTERVAL);

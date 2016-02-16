@@ -90,12 +90,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
 
     textureDefs.forEach((textureDef) => {
       if (textureDef !== null) {
-        const texture = TextureLoader.load(textureDef.path);
-
-        texture.flipY = false;
-        texture.wrapS = this.wrapping;
-        texture.wrapT = this.wrapping;
-
+        const texture = TextureLoader.load(textureDef.path, this.wrapping, this.wrapping, false);
         textures.push(texture);
       }
     });
@@ -111,7 +106,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
     super.dispose();
 
     this.textures.forEach((texture) => {
-      TextureLoader.unload(texture.sourceFile);
+      TextureLoader.unload(texture);
     });
   }
 }
