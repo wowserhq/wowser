@@ -11,7 +11,7 @@ class WMOGroupBlueprint {
 
   static UNLOAD_INTERVAL = 15000;
 
-  static load(wmo, rawPath) {
+  static load(wmo, id, rawPath) {
     const path = rawPath.toUpperCase();
 
     // Prevent unintended unloading.
@@ -34,7 +34,7 @@ class WMOGroupBlueprint {
       this.cache.set(path, WorkerPool.enqueue('WMOGroup', path).then((args) => {
         const [data] = args;
 
-        return new WMOGroup(wmo, path, data);
+        return new WMOGroup(wmo, id, data, path);
       }));
     }
 
@@ -43,11 +43,11 @@ class WMOGroupBlueprint {
     });
   }
 
-  static loadWithID(wmo, path, id) {
+  static loadWithID(wmo, id) {
     const suffix = `000${id}`.slice(-3);
-    const groupPath = path.replace(/\.wmo/i, `_${suffix}.wmo`);
+    const groupPath = wmo.path.replace(/\.wmo/i, `_${suffix}.wmo`);
 
-    return this.load(wmo, groupPath);
+    return this.load(wmo, id, groupPath);
   }
 
   static unload(wmoGroup) {

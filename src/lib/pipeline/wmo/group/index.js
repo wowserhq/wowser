@@ -1,13 +1,12 @@
 import THREE from 'three';
 
 import WMOMaterial from '../material';
-import M2Blueprint from '../../m2/blueprint';
 
 class WMOGroup extends THREE.Mesh {
 
   static cache = {};
 
-  constructor(wmo, path, data) {
+  constructor(wmo, id, data, path) {
     super();
 
     this.dispose = ::this.dispose;
@@ -15,14 +14,12 @@ class WMOGroup extends THREE.Mesh {
     this.matrixAutoUpdate = false;
 
     this.wmo = wmo;
-    this.path = path;
+    this.groupID = id;
     this.data = data;
+    this.path = path;
 
     this.indoor = data.indoor;
     this.animated = false;
-
-    this.doodads = new Set();
-    this.animatedDoodads = new Set();
 
     const vertexCount = data.MOVT.vertices.length;
     const textureCoords = data.MOTV.textureCoords;
@@ -58,7 +55,7 @@ class WMOGroup extends THREE.Mesh {
       });
     } else if (this.indoor) {
       // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
-      data.MOVT.vertices.forEach(function(vertex, index) {
+      data.MOVT.vertices.forEach(function(_vertex, index) {
         colors[index * 3] = 127.0 / 255.0;
         colors[index * 3 + 1] = 127.0 / 255.0;
         colors[index * 3 + 2] = 127.0 / 255.0;
@@ -146,50 +143,8 @@ class WMOGroup extends THREE.Mesh {
     return material;
   }
 
-  loadDoodad(entry) {
-    ++this.parent.loadedDoodadCount;
-
-    return M2Blueprint.load(entry.filename).then((m2) => {
-      m2.position.set(
-        -entry.position.x,
-        -entry.position.y,
-        entry.position.z
-      );
-
-      // Adjust M2 rotation to match Wowser's axes.
-      const quat = m2.quaternion;
-      quat.set(entry.rotation.x, entry.rotation.y, -entry.rotation.z, -entry.rotation.w);
-
-      const scale = entry.scale;
-      m2.scale.set(scale, scale, scale);
-
-      this.add(m2);
-      m2.updateMatrix();
-
-      this.doodads.add(m2);
-
-      if (m2.animated) {
-        this.animated = true;
-        this.animatedDoodads.add(m2);
-
-        // TODO: Which WMO doodad animation should be playing?
-        m2.animations.play(0);
-      }
-
-      return m2;
-    });
-  }
-
-  unloadDoodads() {
-    this.doodads.forEach((m2) => {
-      M2Blueprint.unload(m2);
-      this.doodads.delete(m2);
-      this.animatedDoodads.delete(m2);
-    });
-  }
-
   clone() {
-    return new this.constructor(this.wmo, this.path, this.data);
+    return new this.constructor(this.wmo, this.groupID, this.data, this.path);
   }
 
   dispose() {
