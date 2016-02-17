@@ -89,7 +89,9 @@ Build the pipeline:
 npm run gulp
 ```
 
-After building, serve the pipeline as follows:
+Keep this process running to monitor source files and automatically rebuild.
+
+After building, serve the pipeline as follows in a separate process:
 
 ```shell
 npm run serve
