@@ -75,7 +75,7 @@ class ContentQueue {
   }
 
   clear() {
-    this.queue = new Map();
+    this.queue.clear();
   }
 
 }
