@@ -5,11 +5,11 @@ import M2Blueprint from '../../../pipeline/m2/blueprint';
 
 class WMOHandler {
 
-  static LOAD_GROUP_INTERVAL = 2;
+  static LOAD_GROUP_INTERVAL = 1;
   static LOAD_GROUP_WORK_FACTOR = 1 / 10;
   static LOAD_GROUP_WORK_MIN = 2;
 
-  static LOAD_DOODAD_INTERVAL = 2;
+  static LOAD_DOODAD_INTERVAL = 1;
   static LOAD_DOODAD_WORK_FACTOR = 1 / 20;
   static LOAD_DOODAD_WORK_MIN = 2;
 

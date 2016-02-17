@@ -4,7 +4,7 @@ import WMOBlueprint from '../../../pipeline/wmo/blueprint';
 
 class WMOManager {
 
-  static LOAD_ENTRY_INTERVAL = 2;
+  static LOAD_ENTRY_INTERVAL = 1;
   static LOAD_ENTRY_WORK_FACTOR = 1 / 10;
   static LOAD_ENTRY_WORK_MIN = 2;
 
