@@ -28,23 +28,12 @@ class ContentQueue {
     this.queue.set(key, job);
   }
 
-  remove(keyPattern) {
+  remove(key) {
     let count = 0;
 
-    if (keyPattern.toString().includes('*')) {
-      for (const entry of this.queue) {
-        const key = entry[0];
-
-        if (key.startsWith(keyPattern.split('*')[0])) {
-          this.queue.delete(key);
-          count++;
-        }
-      }
-    } else {
-      if (this.queue.has(keyPattern)) {
-        this.queue.delete(keyPattern);
-        count++;
-      }
+    if (this.queue.has(key)) {
+      this.queue.delete(key);
+      count++;
     }
 
     return count;
