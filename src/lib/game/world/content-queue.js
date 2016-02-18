@@ -15,9 +15,8 @@ class ContentQueue {
     this.schedule();
   }
 
-  has(keyPattern) {
-    // todo: allow wildcards (ie 8-*)
-    return this.queue.has(keyPattern);
+  has(key) {
+    return this.queue.has(key);
   }
 
   add(key, job) {
