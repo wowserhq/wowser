@@ -102,6 +102,12 @@ void main() {
     discard;
   }
 
+  // Force transparent pixels to fully opaque if in opaque blending mode. Needed to prevent fog
+  // from causing textures with transparent pixels to appear too bright in the distance.
+  if (blendingMode == 0 && color.a < 1.0) {
+    color.a = 1.0;
+  }
+
   if (lightModifier > 0.0) {
     if (indoor == 1) {
       color = lightIndoor(color, vertexColor, globalLight);
