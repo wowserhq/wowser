@@ -121,15 +121,15 @@ class WorldHandler extends EventEmitter {
     this.renderAtCoords(player.position.x, player.position.y);
   }
 
-  animate(delta, camera, cameraRotated) {
-    this.animateEntities(delta, camera, cameraRotated);
+  animate(delta, camera, cameraMoved) {
+    this.animateEntities(delta, camera, cameraMoved);
 
     if (this.map !== null) {
-      this.map.animate(delta, camera, cameraRotated);
+      this.map.animate(delta, camera, cameraMoved);
     }
   }
 
-  animateEntities(delta, camera, cameraRotated) {
+  animateEntities(delta, camera, cameraMoved) {
     this.entities.forEach((entity) => {
       const { model } = entity;
 
@@ -141,7 +141,7 @@ class WorldHandler extends EventEmitter {
         model.animations.update(delta);
       }
 
-      if (cameraRotated && model.billboards.length > 0) {
+      if (cameraMoved && model.billboards.length > 0) {
         model.applyBillboards(camera);
       }
 
