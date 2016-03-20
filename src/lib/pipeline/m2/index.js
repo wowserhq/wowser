@@ -50,7 +50,7 @@ class M2 extends THREE.Group {
       // time deltas. Instead, only the original M2 should receive time deltas.
       this.receivesAnimationUpdates = false;
     } else {
-      this.animations = new AnimationManager(this, data.animations);
+      this.animations = new AnimationManager(this, data.animations, data.sequences);
 
       if (this.animated) {
         this.receivesAnimationUpdates = true;

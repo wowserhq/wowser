@@ -191,10 +191,13 @@ class WMOHandler {
     this.placeDoodad(wmoDoodadEntry, wmoDoodad);
 
     if (wmoDoodad.animated) {
-      // TODO: Do WMO doodads have more than one animation? If so, which one should play?
-      wmoDoodad.animations.play(0);
-
       this.animatedDoodads.set(wmoDoodadEntry.id, wmoDoodad);
+
+      if (wmoDoodad.animations.length > 0) {
+        // TODO: Do WMO doodads have more than one animation? If so, which one should play?
+        wmoDoodad.animations.playAnimation(0);
+        wmoDoodad.animations.playAllSequences();
+      }
     }
 
     this.doodads.set(wmoDoodadEntry.id, wmoDoodad);
