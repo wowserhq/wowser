@@ -19,11 +19,11 @@ class M2 extends THREE.Group {
     this.data = data;
     this.skinData = skinData;
 
-    // Instanceable M2s can share geometry and texture units.
+    // Instanceable M2s share geometry, texture units, and animations.
     this.canInstance = data.canInstance;
 
     this.animated = data.animated;
-    this.animations = new AnimationManager(this, data.animations);
+
     this.billboards = [];
 
     // Keep track of whether or not to use skinning. If the M2 has bone animations, useSkinning is
@@ -42,6 +42,22 @@ class M2 extends THREE.Group {
     this.skeleton = null;
     this.bones = [];
     this.rootBones = [];
+
+    if (instance) {
+      this.animations = instance.animations;
+
+      // To prevent over-updating animation timelines, instanced M2s shouldn't receive animation
+      // time deltas. Instead, only the original M2 should receive time deltas.
+      this.receivesAnimationUpdates = false;
+    } else {
+      this.animations = new AnimationManager(this, data.animations);
+
+      if (this.animated) {
+        this.receivesAnimationUpdates = true;
+      } else {
+        this.receivesAnimationUpdates = false;
+      }
+    }
 
     this.createSkeleton(data.bones);
 
@@ -432,6 +448,7 @@ class M2 extends THREE.Group {
     let instance = {};
 
     if (this.canInstance) {
+      instance.animations = this.animations;
       instance.geometry = this.geometry;
       instance.submeshGeometries = this.submeshGeometries;
       instance.textureUnits = this.textureUnits;

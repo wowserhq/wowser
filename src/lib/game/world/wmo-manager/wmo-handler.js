@@ -379,7 +379,7 @@ class WMOHandler {
         continue;
       }
 
-      if (wmoDoodad.animations.length > 0) {
+      if (wmoDoodad.receivesAnimationUpdates && wmoDoodad.animations.length > 0) {
         wmoDoodad.animations.update(delta);
       }
 

@@ -216,7 +216,7 @@ class DoodadManager {
         return;
       }
 
-      if (doodad.animations.length > 0) {
+      if (doodad.receivesAnimationUpdates && doodad.animations.length > 0) {
         doodad.animations.update(delta);
       }
 
