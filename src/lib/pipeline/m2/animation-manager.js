@@ -1,9 +1,14 @@
+import EventEmitter from 'events';
 import THREE from 'three';
 
-class AnimationManager {
+class AnimationManager extends EventEmitter {
 
   constructor(root, animationDefs, sequenceDefs) {
-    this.animationDefs = animationDefs;
+    super();
+
+    // Complicated M2s may have far more than 10 (default listener cap) M2Materials subscribed to
+    // the same texture animations.
+    this.setMaxListeners(200);
 
     this.animationDefs = animationDefs;
     this.sequenceDefs = sequenceDefs;
@@ -26,6 +31,8 @@ class AnimationManager {
 
   update(delta) {
     this.mixer.update(delta);
+
+    this.emit('update');
   }
 
   playAnimation(animationIndex) {
