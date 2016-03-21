@@ -97,6 +97,8 @@ class M2 extends THREE.Group {
       // Flag billboarded bones
       if (boneDef.billboarded) {
         bone.userData.billboarded = true;
+        bone.userData.billboardType = boneDef.billboardType;
+
         billboards.push(bone);
       }
 
@@ -377,11 +379,21 @@ class M2 extends THREE.Group {
   applyBillboards(camera) {
     for (let i = 0, len = this.billboards.length; i < len; ++i) {
       const bone = this.billboards[i];
-      this.applyBillboard(camera, bone);
+
+      switch (bone.userData.billboardType) {
+        case 0:
+          this.applySphericalBillboard(camera, bone);
+          break;
+        case 3:
+          this.applyCylindricalZBillboard(camera, bone);
+          break;
+        default:
+          break;
+      }
     }
   }
 
-  applyBillboard(camera, bone) {
+  applySphericalBillboard(camera, bone) {
     const boneRoot = bone.skin;
 
     if (!boneRoot) {
@@ -400,6 +412,35 @@ class M2 extends THREE.Group {
     const modelUp = new THREE.Vector3();
     modelUp.crossVectors(modelForward, modelRight);
     modelUp.normalize();
+
+    const rotateMatrix = new THREE.Matrix4();
+
+    rotateMatrix.set(
+      modelForward.x,   modelRight.x,   modelUp.x,  0,
+      modelForward.y,   modelRight.y,   modelUp.y,  0,
+      modelForward.z,   modelRight.z,   modelUp.z,  0,
+      0,                0,              0,          1
+    );
+
+    bone.rotation.setFromRotationMatrix(rotateMatrix);
+  }
+
+  applyCylindricalZBillboard(camera, bone) {
+    const boneRoot = bone.skin;
+
+    if (!boneRoot) {
+      return;
+    }
+
+    const camPos = this.worldToLocal(camera.position.clone());
+
+    const modelForward = new THREE.Vector3(camPos.x, camPos.y, camPos.z);
+    modelForward.normalize();
+
+    const modelVmEl = boneRoot.modelViewMatrix.elements;
+    const modelRight = new THREE.Vector3(modelVmEl[0], modelVmEl[4], modelVmEl[8]);
+
+    const modelUp = new THREE.Vector3(0, 0, 1);
 
     const rotateMatrix = new THREE.Matrix4();
 
