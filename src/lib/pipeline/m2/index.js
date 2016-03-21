@@ -67,6 +67,7 @@ class M2 extends THREE.Group {
       this.geometry = instance.geometry;
       this.submeshGeometries = instance.submeshGeometries;
     } else {
+      this.createTextureAnimations(data);
       this.createTextureUnits(data, skinData);
       this.createGeometry(data.vertices);
     }
@@ -185,6 +186,7 @@ class M2 extends THREE.Group {
 
     const { textureLookups, textures, renderFlags } = data;
     const { transparencyLookups, transparencies, colors } = data;
+    const { uvAnimationLookups, uvAnimations } = data;
 
     const tuLen = textureUnitDefs.length;
     for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
@@ -203,9 +205,10 @@ class M2 extends THREE.Group {
         opCount: textureUnit.opCount,
         renderFlags: null,
         blendingMode: null,
-        color: null,
         textures: [],
-        transparencies: []
+        uvAnimations: [],
+        transparencyAnimations: [],
+        vertexColorAnimation: null
       };
 
       // Shader ID (needs to be unmasked to get actual shader ID)
@@ -218,7 +221,7 @@ class M2 extends THREE.Group {
 
       // Vertex color animation block
       if (textureUnit.colorIndex > -1) {
-        materialDef.color = colors[textureUnit.colorIndex];
+        materialDef.vertexColorAnimation = textureUnit.colorIndex;
       }
 
       for (let opIndex = 0; opIndex < opCount; ++opIndex) {
@@ -231,16 +234,24 @@ class M2 extends THREE.Group {
         // Texture transparency animation block
         const transparencyLookup = textureUnit.transparencyIndex + opIndex;
         const transparencyIndex = transparencyLookups[transparencyLookup];
-        const transparency = transparencies[transparencyIndex];
-        if (transparency) {
-          materialDef.transparencies[opIndex] = transparency;
+        const transparencyAnimation = transparencies[transparencyIndex];
+        if (transparencyAnimation) {
+          materialDef.transparencyAnimations[opIndex] = transparencyIndex;
+        }
+
+        // UV animation block
+        const uvAnimationLookup = textureUnit.textureAnimIndex + opIndex;
+        const uvAnimationIndex = uvAnimationLookups[uvAnimationLookup];
+        const uvAnimation = uvAnimations[uvAnimationIndex];
+        if (uvAnimation) {
+          materialDef.uvAnimations[opIndex] = uvAnimationIndex;
         }
       }
 
       // Observe the M2's skinning flag in the M2Material.
       materialDef.useSkinning = this.useSkinning;
 
-      const tuMaterial = new M2Material(materialDef);
+      const tuMaterial = new M2Material(this, materialDef);
 
       submeshTextureUnits[textureUnitNumber] = tuMaterial;
     }
@@ -390,6 +401,122 @@ class M2 extends THREE.Group {
     submesh.userData.partID = submeshDef.id;
 
     return submesh;
+  }
+
+  createTextureAnimations(data) {
+    this.textureAnimations = new THREE.Object3D();
+    this.uvAnimationValues = [];
+    this.transparencyAnimationValues = [];
+    this.vertexColorAnimationValues = [];
+
+    const uvAnimations = data.uvAnimations;
+    const transparencyAnimations = data.transparencies;
+    const vertexColorAnimations = data.colors;
+
+    this.createUVAnimations(uvAnimations);
+    this.createTransparencyAnimations(transparencyAnimations);
+    this.createVertexColorAnimations(vertexColorAnimations);
+  }
+
+  createUVAnimations(uvAnimationDefs) {
+    if (uvAnimationDefs.length === 0) {
+      return;
+    }
+
+    uvAnimationDefs.forEach((uvAnimationDef, index) => {
+      // Default value
+      this.uvAnimationValues[index] = {
+        translation: new THREE.Vector3(),
+        rotation: new THREE.Quaternion(),
+        scaling: new THREE.Vector3(1, 1, 1)
+      };
+
+      const { translation, rotation, scaling } = uvAnimationDef;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'uvAnimationValues[' + index + '].translation',
+        animationBlock: translation,
+        trackType: 'VectorKeyframeTrack',
+
+        valueTransform: function(value) {
+          return new THREE.Vector3(value.x, value.y, value.z);
+        }
+      });
+
+      // Set up event subscription to produce matrix from translation, rotation, and scaling
+      // values.
+      this.animations.on('update', () => {
+        const animationValue = this.uvAnimationValues[index];
+
+        // Set up matrix for use in uv transform in vertex shader.
+        animationValue.matrix = new THREE.Matrix4().compose(
+          animationValue.translation,
+          animationValue.rotation,
+          animationValue.scaling
+        );
+      });
+    });
+  }
+
+  createTransparencyAnimations(transparencyAnimationDefs) {
+    if (transparencyAnimationDefs.length === 0) {
+      return;
+    }
+
+    transparencyAnimationDefs.forEach((transparencyAnimationDef, index) => {
+      // Default value
+      this.transparencyAnimationValues[index] = 1.0;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'transparencyAnimationValues[' + index + ']',
+        animationBlock: transparencyAnimationDef,
+        trackType: 'NumberKeyframeTrack',
+
+        valueTransform: function(value) {
+          return value / 32767.0;
+        }
+      });
+    });
+  }
+
+  createVertexColorAnimations(vertexColorAnimationDefs) {
+    if (vertexColorAnimationDefs.length === 0) {
+      return;
+    }
+
+    vertexColorAnimationDefs.forEach((vertexColorAnimationDef, index) => {
+      // Default value
+      this.vertexColorAnimationValues[index] = {
+        color: new THREE.Vector3(1.0, 1.0, 1.0),
+        alpha: 1.0
+      };
+
+      const { color, alpha } = vertexColorAnimationDef;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'vertexColorAnimationValues[' + index + '].color',
+        animationBlock: color,
+        trackType: 'VectorKeyframeTrack',
+
+        valueTransform: function(value) {
+          return new THREE.Vector3(value.x, value.y, value.z);
+        }
+      });
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'vertexColorAnimationValues[' + index + '].alpha',
+        animationBlock: alpha,
+        trackType: 'NumberKeyframeTrack',
+
+        valueTransform: function(value) {
+          return value / 32767.0;
+        }
+      });
+    });
   }
 
   applyBillboards(camera) {

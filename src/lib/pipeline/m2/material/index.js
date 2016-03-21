@@ -6,12 +6,14 @@ import fragmentShader from './shader.frag';
 
 class M2Material extends THREE.ShaderMaterial {
 
-  constructor(def) {
+  constructor(m2, def) {
     if (def.useSkinning) {
       super({ skinning: true });
     } else {
       super({ skinning: false });
     }
+
+    this.m2 = m2;
 
     const vertexShaderMode = this.vertexShaderModeFromID(def.shaderID, def.opCount);
     const fragmentShaderMode = this.fragmentShaderModeFromID(def.shaderID, def.opCount);
@@ -25,14 +27,23 @@ class M2Material extends THREE.ShaderMaterial {
 
       billboarded: { type: 'f', value: 0.0 },
 
-      // Animated vertex color, uses vector 4 since it can contain alpha channels
-      // TODO: Actually implement vertex color animation
-      animatedVertexColor: { type: 'c', value: new THREE.Color(1.0, 1.0, 1.0) },
-      animatedVertexAlpha: { type: 'f', value: 1.0 },
+      // Animated vertex colors
+      animatedVertexColorRGB: { type: 'v3', value: new THREE.Vector3(1.0, 1.0, 1.0) },
+      animatedVertexColorAlpha: { type: 'f', value: 1.0 },
 
-      // Animated transparencies; these apply per-texture
-      // TODO: Actually implement transparency animation
+      // Animated transparencies
       animatedTransparencies: { type: '1fv', value: [1.0, 1.0, 1.0, 1.0] },
+
+      // Animated texture coordinate transform matrices
+      animatedUVs: {
+        type: 'm4v',
+        value: [
+          new THREE.Matrix4(),
+          new THREE.Matrix4(),
+          new THREE.Matrix4(),
+          new THREE.Matrix4()
+        ]
+      },
 
       // Managed by light manager
       lightModifier: { type: 'f', value: '1.0' },
@@ -64,6 +75,8 @@ class M2Material extends THREE.ShaderMaterial {
     this.textures = [];
     this.textureDefs = def.textures;
     this.loadTextures();
+
+    this.registerAnimations(def);
   }
 
   // TODO: Fully expand these lookups.
@@ -82,12 +95,12 @@ class M2Material extends THREE.ShaderMaterial {
   // TODO: Fully expand these lookups.
   fragmentShaderModeFromID(shaderID, opCount) {
     if (opCount === 1) {
-      // fragCombinersOpaque
+      // fragCombinersWrath1Pass
       return 0;
     }
 
     if (shaderID === 0) {
-      // fragCombinersOpaqueOpaque
+      // fragCombinersWrath2Pass
       return 1;
     }
 
@@ -252,6 +265,58 @@ class M2Material extends THREE.ShaderMaterial {
     } else {
       return null;
     }
+  }
+
+  registerAnimations(def) {
+    const { uvAnimations, transparencyAnimations, vertexColorAnimation } = def;
+
+    this.registerUVAnimations(uvAnimations);
+    this.registerTransparencyAnimations(transparencyAnimations);
+    this.registerVertexColorAnimation(vertexColorAnimation);
+  }
+
+  registerUVAnimations(uvAnimationIndices) {
+    const { animations, uvAnimationValues } = this.m2;
+
+    uvAnimationIndices.forEach((uvAnimationIndex, opIndex) => {
+      const target = this.uniforms.animatedUVs;
+      const source = uvAnimationValues[uvAnimationIndex];
+
+      animations.on('update', () => {
+        target.value[opIndex] = source.matrix;
+      });
+    });
+  }
+
+  registerTransparencyAnimations(transparencyAnimationIndices) {
+    const { animations, transparencyAnimationValues } = this.m2;
+
+    transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
+      const target = this.uniforms.animatedTransparencies;
+      const source = transparencyAnimationValues;
+
+      animations.on('update', () => {
+        target.value[opIndex] = source[valueIndex];
+      });
+    });
+  }
+
+  registerVertexColorAnimation(vertexColorAnimationIndex) {
+    if (vertexColorAnimationIndex === null || vertexColorAnimationIndex === -1) {
+      return;
+    }
+
+    const { animations, vertexColorAnimationValues } = this.m2;
+
+    const targetRGB = this.uniforms.animatedVertexColorRGB;
+    const targetAlpha = this.uniforms.animatedVertexColorAlpha;
+    const source = vertexColorAnimationValues;
+    const valueIndex = vertexColorAnimationIndex;
+
+    animations.on('update', () => {
+      targetRGB.value = source[valueIndex].color;
+      targetAlpha.value = source[valueIndex].alpha;
+    });
   }
 
   updateSkinTextures(skin1, skin2, skin3) {
