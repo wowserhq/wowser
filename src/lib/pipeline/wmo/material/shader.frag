@@ -54,13 +54,14 @@ vec3 createGlobalLight(vec3 lightDirection, vec3 lightNormal, vec3 diffuseLight,
 
 vec4 applyFog(vec4 color) {
   float fogFactor = (fogEnd - cameraDistance) / (fogEnd - fogStart);
-  fogFactor = fogFactor * fogModifier;
-  fogFactor = clamp(fogFactor, 0.0, 1.0);
-  color.rgb = mix(fogColor.rgb, color.rgb, fogFactor);
+  fogFactor = 1.0 - clamp(fogFactor, 0.0, 1.0);
+  float fogColorFactor = fogFactor * fogModifier;
 
-  // Ensure alpha channel is gone once a sufficient distance into the fog is reached. Prevents
-  // texture artifacts from overlaying alpha values.
-  if (cameraDistance > fogEnd * 1.5) {
+  color.rgb = mix(color.rgb, fogColor.rgb, fogColorFactor);
+
+  // Ensure certain blending mode pixels become fully opaque by fog end.
+  if (cameraDistance >= fogEnd) {
+    color.rgb = fogColor.rgb;
     color.a = 1.0;
   }
 
