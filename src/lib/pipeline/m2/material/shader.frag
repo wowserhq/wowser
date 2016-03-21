@@ -25,6 +25,8 @@ uniform float fogStart;
 uniform float fogEnd;
 uniform vec3 fogColor;
 
+uniform int blendingMode;
+
 vec3 saturate(vec3 value) {
   vec3 result = clamp(value, 0.0, 1.0);
   return result;
@@ -155,14 +157,23 @@ vec4 applyDiffuseLighting(vec4 color) {
 
 vec4 applyFog(vec4 color) {
   float fogFactor = (fogEnd - cameraDistance) / (fogEnd - fogStart);
-  fogFactor = fogFactor * fogModifier;
-  fogFactor = clamp(fogFactor, 0.0, 1.0);
-  color.rgb = mix(fogColor.rgb, color.rgb, fogFactor);
+  fogFactor = 1.0 - clamp(fogFactor, 0.0, 1.0);
+  float fogColorFactor = fogFactor * fogModifier;
 
-  // Ensure alpha channel is gone once a sufficient distance into the fog is reached. Prevents
-  // texture artifacts from overlaying alpha values.
-  if (cameraDistance > fogEnd * 1.5) {
+  // Only mix fog color for simple blending modes.
+  if (blendingMode <= 2) {
+    color.rgb = mix(color.rgb, fogColor.rgb, fogColorFactor);
+  }
+
+  // Ensure certain blending mode pixels become fully opaque by fog end.
+  if (cameraDistance >= fogEnd) {
+    color.rgb = fogColor.rgb;
     color.a = 1.0;
+  }
+
+  // Ensure certain blending mode pixels fade out as fog increases.
+  if (blendingMode >= 2 && blendingMode < 6) {
+    color.a *= 1.0 - fogFactor;
   }
 
   return color;
@@ -173,9 +184,7 @@ vec4 finalizeColor(vec4 color) {
     color = applyDiffuseLighting(color);
   }
 
-  if (fogModifier > 0.0) {
-    color = applyFog(color);
-  }
+  color = applyFog(color);
 
   return color;
 }
