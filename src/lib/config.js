@@ -30,7 +30,7 @@ class Config {
     this.timezone = 0;
 
     this.locale = 'enUS';
-    this.os = 'Mac';
+    this.os = 'Win';
     this.platform = 'x86';
 
     this.raw = new Raw(this);
