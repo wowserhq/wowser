@@ -41,22 +41,25 @@ class Stats extends React.Component {
         <h2>WMOs</h2>
         <div className="divider"></div>
         <p>
-          Loading Roots: { map ? map.wmoManager.entriesPendingLoad.size : 0 }
+          Loading Entries: { map ? map.wmoManager.counters.loadingEntries : 0 }
         </p>
         <p>
-          Loaded Roots: { map ? map.wmoManager.wmos.size : 0 }
+          Loaded Entries: { map ? map.wmoManager.counters.loadedEntries : 0 }
         </p>
         <p>
-          Loading Groups: { map ? map.wmoManager.groupsPendingLoadCount : 0 }
+          Loading Groups: { map ? map.wmoManager.counters.loadingGroups : 0 }
         </p>
         <p>
-          Loaded Groups: { map ? map.wmoManager.groupCount : 0 }
+          Loaded Groups: { map ? map.wmoManager.counters.loadedGroups : 0 }
         </p>
         <p>
-          Loading Doodads: { map ? map.wmoManager.doodadsPendingLoadCount : 0 }
+          Loading Doodads: { map ? map.wmoManager.counters.loadingDoodads : 0 }
         </p>
         <p>
-          Loaded Doodads: { map ? map.wmoManager.doodadCount : 0 }
+          Loaded Doodads: { map ? map.wmoManager.counters.loadedDoodads : 0 }
+        </p>
+        <p>
+          Animated Doodads: { map ? map.wmoManager.counters.animatedDoodads : 0 }
         </p>
       </div>
     );
