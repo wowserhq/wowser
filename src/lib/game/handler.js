@@ -27,9 +27,10 @@ class GameHandler extends Socket {
   }
 
   // Connects to given host through given port
-  connect(host, port) {
+  connect(host, realm) {
+    this.realm=realm;
     if (!this.connected) {
-      super.connect(host, port);
+      super.connect(host, realm.port);
       console.info('connecting to game-server @', this.host, ':', this.port);
     }
     return this;
@@ -136,7 +137,7 @@ class GameHandler extends Socket {
     app.write(seed.toArray());   // client-seed
     app.writeUnsignedInt(0);     // (?)
     app.writeUnsignedInt(0);     // (?)
-    app.writeUnsignedInt(0);     // (?)
+    app.writeUnsignedInt(this.realm.id);     // realmid
     app.writeUnsignedInt(0);     // (?)
     app.writeUnsignedInt(0);     // (?)
     app.write(hash.digest);      // digest

@@ -34,6 +34,7 @@ class AuthScreen extends React.Component {
   }
 
   connect(host, port) {
+    session.authstate = this.state;
     session.auth.connect(host, port);
   }
 
