@@ -55,6 +55,12 @@ vec4 fragCombinersWotlkSingle(sampler2D texture1, vec2 uv1) {
   // Restore full color intensity after blending with vertexColor
   c1.rgb *= 2.0;
 
+  // Force transparent pixels to fully opaque if in opaque blending mode (0). Needed to prevent
+  // transparent pixels from becoming inappropriately bright.
+  if (blendingMode == 0) {
+    c1.a = 1.0;
+  }
+
   vec4 outputColor = c1;
 
   return outputColor;
@@ -83,6 +89,12 @@ vec4 fragCombinersWotlkMulti2(sampler2D texture1, vec2 uv1, sampler2D texture2, 
 
   // Restore full color intensity after blending with vertexColor
   c1.rgb *= 2.0;
+
+  // Force transparent pixels to fully opaque if in opaque blending mode (0). Needed to prevent
+  // transparent pixels from becoming inappropriately bright.
+  if (blendingMode == 0) {
+    c1.a = 1.0;
+  }
 
   vec4 outputColor = c1;
 
