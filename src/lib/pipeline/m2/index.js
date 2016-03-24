@@ -220,7 +220,7 @@ class M2 extends THREE.Group {
       materialDef.blendingMode = renderFlags[renderFlagsIndex].blendingMode;
 
       // Vertex color animation block
-      if (textureUnit.colorIndex > -1) {
+      if (textureUnit.colorIndex > -1 && colors[textureUnit.colorIndex]) {
         materialDef.vertexColorAnimation = textureUnit.colorIndex;
       }
 
