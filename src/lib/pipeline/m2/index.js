@@ -418,6 +418,7 @@ class M2 extends THREE.Group {
     this.createVertexColorAnimations(vertexColorAnimations);
   }
 
+  // TODO: Add support for rotation and scaling in UV animations.
   createUVAnimations(uvAnimationDefs) {
     if (uvAnimationDefs.length === 0) {
       return;
@@ -432,7 +433,7 @@ class M2 extends THREE.Group {
         matrix: new THREE.Matrix4()
       };
 
-      const { translation, rotation, scaling } = uvAnimationDef;
+      const { translation } = uvAnimationDef;
 
       this.animations.registerTrack({
         target: this,
