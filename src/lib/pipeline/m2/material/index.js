@@ -20,6 +20,7 @@ class M2Material extends THREE.ShaderMaterial {
       textureCount: { type: 'i', value: 0 },
       textures: { type: 'tv', value: [] },
 
+      blendingMode: { type: 'i', value: 0 },
       vertexShaderMode: { type: 'i', value: vertexShaderMode },
       fragmentShaderMode: { type: 'i', value: fragmentShaderMode },
 
@@ -128,6 +129,8 @@ class M2Material extends THREE.ShaderMaterial {
   }
 
   applyBlendingMode(blendingMode) {
+    this.uniforms.blendingMode.value = blendingMode;
+
     if (blendingMode === 1) {
       this.uniforms.alphaKey = { type: 'f', value: 1.0 };
     } else {
