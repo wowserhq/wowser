@@ -98,14 +98,14 @@ void main() {
   // Base layer
   vec4 color = texture2D(textures[0], vUv);
 
-  // Knock out transparent pixels in blending mode 1
+  // Knock out transparent pixels in transparent blending mode (1).
   if (blendingMode == 1 && color.a < (10.0 / 255.0)) {
     discard;
   }
 
-  // Force transparent pixels to fully opaque if in opaque blending mode. Needed to prevent fog
-  // from causing textures with transparent pixels to appear too bright in the distance.
-  if (blendingMode == 0 && color.a < 1.0) {
+  // Force transparent pixels to fully opaque if in opaque blending mode (0). Needed to prevent
+  // transparent pixels from becoming inappropriately bright.
+  if (blendingMode == 0) {
     color.a = 1.0;
   }
 
