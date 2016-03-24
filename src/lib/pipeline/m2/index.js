@@ -428,7 +428,8 @@ class M2 extends THREE.Group {
       this.uvAnimationValues[index] = {
         translation: new THREE.Vector3(),
         rotation: new THREE.Quaternion(),
-        scaling: new THREE.Vector3(1, 1, 1)
+        scaling: new THREE.Vector3(1, 1, 1),
+        matrix: new THREE.Matrix4()
       };
 
       const { translation, rotation, scaling } = uvAnimationDef;
