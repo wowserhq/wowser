@@ -118,6 +118,7 @@ class WorldMap extends THREE.Group {
   }
 
   animate(delta, camera, cameraMoved) {
+    this.terrainManager.animate(delta, camera, cameraMoved);
     this.doodadManager.animate(delta, camera, cameraMoved);
     this.wmoManager.animate(delta, camera, cameraMoved);
   }
