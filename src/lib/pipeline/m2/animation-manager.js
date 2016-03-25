@@ -8,7 +8,7 @@ class AnimationManager extends EventEmitter {
 
     // Complicated M2s may have far more than 10 (default listener cap) M2Materials subscribed to
     // the same texture animations.
-    this.setMaxListeners(200);
+    this.setMaxListeners(150);
 
     this.animationDefs = animationDefs;
     this.sequenceDefs = sequenceDefs;

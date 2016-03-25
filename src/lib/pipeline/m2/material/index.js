@@ -281,11 +281,11 @@ class M2Material extends THREE.ShaderMaterial {
   registerUVAnimations(uvAnimationIndices) {
     const { animations, uvAnimationValues } = this.m2;
 
-    uvAnimationIndices.forEach((uvAnimationIndex, opIndex) => {
-      const target = this.uniforms.animatedUVs;
-      const source = uvAnimationValues[uvAnimationIndex];
+    animations.on('update', () => {
+      uvAnimationIndices.forEach((uvAnimationIndex, opIndex) => {
+        const target = this.uniforms.animatedUVs;
+        const source = uvAnimationValues[uvAnimationIndex];
 
-      animations.on('update', () => {
         target.value[opIndex] = source.matrix;
       });
     });
@@ -294,11 +294,11 @@ class M2Material extends THREE.ShaderMaterial {
   registerTransparencyAnimations(transparencyAnimationIndices) {
     const { animations, transparencyAnimationValues } = this.m2;
 
-    transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
-      const target = this.uniforms.animatedTransparencies;
-      const source = transparencyAnimationValues;
+    animations.on('update', () => {
+      transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
+        const target = this.uniforms.animatedTransparencies;
+        const source = transparencyAnimationValues;
 
-      animations.on('update', () => {
         target.value[opIndex] = source[valueIndex];
       });
     });
