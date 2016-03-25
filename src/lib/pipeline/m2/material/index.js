@@ -279,6 +279,10 @@ class M2Material extends THREE.ShaderMaterial {
   }
 
   registerUVAnimations(uvAnimationIndices) {
+    if (uvAnimationIndices.length === 0) {
+      return;
+    }
+
     const { animations, uvAnimationValues } = this.m2;
 
     animations.on('update', () => {
@@ -292,6 +296,10 @@ class M2Material extends THREE.ShaderMaterial {
   }
 
   registerTransparencyAnimations(transparencyAnimationIndices) {
+    if (transparencyAnimationIndices.length === 0) {
+      return;
+    }
+
     const { animations, transparencyAnimationValues } = this.m2;
 
     animations.on('update', () => {
