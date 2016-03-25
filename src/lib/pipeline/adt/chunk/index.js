@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import ADT from '../';
+import Liquid from '../../liquid';
 import Material from './material';
 
 class Chunk extends THREE.Mesh {
@@ -87,6 +88,13 @@ class Chunk extends THREE.Mesh {
     geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
     geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geometry.addAttribute('uvAlpha', new THREE.BufferAttribute(uvsAlpha, 2));
+
+    if (adt.data.MH2O) {
+      const liquid = adt.data.MH2O && adt.data.MH2O.chunks[id];
+      if (liquid.layerCount > 0) {
+        this.add(new Liquid(liquid));
+      }
+    }
 
     this.material = new Material(data, textureNames);
   }
