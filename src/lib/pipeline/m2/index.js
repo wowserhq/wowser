@@ -13,6 +13,8 @@ class M2 extends THREE.Group {
 
     this.matrixAutoUpdate = false;
 
+    this.eventListeners = [];
+
     this.name = path.split('\\').slice(-1).pop();
 
     this.path = path;
@@ -448,7 +450,7 @@ class M2 extends THREE.Group {
 
       // Set up event subscription to produce matrix from translation, rotation, and scaling
       // values.
-      this.animations.on('update', () => {
+      const updater = () => {
         const animationValue = this.uvAnimationValues[index];
 
         // Set up matrix for use in uv transform in vertex shader.
@@ -457,7 +459,11 @@ class M2 extends THREE.Group {
           animationValue.rotation,
           animationValue.scaling
         );
-      });
+      };
+
+      this.animations.on('update', updater);
+
+      this.eventListeners.push([this.animations, 'update', updater]);
     });
   }
 
@@ -605,7 +611,17 @@ class M2 extends THREE.Group {
     }
   }
 
+  detachEventListeners() {
+    this.eventListeners.forEach((entry) => {
+      const [target, event, listener] = entry;
+      target.removeListener(event, listener);
+    });
+  }
+
   dispose() {
+    this.detachEventListeners();
+    this.eventListeners = [];
+
     this.geometry.dispose();
     this.mesh.geometry.dispose();
 
