@@ -15,6 +15,8 @@ class M2Material extends THREE.ShaderMaterial {
 
     this.m2 = m2;
 
+    this.eventListeners = [];
+
     const vertexShaderMode = this.vertexShaderModeFromID(def.shaderID, def.opCount);
     const fragmentShaderMode = this.fragmentShaderModeFromID(def.shaderID, def.opCount);
 
@@ -285,14 +287,18 @@ class M2Material extends THREE.ShaderMaterial {
 
     const { animations, uvAnimationValues } = this.m2;
 
-    animations.on('update', () => {
+    const updater = () => {
       uvAnimationIndices.forEach((uvAnimationIndex, opIndex) => {
         const target = this.uniforms.animatedUVs;
         const source = uvAnimationValues[uvAnimationIndex];
 
         target.value[opIndex] = source.matrix;
       });
-    });
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
   }
 
   registerTransparencyAnimations(transparencyAnimationIndices) {
@@ -302,14 +308,18 @@ class M2Material extends THREE.ShaderMaterial {
 
     const { animations, transparencyAnimationValues } = this.m2;
 
-    animations.on('update', () => {
+    const updater = () => {
       transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
         const target = this.uniforms.animatedTransparencies;
         const source = transparencyAnimationValues;
 
         target.value[opIndex] = source[valueIndex];
       });
-    });
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
   }
 
   registerVertexColorAnimation(vertexColorAnimationIndex) {
@@ -324,9 +334,20 @@ class M2Material extends THREE.ShaderMaterial {
     const source = vertexColorAnimationValues;
     const valueIndex = vertexColorAnimationIndex;
 
-    animations.on('update', () => {
+    const updater = () => {
       targetRGB.value = source[valueIndex].color;
       targetAlpha.value = source[valueIndex].alpha;
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
+  }
+
+  detachEventListeners() {
+    this.eventListeners.forEach((entry) => {
+      const [target, event, listener] = entry;
+      target.removeListener(event, listener);
     });
   }
 
@@ -340,6 +361,9 @@ class M2Material extends THREE.ShaderMaterial {
 
   dispose() {
     super.dispose();
+
+    this.detachEventListeners();
+    this.eventListeners = [];
 
     this.textures.forEach((texture) => {
       TextureLoader.unload(texture);
