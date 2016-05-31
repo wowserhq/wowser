@@ -55,16 +55,16 @@ uniform float billboarded;
 #endif
 
 void main() {
-	// TODO: Use vertexShaderMode to determine coordinates
-	uv1 = vec2(uv[0], uv[1]);
-	uv2 = vec2(uv[0], uv[1]);
+  // TODO: Use vertexShaderMode to determine coordinates
+  uv1 = vec2(uv[0], uv[1]);
+  uv2 = vec2(uv[0], uv[1]);
 
-	// Apply texture animations
-	vec4 uv1a = animatedUVs[0] * vec4(uv1, 0, 1.0);
-	uv1 = uv1a.xy / uv1a.w;
+  // Apply texture animations
+  vec4 uv1a = animatedUVs[0] * vec4(uv1, 0, 1.0);
+  uv1 = uv1a.xy / uv1a.w;
 
-	vec4 uv2a = animatedUVs[1] * vec4(uv2, 0, 1.0);
-	uv2 = uv2a.xy / uv2a.w;
+  vec4 uv2a = animatedUVs[1] * vec4(uv2, 0, 1.0);
+  uv2 = uv2a.xy / uv2a.w;
 
   // TODO: Will this be needed in the fragment shader at some point?
   vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
