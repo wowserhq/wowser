@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         test: /\.(frag|vert)$/,
-        loader: 'raw-loader!glslify-loader',
+        loader: 'raw-loader!glslify-loader?transform[]=glslify-import',
         exclude: /node_modules/
       },
       {
