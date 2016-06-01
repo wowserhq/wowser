@@ -30,7 +30,7 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(frag|vert)$/,
+        test: /\.(frag|vert|glsl)$/,
         loader: 'raw-loader!glslify-loader?transform[]=glslify-import',
         exclude: /node_modules/
       },
