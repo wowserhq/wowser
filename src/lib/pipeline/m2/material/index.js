@@ -6,12 +6,16 @@ import fragmentShader from './shader.frag';
 
 class M2Material extends THREE.ShaderMaterial {
 
-  constructor(def) {
+  constructor(m2, def) {
     if (def.useSkinning) {
       super({ skinning: true });
     } else {
       super({ skinning: false });
     }
+
+    this.m2 = m2;
+
+    this.eventListeners = [];
 
     const vertexShaderMode = this.vertexShaderModeFromID(def.shaderID, def.opCount);
     const fragmentShaderMode = this.fragmentShaderModeFromID(def.shaderID, def.opCount);
@@ -26,14 +30,23 @@ class M2Material extends THREE.ShaderMaterial {
 
       billboarded: { type: 'f', value: 0.0 },
 
-      // Animated vertex color, uses vector 4 since it can contain alpha channels
-      // TODO: Actually implement vertex color animation
-      animatedVertexColor: { type: 'c', value: new THREE.Color(1.0, 1.0, 1.0) },
-      animatedVertexAlpha: { type: 'f', value: 1.0 },
+      // Animated vertex colors
+      animatedVertexColorRGB: { type: 'v3', value: new THREE.Vector3(1.0, 1.0, 1.0) },
+      animatedVertexColorAlpha: { type: 'f', value: 1.0 },
 
-      // Animated transparencies; these apply per-texture
-      // TODO: Actually implement transparency animation
+      // Animated transparencies
       animatedTransparencies: { type: '1fv', value: [1.0, 1.0, 1.0, 1.0] },
+
+      // Animated texture coordinate transform matrices
+      animatedUVs: {
+        type: 'm4v',
+        value: [
+          new THREE.Matrix4(),
+          new THREE.Matrix4(),
+          new THREE.Matrix4(),
+          new THREE.Matrix4()
+        ]
+      },
 
       // Managed by light manager
       lightModifier: { type: 'f', value: '1.0' },
@@ -65,6 +78,8 @@ class M2Material extends THREE.ShaderMaterial {
     this.textures = [];
     this.textureDefs = def.textures;
     this.loadTextures();
+
+    this.registerAnimations(def);
   }
 
   // TODO: Fully expand these lookups.
@@ -83,12 +98,12 @@ class M2Material extends THREE.ShaderMaterial {
   // TODO: Fully expand these lookups.
   fragmentShaderModeFromID(shaderID, opCount) {
     if (opCount === 1) {
-      // fragCombinersOpaque
+      // fragCombinersWrath1Pass
       return 0;
     }
 
     if (shaderID === 0) {
-      // fragCombinersOpaqueOpaque
+      // fragCombinersWrath2Pass
       return 1;
     }
 
@@ -257,6 +272,85 @@ class M2Material extends THREE.ShaderMaterial {
     }
   }
 
+  registerAnimations(def) {
+    const { uvAnimations, transparencyAnimations, vertexColorAnimation } = def;
+
+    this.registerUVAnimations(uvAnimations);
+    this.registerTransparencyAnimations(transparencyAnimations);
+    this.registerVertexColorAnimation(vertexColorAnimation);
+  }
+
+  registerUVAnimations(uvAnimationIndices) {
+    if (uvAnimationIndices.length === 0) {
+      return;
+    }
+
+    const { animations, uvAnimationValues } = this.m2;
+
+    const updater = () => {
+      uvAnimationIndices.forEach((uvAnimationIndex, opIndex) => {
+        const target = this.uniforms.animatedUVs;
+        const source = uvAnimationValues[uvAnimationIndex];
+
+        target.value[opIndex] = source.matrix;
+      });
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
+  }
+
+  registerTransparencyAnimations(transparencyAnimationIndices) {
+    if (transparencyAnimationIndices.length === 0) {
+      return;
+    }
+
+    const { animations, transparencyAnimationValues } = this.m2;
+
+    const updater = () => {
+      transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
+        const target = this.uniforms.animatedTransparencies;
+        const source = transparencyAnimationValues;
+
+        target.value[opIndex] = source[valueIndex];
+      });
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
+  }
+
+  registerVertexColorAnimation(vertexColorAnimationIndex) {
+    if (vertexColorAnimationIndex === null || vertexColorAnimationIndex === -1) {
+      return;
+    }
+
+    const { animations, vertexColorAnimationValues } = this.m2;
+
+    const targetRGB = this.uniforms.animatedVertexColorRGB;
+    const targetAlpha = this.uniforms.animatedVertexColorAlpha;
+    const source = vertexColorAnimationValues;
+    const valueIndex = vertexColorAnimationIndex;
+
+    const updater = () => {
+      targetRGB.value = source[valueIndex].color;
+      targetAlpha.value = source[valueIndex].alpha;
+    };
+
+    animations.on('update', updater);
+
+    this.eventListeners.push([animations, 'update', updater]);
+  }
+
+  detachEventListeners() {
+    this.eventListeners.forEach((entry) => {
+      const [target, event, listener] = entry;
+      target.removeListener(event, listener);
+    });
+  }
+
   updateSkinTextures(skin1, skin2, skin3) {
     this.skins.skin1 = skin1;
     this.skins.skin2 = skin2;
@@ -267,6 +361,9 @@ class M2Material extends THREE.ShaderMaterial {
 
   dispose() {
     super.dispose();
+
+    this.detachEventListeners();
+    this.eventListeners = [];
 
     this.textures.forEach((texture) => {
       TextureLoader.unload(texture);
