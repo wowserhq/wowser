@@ -11,7 +11,7 @@ varying float cameraDistance;
 varying vec3 vertexWorldNormal;
 
 varying vec4 animatedVertexColor;
-uniform float animatedTransparencies[4];
+uniform float animatedTransparency;
 
 uniform float alphaKey;
 
@@ -46,7 +46,7 @@ vec4 fragCombinersWrath1Pass(sampler2D texture1, vec2 uv1) {
   vec4 c1 = texture1Color;
 
   // Apply animated transparency (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
+  c1.a *= animatedTransparency;
 
   // Blend with vertex color
   c1.rgb *= (animatedVertexColor.rgb * animatedVertexColor.a);
@@ -76,9 +76,8 @@ vec4 fragCombinersWrath2Pass(sampler2D texture1, vec2 uv1, sampler2D texture2, v
   vec4 c1 = texture1Color;
   vec4 c2 = texture2Color;
 
-  // Apply animated transparencies (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
-  c2.a *= animatedTransparencies[1];
+  // Apply animated transparency (defaults to 1.0)
+  c1.a *= animatedTransparency;
 
   // Blend texture alphas
   c1.a *= c2.a;

@@ -9,7 +9,7 @@ varying vec3 vertexWorldNormal;
 
 uniform vec3 animatedVertexColorRGB;
 uniform float animatedVertexColorAlpha;
-uniform float animatedTransparencies[4];
+uniform float animatedTransparency;
 uniform mat4 animatedUVs[4];
 
 varying vec4 animatedVertexColor;
