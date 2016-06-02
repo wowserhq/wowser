@@ -20,7 +20,7 @@
     "pretest": "gulp rebuild",
     "reset": "gulp reset",
     "test": "istanbul test ./node_modules/mocha/bin/_mocha -- spec --recursive",
-    "web-dev": "webpack-dev-server --host 0.0.0.0",
+    "web-dev": "webpack-dev-server",
     "web-release": "webpack --optimize --progress"
   },
   "repository": "wowserhq/wowser",
