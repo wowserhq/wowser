@@ -54,6 +54,14 @@ class RealmsHandler extends EventEmitter {
       realm.timezone = ap.readUnsignedByte();
       realm.id = ap.readUnsignedByte();
 
+      // TODO: Introduce magic constants such as REALM_FLAG_SPECIFYBUILD
+      if (realm.flags & 0x04) {
+        realm.majorVersion = ap.readUnsignedByte();
+        realm.minorVersion = ap.readUnsignedByte();
+        realm.patchVersion = ap.readUnsignedByte();
+        realm.build = ap.readUnsignedShort();
+      }
+
       this.list.push(realm);
     }
 
