@@ -26,16 +26,6 @@ uniform vec3 fogColor;
 
 uniform int blendingMode;
 
-vec3 saturate(vec3 value) {
-  vec3 result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
-float saturate(float value) {
-  float result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
 vec4 fragCombinersWrath1Pass(sampler2D texture1, vec2 uv1) {
   vec4 texture1Color = texture2D(texture1, uv1);
 
