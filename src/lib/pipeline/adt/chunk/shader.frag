@@ -17,16 +17,6 @@ uniform float fogStart;
 uniform float fogEnd;
 uniform vec3 fogColor;
 
-vec3 saturate(vec3 value) {
-  vec3 result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
-float saturate(float value) {
-  float result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
 vec4 applyFog(vec4 color) {
   float fogFactor = (fogEnd - cameraDistance) / (fogEnd - fogStart);
   fogFactor = fogFactor * fogModifier;
