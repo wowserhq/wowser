@@ -261,6 +261,10 @@ class M2 extends THREE.Group {
 
     mesh.matrixAutoUpdate = this.matrixAutoUpdate;
 
+    // Never display the mesh
+    // TODO: We shouldn't really even have this mesh in the first place, should we?
+    mesh.visible = false;
+
     // Add mesh to the group
     this.add(mesh);
 
@@ -289,7 +293,7 @@ class M2 extends THREE.Group {
 
       this.submeshGeometries.set(submeshIndex, submeshGeometry);
 
-      this.mesh.add(submesh);
+      this.add(submesh);
     }
   }
 
