@@ -15,8 +15,8 @@ class AnimationManager extends EventEmitter {
 
     this.animationClips = [];
     this.sequenceClips = [];
-    this.activeAnimations = {};
-    this.activeSequences = {};
+    this.loadedAnimations = {};
+    this.loadedSequences = {};
 
     this.mixer = new THREE.AnimationMixer(root);
 
@@ -35,41 +35,79 @@ class AnimationManager extends EventEmitter {
     this.emit('update');
   }
 
-  playAnimation(animationIndex) {
-    // The animation is already playing.
-    if (typeof this.activeAnimations[animationIndex] !== 'undefined') {
+  loadAnimation(animationIndex) {
+    // The animation is already loaded.
+    if (typeof this.loadedAnimations[animationIndex] !== 'undefined') {
+      return this.loadedAnimations[animationIndex];
+    }
+
+    const clip = this.animationClips[animationIndex];
+    const action = this.mixer.clipAction(clip);
+
+    this.loadedAnimations[animationIndex] = action;
+
+    return action;
+  }
+
+  unloadAnimation(animationIndex) {
+    // The animation isn't loaded.
+    if (typeof this.loadedAnimations[animationIndex] === 'undefined') {
       return;
     }
 
     const clip = this.animationClips[animationIndex];
+    this.mixer.uncacheClip(clip);
 
-    const action = new THREE.AnimationAction(clip);
+    delete this.loadedAnimations[animationIndex];
 
-    this.mixer.play(action);
-    this.activeAnimations[animationIndex] = action;
+    return;
+  }
+
+  playAnimation(animationIndex) {
+    const action = this.loadAnimation(animationIndex);
+    action.play();
   }
 
   stopAnimation(animationIndex) {
-    // The animation isn't currently playing.
-    if (typeof this.activeAnimations[animationIndex] === 'undefined') {
+    // The animation isn't loaded.
+    if (typeof this.loadedAnimations[animationIndex] === 'undefined') {
       return;
     }
 
-    this.mixer.removeAction(this.activeAnimations[animationIndex]);
-    delete this.activeAnimations[animationIndex];
+    const action = this.loadAnimation(animationIndex);
+    action.stop();
   }
 
-  playSequence(sequenceID) {
-    // The sequence is already playing.
-    if (typeof this.activeSequences[sequenceID] !== 'undefined') {
+  loadSequence(sequenceIndex) {
+    // The sequence is already loaded.
+    if (typeof this.loadedSequences[sequenceIndex] !== 'undefined') {
+      return this.loadedSequences[sequenceIndex];
+    }
+
+    const clip = this.sequenceClips[sequenceIndex];
+    const action = this.mixer.clipAction(clip);
+
+    this.loadedSequences[sequenceIndex] = action;
+
+    return action;
+  }
+
+  unloadSequence(sequenceIndex) {
+    // The sequence isn't loaded.
+    if (typeof this.loadedSquences[sequenceIndex] === 'undefined') {
       return;
     }
 
-    const clip = this.sequenceClips[sequenceID];
-    const action = new THREE.AnimationAction(clip);
+    const clip = this.sequenceClips[sequenceIndex];
+    this.mixer.uncacheClip(clip);
+    delete this.loadedSequences[sequenceIndex];
 
-    this.mixer.play(action);
-    this.activeSequences[sequenceID] = action;
+    return;
+  }
+
+  playSequence(sequenceIndex) {
+    const action = this.loadSequence(sequenceIndex);
+    action.play();
   }
 
   playAllSequences() {
@@ -78,14 +116,14 @@ class AnimationManager extends EventEmitter {
     });
   }
 
-  stopSequence(sequenceID) {
-    // The sequence isn't currently playing.
-    if (typeof this.activeSequences[sequenceID] === 'undefined') {
+  stopSequence(sequenceIndex) {
+    // The sequence isn't loaded.
+    if (typeof this.loadedSequences[sequenceIndex] === 'undefined') {
       return;
     }
 
-    this.mixer.removeAction(this.activeSequences[sequenceID]);
-    delete this.activeSequences[sequenceID];
+    const action = this.loadSequence(sequenceIndex);
+    action.stop();
   }
 
   registerAnimationClips(animationDefs) {
@@ -137,6 +175,7 @@ class AnimationManager extends EventEmitter {
   registerAnimationTrack(opts) {
     const trackName = opts.target.uuid + '.' + opts.property;
     const animationBlock = opts.animationBlock;
+    const { valueTransform } = opts;
 
     animationBlock.tracks.forEach((trackDef, animationIndex) => {
       const animationDef = this.animationDefs[animationIndex];
@@ -147,31 +186,24 @@ class AnimationManager extends EventEmitter {
       }
 
       // Avoid creating empty tracks.
-      if (trackDef.keyframes.length === 0) {
+      if (trackDef.timestamps.length === 0) {
         return;
       }
 
-      const keyframes = [];
+      const timestamps = trackDef.timestamps;
+      const values = [];
 
-      trackDef.keyframes.forEach((keyframeDef) => {
-        let value;
-
-        if (opts.valueTransform) {
-          value = opts.valueTransform(keyframeDef.value);
+      // Transform values before passing in to track.
+      trackDef.values.forEach((rawValue) => {
+        if (valueTransform) {
+          values.push.apply(values, valueTransform(rawValue));
         } else {
-          value = keyframeDef.value;
+          values.push.apply(values, rawValue);
         }
-
-        const keyframe = {
-          time: keyframeDef.time,
-          value: value
-        };
-
-        keyframes.push(keyframe);
       });
 
       const clip = this.animationClips[animationIndex];
-      const track = new THREE[opts.trackType](trackName, keyframes);
+      const track = new THREE[opts.trackType](trackName, timestamps, values);
 
       clip.tracks.push(track);
 
@@ -184,33 +216,27 @@ class AnimationManager extends EventEmitter {
   registerSequenceTrack(opts) {
     const trackName = opts.target.uuid + '.' + opts.property;
     const animationBlock = opts.animationBlock;
+    const { valueTransform } = opts;
 
     animationBlock.tracks.forEach((trackDef) => {
       // Avoid creating empty tracks.
-      if (trackDef.keyframes.length === 0) {
+      if (trackDef.timestamps.length === 0) {
         return;
       }
 
-      const keyframes = [];
+      const timestamps = trackDef.timestamps;
+      const values = [];
 
-      trackDef.keyframes.forEach((keyframeDef) => {
-        let value;
-
-        if (opts.valueTransform) {
-          value = opts.valueTransform(keyframeDef.value);
+      // Transform values before passing in to track.
+      trackDef.values.forEach((rawValue) => {
+        if (valueTransform) {
+          values.push.apply(values, valueTransform(rawValue));
         } else {
-          value = keyframeDef.value;
+          values.push.apply(values, rawValue);
         }
-
-        const keyframe = {
-          time: keyframeDef.time,
-          value: value
-        };
-
-        keyframes.push(keyframe);
       });
 
-      const track = new THREE[opts.trackType](trackName, keyframes);
+      const track = new THREE[opts.trackType](trackName, timestamps, values);
 
       const clip = this.sequenceClips[animationBlock.globalSequenceID];
       clip.tracks.push(track);
