@@ -34,8 +34,8 @@ class M2Material extends THREE.ShaderMaterial {
       animatedVertexColorRGB: { type: 'v3', value: new THREE.Vector3(1.0, 1.0, 1.0) },
       animatedVertexColorAlpha: { type: 'f', value: 1.0 },
 
-      // Animated transparencies
-      animatedTransparencies: { type: '1fv', value: [1.0, 1.0, 1.0, 1.0] },
+      // Animated transparency
+      animatedTransparency: { type: 'f', value: 1.0 },
 
       // Animated texture coordinate transform matrices
       animatedUVs: {
@@ -273,11 +273,11 @@ class M2Material extends THREE.ShaderMaterial {
   }
 
   registerAnimations(def) {
-    const { uvAnimations, transparencyAnimations, vertexColorAnimation } = def;
+    const { uvAnimationIndices, transparencyAnimationIndex, vertexColorAnimationIndex } = def;
 
-    this.registerUVAnimations(uvAnimations);
-    this.registerTransparencyAnimations(transparencyAnimations);
-    this.registerVertexColorAnimation(vertexColorAnimation);
+    this.registerUVAnimations(uvAnimationIndices);
+    this.registerTransparencyAnimation(transparencyAnimationIndex);
+    this.registerVertexColorAnimation(vertexColorAnimationIndex);
   }
 
   registerUVAnimations(uvAnimationIndices) {
@@ -301,20 +301,19 @@ class M2Material extends THREE.ShaderMaterial {
     this.eventListeners.push([animations, 'update', updater]);
   }
 
-  registerTransparencyAnimations(transparencyAnimationIndices) {
-    if (transparencyAnimationIndices.length === 0) {
+  registerTransparencyAnimation(transparencyAnimationIndex) {
+    if (transparencyAnimationIndex === null || transparencyAnimationIndex === -1) {
       return;
     }
 
     const { animations, transparencyAnimationValues } = this.m2;
 
-    const updater = () => {
-      transparencyAnimationIndices.forEach((valueIndex, opIndex) => {
-        const target = this.uniforms.animatedTransparencies;
-        const source = transparencyAnimationValues;
+    const target = this.uniforms.animatedTransparency;
+    const source = transparencyAnimationValues;
+    const valueIndex = transparencyAnimationIndex;
 
-        target.value[opIndex] = source[valueIndex];
-      });
+    const updater = () => {
+      target.value = source[valueIndex];
     };
 
     animations.on('update', updater);
