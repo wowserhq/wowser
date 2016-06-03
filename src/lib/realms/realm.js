@@ -16,6 +16,11 @@ class Realm {
     this.timezone = null;
     this.population = 0.0;
     this.characters = 0;
+
+    this.majorVersion = null;
+    this.minorVersion = null;
+    this.patchVersion = null;
+    this.build = null;
   }
 
   // Short string representation of this realm
