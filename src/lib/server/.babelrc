@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "transform-class-properties",
+    "transform-export-extensions",
+    "transform-function-bind",
+    "transform-es2015-block-scoping",
+    "transform-es2015-modules-commonjs",
+    "transform-es2015-parameters"
+  ]
+}
