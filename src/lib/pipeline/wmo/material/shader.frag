@@ -19,21 +19,6 @@ uniform vec3 fogColor;
 
 uniform int indoor;
 
-vec4 saturate(vec4 value) {
-  vec4 result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
-vec3 saturate(vec3 value) {
-  vec3 result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
-float saturate(float value) {
-  float result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
 // Given a light direction and normal, return a directed diffuse light.
 vec3 createGlobalLight(vec3 lightDirection, vec3 lightNormal, vec3 diffuseLight, vec3 ambientLight) {
   float light = dot(lightNormal, -lightDirection);

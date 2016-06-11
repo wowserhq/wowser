@@ -94,7 +94,7 @@ class M2 extends THREE.Group {
 
       // M2 bone positioning seems to be inverted on X and Y
       const { pivotPoint } = boneDef;
-      const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
+      const correctedPosition = new THREE.Vector3(-pivotPoint[0], -pivotPoint[1], pivotPoint[2]);
       bone.position.copy(correctedPosition);
 
       if (boneDef.parentID > -1) {
@@ -133,11 +133,11 @@ class M2 extends THREE.Group {
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Vector3(
-              bone.position.x + -value.x,
-              bone.position.y + -value.y,
-              bone.position.z + value.z
-            );
+            return [
+              bone.position.x + -value[0],
+              bone.position.y + -value[1],
+              bone.position.z + value[2]
+            ];
           }
         });
       }
@@ -151,7 +151,7 @@ class M2 extends THREE.Group {
           trackType: 'QuaternionKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Quaternion(value.x, value.y, -value.z, -value.w);
+            return [value[0], value[1], -value[2], -value[3]];
           }
         });
       }
@@ -162,11 +162,7 @@ class M2 extends THREE.Group {
           target: bone,
           property: 'scale',
           animationBlock: boneDef.scaling,
-          trackType: 'VectorKeyframeTrack',
-
-          valueTransform: function(value) {
-            return new THREE.Vector3(value.x, value.y, value.z);
-          }
+          trackType: 'VectorKeyframeTrack'
         });
       }
     }
@@ -265,6 +261,10 @@ class M2 extends THREE.Group {
 
     mesh.matrixAutoUpdate = this.matrixAutoUpdate;
 
+    // Never display the mesh
+    // TODO: We shouldn't really even have this mesh in the first place, should we?
+    mesh.visible = false;
+
     // Add mesh to the group
     this.add(mesh);
 
@@ -293,7 +293,7 @@ class M2 extends THREE.Group {
 
       this.submeshGeometries.set(submeshIndex, submeshGeometry);
 
-      this.mesh.add(submesh);
+      this.add(submesh);
     }
   }
 
@@ -379,9 +379,9 @@ class M2 extends THREE.Group {
     uvAnimationDefs.forEach((uvAnimationDef, index) => {
       // Default value
       this.uvAnimationValues[index] = {
-        translation: new THREE.Vector3(),
-        rotation: new THREE.Quaternion(),
-        scaling: new THREE.Vector3(1, 1, 1),
+        translation: [1.0, 1.0, 1.0],
+        rotation: [0.0, 0.0, 0.0, 1.0],
+        scaling: [1.0, 1.0, 1.0],
         matrix: new THREE.Matrix4()
       };
 
@@ -391,11 +391,7 @@ class M2 extends THREE.Group {
         target: this,
         property: 'uvAnimationValues[' + index + '].translation',
         animationBlock: translation,
-        trackType: 'VectorKeyframeTrack',
-
-        valueTransform: function(value) {
-          return new THREE.Vector3(value.x, value.y, value.z);
-        }
+        trackType: 'VectorKeyframeTrack'
       });
 
       // Set up event subscription to produce matrix from translation, rotation, and scaling
@@ -405,9 +401,9 @@ class M2 extends THREE.Group {
 
         // Set up matrix for use in uv transform in vertex shader.
         animationValue.matrix = new THREE.Matrix4().compose(
-          animationValue.translation,
-          animationValue.rotation,
-          animationValue.scaling
+          new THREE.Vector3(...animationValue.translation),
+          new THREE.Quaternion(...animationValue.rotation),
+          new THREE.Vector3(...animationValue.scaling)
         );
       };
 
@@ -433,7 +429,7 @@ class M2 extends THREE.Group {
         trackType: 'NumberKeyframeTrack',
 
         valueTransform: function(value) {
-          return value / 32767.0;
+          return [value];
         }
       });
     });
@@ -447,7 +443,7 @@ class M2 extends THREE.Group {
     vertexColorAnimationDefs.forEach((vertexColorAnimationDef, index) => {
       // Default value
       this.vertexColorAnimationValues[index] = {
-        color: new THREE.Vector3(1.0, 1.0, 1.0),
+        color: [1.0, 1.0, 1.0],
         alpha: 1.0
       };
 
@@ -457,11 +453,7 @@ class M2 extends THREE.Group {
         target: this,
         property: 'vertexColorAnimationValues[' + index + '].color',
         animationBlock: color,
-        trackType: 'VectorKeyframeTrack',
-
-        valueTransform: function(value) {
-          return new THREE.Vector3(value.x, value.y, value.z);
-        }
+        trackType: 'VectorKeyframeTrack'
       });
 
       this.animations.registerTrack({
@@ -471,7 +463,7 @@ class M2 extends THREE.Group {
         trackType: 'NumberKeyframeTrack',
 
         valueTransform: function(value) {
-          return value / 32767.0;
+          return [value];
         }
       });
     });
