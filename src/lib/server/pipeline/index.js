@@ -83,7 +83,17 @@ class Pipeline {
   }
 
   find(req, res) {
-    res.send(this.archive.files.find(req.params.query));
+    const results = this.archive.files.find(req.params.query).map((result) => {
+      const path = `${req.baseUrl}/${encodeURI(result.filename)}`;
+      const link = `${req.protocol}://${req.headers.host}${path}`;
+      return {
+        filename: result.filename,
+        name: result.name,
+        size: result.fileSize,
+        link: link
+      };
+    });
+    res.send(results);
   }
 
   serve(req, res) {
