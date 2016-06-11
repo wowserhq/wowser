@@ -50,7 +50,7 @@ class Pipeline {
       const png = new PNG({ width: mipmap.width, height: mipmap.height });
       png.data = mipmap.rgba;
 
-      res.set('Content-Type', 'image/png');
+      res.type('image/png');
       png.pack().pipe(res);
     });
   }
@@ -97,6 +97,7 @@ class Pipeline {
   }
 
   serve(req, res) {
+    res.type(req.resource.name);
     res.send(req.resource.data);
   }
 
