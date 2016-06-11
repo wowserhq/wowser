@@ -4,6 +4,7 @@
     "transform-export-extensions",
     "transform-function-bind",
     "transform-es2015-block-scoping",
+    "add-module-exports",
     "transform-es2015-modules-commonjs"
   ]
 }

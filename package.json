@@ -63,6 +63,7 @@
     "babel-plugin-transform-es2015-block-scoping": "^6.10.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
     "babel-plugin-transform-es2015-parameters": "^6.9.0",
+    "babel-plugin-add-module-exports": "^0.2.1",    
     "babel-preset-react": "^6.5.0",
     "chai": "^3.4.1",
     "codeclimate-test-reporter": "^0.1.0",
