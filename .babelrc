@@ -1,7 +1,8 @@
 {
-  "optional": [
-    "es7.classProperties",
-    "es7.exportExtensions",
-    "es7.functionBind"
+  "plugins": [
+    "transform-class-properties",
+    "transform-function-bind",
+    "transform-es2015-block-scoping",
+    "transform-es2015-modules-commonjs"
   ]
 }

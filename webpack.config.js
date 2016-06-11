@@ -36,7 +36,7 @@ module.exports = {
       },
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        loader: 'babel-loader?presets[]=react',
         exclude: /node_modules|blizzardry/
       },
       {
