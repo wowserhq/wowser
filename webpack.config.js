@@ -50,7 +50,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       hash: true,
       inject: true,
-      template: 'src/index.html'
+      template: 'index.html'
     })
   ],
   devServer: {
