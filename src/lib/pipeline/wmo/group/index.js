@@ -1,7 +1,5 @@
 import THREE from 'three';
 
-import WMOMaterial from '../material';
-
 class WMOGroup extends THREE.Mesh {
 
   static cache = {};
@@ -84,63 +82,37 @@ class WMOGroup extends THREE.Mesh {
     geometry.applyMatrix(matrix);
     geometry.rotateX(-Math.PI / 2);
 
-    const materialIDs = [];
-
-    data.MOBA.batches.forEach(function(batch) {
-      materialIDs.push(batch.materialID);
-      geometry.addGroup(batch.firstIndex, batch.indexCount, batch.materialID);
-    });
-
-    const materialDefs = this.wmo.data.MOMT.materials;
-    const texturePaths = this.wmo.data.MOTX.filenames;
-
-    this.material = this.createMultiMaterial(materialIDs, materialDefs, texturePaths);
+    this.createBatches(this.data.MOBA, this.data.MOGP.batchOffsets);
   }
 
-  createMultiMaterial(materialIDs, materialDefs, texturePaths) {
-    const multiMaterial = new THREE.MultiMaterial();
+  createBatches(batchChunk, batchOffsets) {
+    const materialRefs = [];
 
-    materialIDs.forEach((materialID) => {
-      const materialDef = materialDefs[materialID];
+    // Counter for the material index used in the specific multimaterial for this group.
+    let groupMaterialIndex = 0;
 
-      if (this.indoor) {
-        materialDef.indoor = true;
+    batchChunk.batches.forEach((batchData, batchIndex) => {
+      this.geometry.addGroup(batchData.firstIndex, batchData.indexCount, groupMaterialIndex++);
+
+      const materialRef = {};
+
+      materialRef.materialIndex = batchData.materialID;
+
+      materialRef.interior = this.indoor === true;
+      materialRef.exterior = this.indoor !== true;
+
+      if (batchIndex >= batchOffsets.c) {
+        materialRef.batchType = 3;
+      } else if (batchIndex >= batchOffsets.b) {
+        materialRef.batchType = 2;
       } else {
-        materialDef.indoor = false;
+        materialRef.batchType = 1;
       }
 
-      if (!this.wmo.data.MOHD.skipBaseColor) {
-        materialDef.useBaseColor = true;
-        materialDef.baseColor = this.wmo.data.MOHD.baseColor;
-      } else {
-        materialDef.useBaseColor = false;
-      }
-
-      const material = this.createMaterial(materialDefs[materialID], texturePaths);
-
-      multiMaterial.materials[materialID] = material;
+      materialRefs.push(materialRef);
     });
 
-    return multiMaterial;
-  }
-
-  createMaterial(materialDef, texturePaths) {
-    const textureDefs = [];
-
-    materialDef.textures.forEach((textureDef) => {
-      const texturePath = texturePaths[textureDef.offset];
-
-      if (texturePath !== undefined) {
-        textureDef.path = texturePath;
-        textureDefs.push(textureDef);
-      } else {
-        textureDefs.push(null);
-      }
-    });
-
-    const material = new WMOMaterial(materialDef, textureDefs);
-
-    return material;
+    this.material = this.wmo.createMultiMaterial(materialRefs);
   }
 
   clone() {
