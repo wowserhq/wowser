@@ -39,7 +39,7 @@ class WMOGroupBlueprint {
     }
 
     return this.cache.get(path).then((wmoGroup) => {
-      return wmoGroup.clone();
+      return wmoGroup.clone(wmo);
     });
   }
 
