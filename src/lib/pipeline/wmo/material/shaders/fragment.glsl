@@ -14,6 +14,15 @@ uniform vec3 fogColor;
 void main() {
   vec4 color = texture2D(textures[0], vCoord0);
 
+  // Alpha test
+  #ifdef BLENDING_MODE
+    #if BLENDING_MODE == 1
+      if (color.a < 18.0 / 255.0) {
+        discard;
+      }
+    #endif
+  #endif
+
   // Lighting
   #ifdef USE_WORLD_LIGHT
     #ifdef BATCH_TYPE
@@ -45,7 +54,7 @@ void main() {
 
     // Scale pixel transparency with fog factor in blending mode 1
     #if BLENDING_MODE == 1
-      color.a = mix(color.a, 1.0, vFogFactor);
+      color.a = mix(color.a, 0.0, vFogFactor);
     #endif
   #endif
 
