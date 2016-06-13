@@ -6,16 +6,14 @@ attribute vec4 acolor;
 varying float vFogFactor;
 varying vec2 vCoord0;
 varying vec4 vColor0;
-#ifdef USE_WORLD_LIGHT
-  varying vec3 vWorldLight;
-#endif
 
 uniform float fogModifier;
 uniform float fogStart;
 uniform float fogEnd;
-#ifdef USE_WORLD_LIGHT
+#ifdef USE_LIGHTING
   uniform vec3 diffuseColor;
   uniform vec3 ambientColor;
+  uniform float lightModifier;
 #endif
 
 float saturate(float value) {
@@ -31,6 +29,10 @@ vec4 saturate(vec4 value) {
 }
 
 void main() {
+  // Varyings
+  vCoord0 = uv;
+  vColor0 = acolor;
+
   vec4 vertexLocal = vec4(position, 1.0);
   vec3 vertexWorld = (modelMatrix * vertexLocal).xyz;
   vec4 normalLocal = vec4(normal, 0.0);
@@ -39,26 +41,42 @@ void main() {
   // Calculate distance from camera to this vertex
   float cameraDistance = distance(cameraPosition, vertexWorld);
 
-  // 1.0 = max fog, 0.0 = no fog
+  // Fog
+  // 0.0 = no fog; 1.0 = max fog
   vFogFactor = saturate((cameraDistance - fogStart) / (fogEnd - fogStart));
   vFogFactor *= fogModifier;
 
-  #ifdef USE_WORLD_LIGHT
-    vec3 worldLightDirection = vec3(1, 1, 1);
-    float worldLightFactor = dot(normalize(worldLightDirection), normalize(normalWorld));
+  // Lighting
+  #ifdef USE_LIGHTING
+    vec3 lightDirection = vec3(1, 1, 1);
+    float lightFactor = dot(normalize(lightDirection), normalize(normalWorld));
 
     // Saturate + amplify brighter light
-    if (worldLightFactor < 0.0) {
-      worldLightFactor = 0.0;
-    } else if (worldLightFactor > 0.5) {
-      worldLightFactor = 0.5 + ((worldLightFactor - 0.5) * 0.65);
+    if (lightFactor < 0.0) {
+      lightFactor = 0.0;
+    } else if (lightFactor > 0.5) {
+      lightFactor = 0.5 + ((lightFactor - 0.5) * 0.65);
     }
 
-    vWorldLight = saturate((diffuseColor * worldLightFactor) + ambientColor);
-  #endif
+    vec3 light = saturate((diffuseColor * lightFactor) + ambientColor);
 
-  vCoord0 = uv;
-  vColor0 = acolor;
+    #if BATCH_TYPE == 1
+      // Transition between vertex color and light
+      vColor0.rgb = mix(vColor0.rgb * 2.0, light, vColor0.a);
+    #elif BATCH_TYPE == 2
+      // Transition between vertex color and vertex color added to light
+      vColor0.rgb = mix(vColor0.rgb * 2.0, light + (vColor0.rgb * 2.0), vColor0.a);
+    #elif BATCH_TYPE == 3
+      // Only light
+      vColor0.rgb = light;
+    #endif
+
+    // Apply light modifier
+    vColor0.rgb = mix(vec3(1.0), vColor0.rgb, lightModifier);
+  #else
+    // Fallback: only vertex color
+    vColor0.rgb = vColor0.rgb * 2.0;
+  #endif
 
   gl_Position = projectionMatrix * modelViewMatrix * vertexLocal;
 }

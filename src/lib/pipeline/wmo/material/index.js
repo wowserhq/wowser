@@ -27,15 +27,15 @@ class WMOMaterial extends THREE.ShaderMaterial {
       fogEnd: { type: 'f', value: 400.0 }
     };
 
+    // Enable lighting
+    this.defines['USE_LIGHTING'] = 1;
+
     // Define interior / exterior
     if (def.interior) {
       this.defines['INTERIOR'] = 1;
     } else {
       this.defines['EXTERIOR'] = 1;
     }
-
-    // Define world lighting
-    this.defines['USE_WORLD_LIGHT'] = 1;
 
     // Define blending mode
     this.defines['BLENDING_MODE'] = def.blendMode;
@@ -46,7 +46,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
     // Flag 0x10: unlit
     // TODO: This is potentially only unlit at night.
     if (def.flags & 0x10) {
-      delete this.defines['USE_WORLD_LIGHT'];
+      this.uniforms.lightModifier.value = 0.0;
     }
 
     // Transparent blending
