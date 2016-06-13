@@ -41,7 +41,11 @@ class WMO extends THREE.Group {
 
     const entries = this.data.MODD.doodads.slice(start, start + count);
 
-    return entries;
+    return {
+      start: start,
+      count: count,
+      entries: entries
+    };
   }
 
   createMultiMaterial(refs) {

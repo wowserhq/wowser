@@ -125,7 +125,7 @@ class WMOHandler {
 
   enqueueLoadGroupDoodads(wmoGroup) {
     wmoGroup.data.MODR.doodadIndices.forEach((doodadIndex) => {
-      const wmoDoodadEntry = this.doodadSet[doodadIndex];
+      const wmoDoodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
 
       // Since the doodad set is filtered based on the requested set in the entry, not all
       // doodads referenced by a group will be present.
