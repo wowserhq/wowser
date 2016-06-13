@@ -28,20 +28,20 @@ class WMOMaterial extends THREE.ShaderMaterial {
     };
 
     // Enable lighting
-    this.defines['USE_LIGHTING'] = 1;
+    this.defines.USE_LIGHTING = 1;
 
     // Define interior / exterior
     if (def.interior) {
-      this.defines['INTERIOR'] = 1;
+      this.defines.INTERIOR = 1;
     } else {
-      this.defines['EXTERIOR'] = 1;
+      this.defines.EXTERIOR = 1;
     }
 
     // Define blending mode
-    this.defines['BLENDING_MODE'] = def.blendMode;
+    this.defines.BLENDING_MODE = def.blendMode;
 
     // Define batch type
-    this.defines['BATCH_TYPE'] = def.batchType;
+    this.defines.BATCH_TYPE = def.batchType;
 
     // Flag 0x10: unlit
     // TODO: This is potentially only unlit at night.
