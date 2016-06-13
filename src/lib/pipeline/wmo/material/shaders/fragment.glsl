@@ -17,7 +17,7 @@ void main() {
   // Alpha test
   #ifdef BLENDING_MODE
     #if BLENDING_MODE == 1
-      if (color.a < 18.0 / 255.0) {
+      if (color.a < 25.0 / 255.0) {
         discard;
       }
     #endif
@@ -52,11 +52,6 @@ void main() {
     // Force transparent pixels to opaque in blending mode 0
     #if BLENDING_MODE == 0
       color.a = 1.0;
-    #endif
-
-    // Scale pixel transparency with fog factor in blending mode 1
-    #if BLENDING_MODE == 1
-      color.a = mix(color.a, 0.0, vFogFactor);
     #endif
   #endif
 
