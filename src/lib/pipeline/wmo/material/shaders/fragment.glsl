@@ -40,6 +40,8 @@ void main() {
     #else
       color.rgb *= mix(vColor0.rgb * 2.0, vWorldLight.rgb, 1.0);
     #endif
+  #else
+    color.rgb *= vColor0.rgb * 2.0;
   #endif
 
   // Fog

@@ -215,8 +215,8 @@ class WMOGroup extends THREE.Mesh {
 
         colors.set([r, g, b, a], index * 4);
       });
-    } else if (this.indoor) {
-      // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
+    } else {
+      // Default vertex color: rgba(0.5, 0.5, 0.5, 1.0)
       this.data.MOVT.vertices.forEach((_vertex, index) => {
         const r = 127.0 / 255.0;
         const g = 127.0 / 255.0;
