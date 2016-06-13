@@ -1,5 +1,7 @@
 import THREE from 'three';
 
+import MathUtil from '../../../utils/math-util';
+
 class WMOGroup extends THREE.Mesh {
 
   static cache = {};
@@ -43,24 +45,8 @@ class WMOGroup extends THREE.Mesh {
       normals[index * 3 + 2] = -normal[1];
     });
 
-    if ('MOCV' in data) {
-      const rootAmbientColor = this.wmo.data.MOHD.ambientColor;
-
-      data.MOCV.colors.forEach((color, index) => {
-        colors[index * 4] = (color.r + rootAmbientColor.r) / 255.0;
-        colors[index * 4 + 1] = (color.g + rootAmbientColor.g) / 255.0;
-        colors[index * 4 + 2] = (color.b + rootAmbientColor.b) / 255.0;
-        colors[index * 4 + 3] = color.a / 255.0;
-      });
-    } else if (this.indoor) {
-      // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
-      data.MOVT.vertices.forEach((_vertex, index) => {
-        colors[index * 4] = 127.0 / 255.0;
-        colors[index * 4 + 1] = 127.0 / 255.0;
-        colors[index * 4 + 2] = 127.0 / 255.0;
-        colors[index * 4 + 3] = 1.0;
-      });
-    }
+    this.fixVertexColors();
+    this.assignVertexColors(colors);
 
     const indices = new Uint32Array(data.MOVI.triangles);
 
@@ -108,6 +94,138 @@ class WMOGroup extends THREE.Mesh {
     });
 
     this.material = this.wmo.createMultiMaterial(materialRefs);
+  }
+
+  fixVertexColors() {
+    // No MOCVs, or already fixed.
+    if (!this.data.MOCV || this.data.MOCV.fixed) {
+      return;
+    }
+
+    const rootFlags = this.wmo.data.MOHD.flags;
+    const groupFlags = this.data.MOGP.flags;
+
+    const rootAmbientColor = this.wmo.data.MOHD.ambientColor;
+    const { batchCounts, batchOffsets } = this.data.MOGP;
+
+    const vcount = this.data.MOCV.colors.length;
+
+    let firstBatchBVertex = 0;
+
+    if (batchCounts.a > 0) {
+      const firstBatchB = this.data.MOBA.batches[batchOffsets.b];
+
+      if (firstBatchB) {
+        firstBatchBVertex = firstBatchB.firstVertex;
+      } else {
+        firstBatchBVertex = vcount;
+      }
+    }
+
+    // Root Flag 0x08: has outdoor groups
+    if (rootFlags & 0x08) {
+      for (let vindex = firstBatchBVertex; vindex < vcount; ++vindex) {
+        const color = this.data.MOCV.colors[vindex];
+
+        // Group Flag 0x08: is outdoor group
+        color.a = groupFlags & 0x08 ? 255 : 0;
+      }
+
+      this.data.MOCV.fixed = true;
+      return;
+    }
+
+    const mod = {};
+
+    // Root Flag 0x02: don't use root ambient color when fixing
+    if (rootFlags & 0x02) {
+      mod.r = 0;
+      mod.g = 0;
+      mod.b = 0;
+    } else {
+      mod.r = rootAmbientColor.r;
+      mod.g = rootAmbientColor.g;
+      mod.b = rootAmbientColor.b;
+    }
+
+    for (let vindex = 0; vindex < firstBatchBVertex; ++vindex) {
+      const color = this.data.MOCV.colors[vindex];
+      const alpha = color.a / 255.0;
+
+      color.r -= mod.r;
+      color.g -= mod.g;
+      color.b -= mod.b;
+
+      color.r -= (alpha * color.r);
+      color.g -= (alpha * color.g);
+      color.b -= (alpha * color.b);
+
+      color.r = MathUtil.clamp(color.r, 0, 255);
+      color.g = MathUtil.clamp(color.g, 0, 255);
+      color.b = MathUtil.clamp(color.b, 0, 255);
+
+      color.r /= 2.0;
+      color.g /= 2.0;
+      color.b /= 2.0;
+    }
+
+    for (let vindex = firstBatchBVertex; vindex < vcount; ++vindex) {
+      const color = this.data.MOCV.colors[vindex];
+
+      color.r = (color.r - mod.r) + ((color.r * color.a) >> 6);
+      color.g = (color.g - mod.g) + ((color.g * color.a) >> 6);
+      color.b = (color.b - mod.b) + ((color.b * color.a) >> 6);
+
+      color.r /= 2.0;
+      color.g /= 2.0;
+      color.b /= 2.0;
+
+      color.r = MathUtil.clamp(color.r, 0, 255);
+      color.g = MathUtil.clamp(color.g, 0, 255);
+      color.b = MathUtil.clamp(color.b, 0, 255);
+
+      // Group Flag 0x08: is outdoor group
+      color.a = groupFlags & 0x08 ? 255 : 0;
+    }
+
+    this.data.MOCV.fixed = true;
+  }
+
+  assignVertexColors(colors) {
+    if (this.data.MOCV) {
+      const rootAmbientColor = this.wmo.data.MOHD.ambientColor;
+
+      this.data.MOCV.colors.forEach((color, index) => {
+        let r = color.r;
+        let g = color.g;
+        let b = color.b;
+        let a = color.a;
+
+        // Add root ambient color to interior groups.
+        if (this.indoor) {
+          r += (rootAmbientColor.r / 2.0);
+          g += (rootAmbientColor.g / 2.0);
+          b += (rootAmbientColor.b / 2.0);
+        }
+
+        r /= 255.0;
+        g /= 255.0;
+        b /= 255.0;
+        a /= 255.0;
+
+        colors.set([r, g, b, a], index * 4);
+      });
+    } else if (this.indoor) {
+      // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
+      this.data.MOVT.vertices.forEach((_vertex, index) => {
+        const r = 127.0 / 255.0;
+        const g = 127.0 / 255.0;
+        const b = 127.0 / 255.0;
+        const a = 1.0;
+
+        colors.set([r, g, b, a], index * 4);
+      });
+    }
   }
 
   clone(wmo = null) {
