@@ -43,11 +43,10 @@ class WMOMaterial extends THREE.ShaderMaterial {
     // Define batch type
     this.defines['BATCH_TYPE'] = def.batchType;
 
-    // Flag 0x01 (unlit)
-    // TODO: This is really only unlit at night. Needs to integrate with the light manager in
-    // some fashion.
+    // Flag 0x10: unlit
+    // TODO: This is potentially only unlit at night.
     if (def.flags & 0x10) {
-      this.uniforms.lightModifier = { type: 'f', value: 0.0 };
+      delete this.defines['USE_WORLD_LIGHT'];
     }
 
     // Transparent blending
