@@ -27,11 +27,9 @@ class WMOMaterial extends THREE.ShaderMaterial {
     // Enable lighting
     this.defines.USE_LIGHTING = 1;
 
-    // Define interior / exterior
+    // Define interior
     if (def.interior) {
       this.defines.INTERIOR = 1;
-    } else {
-      this.defines.EXTERIOR = 1;
     }
 
     // Define blending mode

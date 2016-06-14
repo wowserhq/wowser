@@ -18,7 +18,7 @@ class WMOGroup extends THREE.Mesh {
     this.data = data;
     this.path = path;
 
-    this.indoor = data.indoor;
+    this.interior = data.interior;
     this.animated = false;
 
     const vertexCount = data.MOVT.vertices.length;
@@ -79,8 +79,7 @@ class WMOGroup extends THREE.Mesh {
 
       materialRef.materialIndex = batchData.materialID;
 
-      materialRef.interior = this.indoor === true;
-      materialRef.exterior = this.indoor !== true;
+      materialRef.interior = this.interior === true;
 
       if (batchIndex >= batchOffsets.c) {
         materialRef.batchType = 3;
@@ -202,7 +201,7 @@ class WMOGroup extends THREE.Mesh {
         let a = color.a;
 
         // Add root ambient color to interior groups.
-        if (this.indoor) {
+        if (this.interior) {
           r += (rootAmbientColor.r / 2.0);
           g += (rootAmbientColor.g / 2.0);
           b += (rootAmbientColor.b / 2.0);
