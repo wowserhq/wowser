@@ -229,7 +229,7 @@ class WMOGroup extends THREE.Mesh {
   }
 
   clone(wmo = null) {
-    const wmoContext = wmo ? wmo : this.wmo;
+    const wmoContext = wmo || this.wmo;
     return new this.constructor(wmoContext, this.groupID, this.data, this.path);
   }
 
