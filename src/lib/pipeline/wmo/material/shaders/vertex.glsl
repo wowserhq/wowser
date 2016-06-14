@@ -7,13 +7,11 @@ varying float vFogFactor;
 varying vec2 vCoord0;
 varying vec4 vColor0;
 
-uniform float fogModifier;
-uniform float fogStart;
-uniform float fogEnd;
+uniform vec3 fogParams;
 #ifdef USE_LIGHTING
+  uniform vec4 lightParams;
   uniform vec3 diffuseColor;
   uniform vec3 ambientColor;
-  uniform float lightModifier;
 #endif
 
 float saturate(float value) {
@@ -43,13 +41,12 @@ void main() {
 
   // Fog
   // 0.0 = no fog; 1.0 = max fog
-  vFogFactor = saturate((cameraDistance - fogStart) / (fogEnd - fogStart));
-  vFogFactor *= fogModifier;
+  vFogFactor = saturate((cameraDistance - fogParams.x) / (fogParams.y - fogParams.x));
+  vFogFactor *= fogParams.z;
 
   // Lighting
   #ifdef USE_LIGHTING
-    vec3 lightDirection = vec3(1, 1, 1);
-    float lightFactor = dot(normalize(lightDirection), normalize(normalWorld));
+    float lightFactor = dot(normalize(-lightParams.xyz), normalize(normalWorld));
 
     // Saturate + amplify brighter light
     if (lightFactor < 0.0) {
@@ -72,7 +69,7 @@ void main() {
     #endif
 
     // Apply light modifier
-    vColor0.rgb = mix(vec3(1.0), vColor0.rgb, lightModifier);
+    vColor0.rgb = mix(vec3(1.0), vColor0.rgb, lightParams.w);
   #else
     // Fallback: only vertex color
     vColor0.rgb = vColor0.rgb * 2.0;

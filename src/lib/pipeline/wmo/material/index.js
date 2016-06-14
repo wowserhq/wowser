@@ -13,18 +13,15 @@ class WMOMaterial extends THREE.ShaderMaterial {
 
     this.uniforms = {
       textures: { type: 'tv', value: [] },
-      textureCount: { type: 'i', value: 0 },
 
-      // Managed by light manager
-      lightModifier: { type: 'f', value: 1.0 },
-      ambientColor: { type: 'f3v', value: [0.5, 0.5, 0.5] },
-      diffuseColor: { type: 'f3v', value: [0.25, 0.5, 1.0] },
+      // Light Params: [dir.x, dir.y, dir.z, modifier]
+      lightParams: { type: '4fv', value: new Float32Array([-1.0, -1.0, -1.0, 1.0]) },
+      ambientColor: { type: '3fv', value: new Float32Array([0.5, 0.5, 0.5]) },
+      diffuseColor: { type: '3fv', value: new Float32Array([0.25, 0.5, 1.0]) },
 
-      // Managed by light manager
-      fogModifier: { type: 'f', value: 1.0 },
-      fogColor: { type: 'f3v', value: [0.25, 0.5, 1.0] },
-      fogStart: { type: 'f', value: 5.0 },
-      fogEnd: { type: 'f', value: 400.0 }
+      // Fog Params: [start, end, modifier]
+      fogParams: { type: '3fv', value: new Float32Array([5.0, 400.0, 1.0]) },
+      fogColor: { type: '3fv', value: new Float32Array([0.25, 0.5, 1.0]) }
     };
 
     // Enable lighting
@@ -46,7 +43,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
     // Flag 0x10: unlit
     // TODO: This is potentially only unlit at night.
     if (def.flags & 0x10) {
-      this.uniforms.lightModifier.value = 0.0;
+      this.uniforms.lightParams.value[3] = 0.0;
     }
 
     // Transparent blending
