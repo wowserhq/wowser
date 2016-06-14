@@ -5,6 +5,13 @@
     "no-multi-spaces": [0],
 
     // See: https://github.com/yannickcr/eslint-plugin-react/issues/128
-    "react/sort-comp": [0]
+    "react/sort-comp": [0],
+
+    // Disable newer additions originating from Airbnb
+    "arrow-body-style": [0],
+    "prefer-arrow-callback": [0],
+    "space-before-function-paren": [0],
+    "react/jsx-indent-props": [0],
+    "react/jsx-closing-bracket-location": [0]
   }
 }
