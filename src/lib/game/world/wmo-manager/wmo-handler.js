@@ -1,6 +1,6 @@
 import ContentQueue from '../content-queue';
-import WMOBlueprint from '../../../pipeline/wmo/blueprint';
-import WMOGroupBlueprint from '../../../pipeline/wmo/group/blueprint';
+import WMOLoader from '../../../pipeline/wmo/loader';
+import WMOGroupLoader from '../../../pipeline/wmo/group/loader';
 import M2Blueprint from '../../../pipeline/m2/blueprint';
 
 class WMOHandler {
@@ -98,7 +98,7 @@ class WMOHandler {
       return;
     }
 
-    WMOGroupBlueprint.loadByIndex(this.root, groupIndex).then((wmoGroup) => {
+    WMOGroupLoader.loadByIndex(this.root, groupIndex).then((wmoGroup) => {
       if (this.unloading) {
         return;
       }
@@ -237,7 +237,7 @@ class WMOHandler {
 
     for (const wmoGroup of this.groups.values()) {
       this.root.remove(wmoGroup);
-      WMOGroupBlueprint.unload(wmoGroup);
+      WMOGroupLoader.unload(wmoGroup);
     }
 
     for (const wmoDoodad of this.doodads.values()) {
@@ -245,7 +245,7 @@ class WMOHandler {
       M2Blueprint.unload(wmoDoodad);
     }
 
-    WMOBlueprint.unload(this.root);
+    WMOLoader.unload(this.root);
 
     this.groups = new Map();
     this.doodads = new Map();

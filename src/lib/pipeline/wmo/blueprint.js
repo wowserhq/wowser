@@ -1,82 +1,48 @@
 import THREE from 'three';
 
-import WorkerPool from '../worker/pool';
 import WMO from './';
 import WMOMaterial from './material';
 
 class WMOBlueprint {
 
-  static cache = new Map();
-
-  static references = new Map();
-  static pendingUnload = new Set();
-  static unloaderRunning = false;
-
-  static UNLOAD_INTERVAL = 15000;
-
-  static load(rawPath) {
-    const path = rawPath.toUpperCase();
-
-    // Prevent unintended unloading.
-    if (this.pendingUnload.has(path)) {
-      this.pendingUnload.delete(path);
-    }
-
-    // Background unloader might need to be started.
-    if (!this.unloaderRunning) {
-      this.unloaderRunning = true;
-      this.backgroundUnload();
-    }
-
-    // Keep track of references.
-    let refCount = this.references.get(path) || 0;
-    ++refCount;
-    this.references.set(path, refCount);
-
-    if (!this.cache.has(path)) {
-      this.cache.set(path, WorkerPool.enqueue('WMO', path).then((args) => {
-        const [data] = args;
-        return new WMOBlueprint(path, data);
-      }));
-    }
-
-    return this.cache.get(path).then((blueprint) => {
-      return blueprint.create();
-    });
+  constructor() {
+    this.finished = false;
   }
 
-  static unload(wmo) {
-    const path = wmo.blueprint.path.toUpperCase();
+  copy(other) {
+    this.path = other.path;
+    this.data = other.data;
 
-    let refCount = this.references.get(path) || 1;
+    this.groupCount = other.groupCount;
+    this.interiorGroupCount = other.interiorGroupCount;
+    this.exteriorGroupCount = other.exteriorGroupCount;
 
-    --refCount;
+    this.interiorGroupIndices = other.interiorGroupIndices;
+    this.exteriorGroupIndices = other.exteriorGroupIndices;
 
-    if (refCount === 0) {
-      this.pendingUnload.add(path);
-    } else {
-      this.references.set(path, refCount);
-    }
+    return this;
   }
 
-  static backgroundUnload() {
-    this.pendingUnload.forEach((path) => {
-      this.cache.delete(path);
-      this.references.delete(path);
-      this.pendingUnload.delete(path);
-    });
-
-    setTimeout(this.backgroundUnload.bind(this), this.UNLOAD_INTERVAL);
-  }
-
-  constructor(path, data) {
+  start(path, data) {
     this.path = path;
     this.data = data;
 
+    this.summarizeGroups(data);
+  }
+
+  finish() {
     this.cache = {
       materials: new Map()
     };
 
+    this.finished = true;
+  }
+
+  create() {
+    return new WMO(this);
+  }
+
+  summarizeGroups(data) {
     this.groupCount = data.MOGI.groups.length;
     this.interiorGroupCount = 0;
     this.exteriorGroupCount = 0;
@@ -97,10 +63,6 @@ class WMOBlueprint {
         this.exteriorGroupCount++;
       }
     }
-  }
-
-  create() {
-    return new WMO(this);
   }
 
   createGroupMaterial(refs) {
@@ -169,10 +131,6 @@ class WMOBlueprint {
     const entries = this.data.MODD.doodads.slice(start, start + count);
 
     return { start, count, entries };
-  }
-
-  clone() {
-    return this.blueprint.create();
   }
 
 }

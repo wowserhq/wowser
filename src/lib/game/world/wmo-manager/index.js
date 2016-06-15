@@ -1,6 +1,6 @@
 import ContentQueue from '../content-queue';
 import WMOHandler from './wmo-handler';
-import WMOBlueprint from '../../../pipeline/wmo/blueprint';
+import WMOLoader from '../../../pipeline/wmo/loader';
 
 class WMOManager {
 
@@ -148,7 +148,7 @@ class WMOManager {
     const wmoHandler = new WMOHandler(this, wmoEntry);
     this.entries.set(wmoEntry.id, wmoHandler);
 
-    WMOBlueprint.load(wmoEntry.filename).then((wmoRoot) => {
+    WMOLoader.load(wmoEntry.filename).then((wmoRoot) => {
       wmoHandler.load(wmoRoot);
 
       this.counters.loadingEntries--;

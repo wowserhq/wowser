@@ -10,6 +10,10 @@ class WMO extends THREE.Group {
     this.blueprint = blueprint;
   }
 
+  clone() {
+    return this.blueprint.create();
+  }
+
 }
 
 export default WMO;

@@ -2,8 +2,8 @@ import ADT from '../adt/loader';
 import DBC from '../dbc/loader';
 import M2 from '../m2/loader';
 import WDT from '../wdt/loader';
-import WMO from '../wmo/loader';
-import WMOGroup from '../wmo/group/loader';
+import WMO from '../wmo/loader/worker';
+import WMOGroup from '../wmo/group/loader/worker';
 
 const worker = self;
 

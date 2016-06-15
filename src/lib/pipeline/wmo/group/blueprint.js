@@ -1,128 +1,88 @@
 import THREE from 'three';
 
-import WorkerPool from '../../worker/pool';
 import WMOGroup from './';
 import MathUtil from '../../../utils/math-util';
 
 class WMOGroupBlueprint {
 
-  static cache = new Map();
-
-  static references = new Map();
-  static pendingUnload = new Set();
-  static unloaderRunning = false;
-
-  static UNLOAD_INTERVAL = 15000;
-
-  static load(root, index, rawPath) {
-    const path = rawPath.toUpperCase();
-
-    // Prevent unintended unloading.
-    if (this.pendingUnload.has(path)) {
-      this.pendingUnload.delete(path);
-    }
-
-    // Background unloader might need to be started.
-    if (!this.unloaderRunning) {
-      this.unloaderRunning = true;
-      this.backgroundUnload();
-    }
-
-    // Keep track of references.
-    let refCount = this.references.get(path) || 0;
-    this.references.set(path, ++refCount);
-
-    if (!this.cache.has(path)) {
-      this.cache.set(path, WorkerPool.enqueue('WMOGroup', path).then((args) => {
-        const [data] = args;
-
-        return new WMOGroupBlueprint(root.blueprint, index, path, data);
-      }));
-    }
-
-    return this.cache.get(path).then((blueprint) => {
-      return blueprint.create();
-    });
+  constructor() {
+    this.finished = false;
   }
 
-  static loadByIndex(root, index) {
-    const suffix = `000${index}`.slice(-3);
-    const path = root.blueprint.path.replace(/\.wmo/i, `_${suffix}.wmo`);
+  copy(other) {
+    this.path = other.path;
+    this.index = other.index;
 
-    return this.load(root, index, path);
+    this.attributes = other.attributes;
+    this.materialReferences = other.materialReferences;
+    this.batches = other.batches;
+
+    this.doodadReferences = other.doodadReferences;
+
+    return this;
   }
 
-  static unload(group) {
-    const path = group.blueprint.path.toUpperCase();
-
-    let refCount = this.references.get(path) || 1;
-    --refCount;
-
-    if (refCount === 0) {
-      this.pendingUnload.add(path);
-    } else {
-      this.references.set(path, refCount);
-    }
-  }
-
-  static backgroundUnload() {
-    for (const path in this.pendingUnload) {
-      if (this.cache.has(path)) {
-        this.cache.get(path).then((blueprint) => {
-          blueprint.dispose();
-        });
-      }
-
-      this.cache.delete(path);
-      this.references.delete(path);
-      this.pendingUnload.delete(path);
-    }
-
-    setTimeout(this.backgroundUnload.bind(this), this.UNLOAD_INTERVAL);
-  }
-
-  constructor(root, index, path, data) {
+  // Called when the blueprint is still on a worker thread. Handles data-heavy manipulations.
+  start(path, index, rootData, groupData) {
     this.path = path;
     this.index = index;
 
     this.attributes = {};
-    this.material = {};
-    this.geometry = {};
+    this.materialReferences = {};
+    this.batches = [];
 
-    this.createAttributes(root, data);
-    this.createMaterial(root, data);
-    this.createGeometry(root, data);
+    this.createAttributes(rootData, groupData);
+    this.createMaterialReferences(groupData);
+    this.batches = groupData.MOBA.batches;
 
-    this.doodadReferences = data.MODR ? data.MODR.doodadIndices : [];
+    this.doodadReferences = groupData.MODR ? groupData.MODR.doodadIndices : [];
+  }
+
+  // Called after the blueprint returns to the main thread. Handles anything that wasn't completed
+  // while the blueprint was on a worker thread.
+  finish(rootBlueprint) {
+    if (!this.material) {
+      this.createMaterial(rootBlueprint, this.materialReferences);
+    }
+
+    if (!this.geometry) {
+      this.createGeometry(this.batches);
+    }
+
+    this.finished = true;
   }
 
   // From the blueprint, produce a new WMOGroup.
   create() {
+    if (!this.finished) {
+      throw 'Unfinished blueprint!';
+    }
+
     const { geometry, material } = this;
     return new WMOGroup(this, geometry, material);
   }
 
-  createAttributes(root, data) {
-    const indexCount = data.MOVI.triangles.length;
-    const vertexCount = data.MOVT.vertices.length;
+  createAttributes(rootData, groupData) {
+    const indexCount = groupData.MOVI.triangles.length;
+    const vertexCount = groupData.MOVT.vertices.length;
 
     const indices = this.attributes.indices = new Uint32Array(indexCount);
-    this.assignIndices(indexCount, data.MOVI, indices);
+    this.assignIndices(indexCount, groupData.MOVI, indices);
 
     const positions = this.attributes.positions = new Float32Array(vertexCount * 3);
-    this.assignPositions(vertexCount, data.MOVT, positions);
+    this.assignPositions(vertexCount, groupData.MOVT, positions);
 
     const uvs = this.attributes.uvs = new Float32Array(vertexCount * 2);
-    this.assignUVs(vertexCount, data.MOTV, uvs);
+    this.assignUVs(vertexCount, groupData.MOTV, uvs);
 
     const normals = this.attributes.normals = new Float32Array(vertexCount * 3);
-    this.assignNormals(vertexCount, data.MONR, normals);
+    this.assignNormals(vertexCount, groupData.MONR, normals);
 
     // Manipulate vertex colors a la FixColorVertexAlpha
-    this.fixVertexColors(vertexCount, root.data.MOHD, data.MOGP, data.MOBA, data.MOCV);
+    this.fixVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOBA, groupData.MOCV);
 
     const colors = this.attributes.colors = new Float32Array(vertexCount * 4);
-    this.assignVertexColors(vertexCount, root.data.MOHD, data.MOGP, data.MOCV, colors);
+    this.assignVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOCV, colors);
   }
 
   assignPositions(vertexCount, movt, attribute) {
@@ -268,35 +228,37 @@ class WMOGroupBlueprint {
     }
   }
 
-  createMaterial(root, data) {
-    const materialRefs = [];
+  createMaterialReferences(groupData) {
+    const refs = this.materialReferences = [];
 
-    const { batchOffsets } = data.MOGP;
-    const batchCount = data.MOBA.batches.length;
+    const { batchOffsets } = groupData.MOGP;
+    const batchCount = groupData.MOBA.batches.length;
 
     for (let index = 0; index < batchCount; ++index) {
-      const batch = data.MOBA.batches[index];
+      const batch = groupData.MOBA.batches[index];
 
-      const materialRef = {};
+      const ref = {};
 
-      materialRef.materialIndex = batch.materialID;
-      materialRef.interior = data.MOGP.interior;
+      ref.materialIndex = batch.materialID;
+      ref.interior = groupData.MOGP.interior;
 
       if (index >= batchOffsets.c) {
-        materialRef.batchType = 3;
+        ref.batchType = 3;
       } else if (index >= batchOffsets.b) {
-        materialRef.batchType = 2;
+        ref.batchType = 2;
       } else {
-        materialRef.batchType = 1;
+        ref.batchType = 1;
       }
 
-      materialRefs.push(materialRef);
+      refs.push(ref);
     }
-
-    this.material = root.createGroupMaterial(materialRefs);
   }
 
-  createGeometry(_root, data) {
+  createMaterial(root, materialReferences) {
+    this.material = root.createGroupMaterial(materialReferences);
+  }
+
+  createGeometry(batches) {
     const geometry = this.geometry = new THREE.BufferGeometry();
 
     const { indices, positions, normals, uvs, colors } = this.attributes;
@@ -313,15 +275,14 @@ class WMOGroupBlueprint {
     geometry.applyMatrix(matrix);
     geometry.rotateX(-Math.PI / 2);
 
-    this.assignBatches(geometry, data.MOBA);
+    this.assignBatches(geometry, batches);
   }
 
-  assignBatches(geometry, moba) {
-    const batchCount = moba.batches.length;
+  assignBatches(geometry, batches) {
+    const batchCount = batches.length;
 
     for (let index = 0; index < batchCount; ++index) {
-      const batch = moba.batches[index];
-
+      const batch = batches[index];
       geometry.addGroup(batch.firstIndex, batch.indexCount, index);
     }
   }
@@ -337,6 +298,20 @@ class WMOGroupBlueprint {
         material.dispose();
       }
     }
+  }
+
+  // Returns an array of references to typed arrays that we'd like to transfer across worker
+  // boundaries.
+  transferable() {
+    const list = [];
+
+    list.push(this.attributes.indices.buffer);
+    list.push(this.attributes.positions.buffer);
+    list.push(this.attributes.uvs.buffer);
+    list.push(this.attributes.normals.buffer);
+    list.push(this.attributes.colors.buffer);
+
+    return list;
   }
 
 }
