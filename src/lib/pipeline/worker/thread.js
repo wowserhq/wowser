@@ -24,12 +24,14 @@ class Thread {
   }
 
   _onMessage(event) {
-    const [success, ...args] = event.data;
-    if (success) {
-      this.task.resolve(args);
+    const result = event.data;
+
+    if (result.success) {
+      this.task.resolve(result.value);
     } else {
-      this.task.reject(args);
+      this.task.reject(result.value);
     }
+
     this.task = null;
   }
 

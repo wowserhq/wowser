@@ -16,8 +16,19 @@ const loaders = {
   WMOGroup
 };
 
-const fulfill = function(success, result) {
-  worker.postMessage([success].concat(result));
+const fulfill = function(success, value) {
+  const result = {
+    success: success,
+    value: value
+  };
+
+  let transferable = [];
+
+  if (value.transferable) {
+    transferable = value.transferable();
+  }
+
+  worker.postMessage(result, transferable);
 };
 
 const resolve = function(value) {
