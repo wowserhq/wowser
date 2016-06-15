@@ -50,7 +50,7 @@ class ADT {
   static load(path, wdtFlags) {
     if (!(path in this.cache)) {
       this.cache[path] = WorkerPool.enqueue('ADT', path, wdtFlags).then((args) => {
-        const [data] = args;
+        const data = args;
         return new this(path, data);
       });
     }

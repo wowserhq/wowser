@@ -22,7 +22,7 @@ class DBC {
   static load(name, id) {
     if (!(name in this.cache)) {
       this.cache[name] = WorkerPool.enqueue('DBC', name).then((args) => {
-        const [data] = args;
+        const data = args;
         return new this(data);
       });
     }
