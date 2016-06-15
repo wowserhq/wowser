@@ -57,7 +57,7 @@ class WMOHandler {
   load(wmoRoot) {
     this.root = wmoRoot;
 
-    this.doodadSet = this.root.doodadSet(this.entry.doodadSet);
+    this.doodadSet = this.root.blueprint.doodadSet(this.entry.doodadSet);
 
     this.placeRoot();
 
@@ -65,46 +65,45 @@ class WMOHandler {
   }
 
   enqueueLoadGroups() {
-    const outdoorGroupIDs = this.root.outdoorGroupIDs;
-    const indoorGroupIDs = this.root.indoorGroupIDs;
+    const { exteriorGroupIndices, interiorGroupIndices } = this.root.blueprint;
 
-    for (let ogi = 0, oglen = outdoorGroupIDs.length; ogi < oglen; ++ogi) {
-      const wmoGroupID = outdoorGroupIDs[ogi];
-      this.enqueueLoadGroup(wmoGroupID);
+    for (let egi = 0, eglen = exteriorGroupIndices.length; egi < eglen; ++egi) {
+      const groupIndex = exteriorGroupIndices[egi];
+      this.enqueueLoadGroup(groupIndex);
     }
 
-    for (let igi = 0, iglen = indoorGroupIDs.length; igi < iglen; ++igi) {
-      const wmoGroupID = indoorGroupIDs[igi];
-      this.enqueueLoadGroup(wmoGroupID);
+    for (let igi = 0, iglen = interiorGroupIndices.length; igi < iglen; ++igi) {
+      const groupIndex = interiorGroupIndices[igi];
+      this.enqueueLoadGroup(groupIndex);
     }
   }
 
-  enqueueLoadGroup(wmoGroupID) {
+  enqueueLoadGroup(groupIndex) {
     // Already loaded.
-    if (this.groups.has(wmoGroupID)) {
+    if (this.groups.has(groupIndex)) {
       return;
     }
 
-    this.queues.loadGroup.add(wmoGroupID, wmoGroupID);
+    this.queues.loadGroup.add(groupIndex, groupIndex);
 
     this.manager.counters.loadingGroups++;
     this.counters.loadingGroups++;
   }
 
-  processLoadGroup(wmoGroupID) {
+  processLoadGroup(groupIndex) {
     // Already loaded.
-    if (this.groups.has(wmoGroupID)) {
+    if (this.groups.has(groupIndex)) {
       this.manager.counters.loadingGroups--;
       this.counters.loadingGroups--;
       return;
     }
 
-    WMOGroupBlueprint.loadWithID(this.root, wmoGroupID).then((wmoGroup) => {
+    WMOGroupBlueprint.loadByIndex(this.root, groupIndex).then((wmoGroup) => {
       if (this.unloading) {
         return;
       }
 
-      this.loadGroup(wmoGroupID, wmoGroup);
+      this.loadGroup(groupIndex, wmoGroup);
 
       this.manager.counters.loadingGroups--;
       this.counters.loadingGroups--;
@@ -118,13 +117,13 @@ class WMOHandler {
 
     this.groups.set(wmoGroupID, wmoGroup);
 
-    if (wmoGroup.data.MODR) {
+    if (wmoGroup.blueprint.doodadReferences) {
       this.enqueueLoadGroupDoodads(wmoGroup);
     }
   }
 
   enqueueLoadGroupDoodads(wmoGroup) {
-    wmoGroup.data.MODR.doodadIndices.forEach((doodadIndex) => {
+    wmoGroup.blueprint.doodadReferences.forEach((doodadIndex) => {
       const wmoDoodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
 
       // Since the doodad set is filtered based on the requested set in the entry, not all
