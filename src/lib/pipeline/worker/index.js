@@ -16,8 +16,8 @@ const loaders = {
   WMOGroup
 };
 
-const fulfill = function(type, result) {
-  worker.postMessage([type].concat(result));
+const fulfill = function(success, result) {
+  worker.postMessage([success].concat(result));
 };
 
 const resolve = function(value) {
