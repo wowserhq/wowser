@@ -1,5 +1,5 @@
 import WorkerPool from '../../worker/pool';
-import WMOBlueprint from '../blueprint';
+import WMOBlueprint from './blueprint';
 
 class WMOLoader {
 
@@ -32,13 +32,8 @@ class WMOLoader {
     if (!this.cache.has(path)) {
       const worker = WorkerPool.enqueue('WMO', path);
 
-      const promise = worker.then((args) => {
-        const remote = args;
-
-        const blueprint = new WMOBlueprint().copy(remote);
-        blueprint.finish();
-
-        return blueprint;
+      const promise = worker.then((definition) => {
+        return new WMOBlueprint(definition);
       });
 
       this.cache.set(path, promise);

@@ -2,7 +2,7 @@ import { DecodeStream } from 'blizzardry/lib/restructure';
 import WMOGroup from 'blizzardry/lib/wmo/group';
 
 import Loader from '../../../../net/loader';
-import WMOGroupBlueprint from '../blueprint';
+import WMOGroupDefinition from './definition';
 
 const loader = new Loader();
 
@@ -13,8 +13,7 @@ export default function(path, index, rootData) {
 
     const groupData = WMOGroup.decode(stream);
 
-    const blueprint = new WMOGroupBlueprint();
-    blueprint.start(path, index, rootData, groupData);
+    const blueprint = new WMOGroupDefinition(path, index, rootData, groupData);
 
     return blueprint;
   });

@@ -1,5 +1,5 @@
 import WorkerPool from '../../../worker/pool';
-import WMOGroupBlueprint from '../blueprint';
+import WMOGroupBlueprint from './blueprint';
 
 class WMOGroupLoader {
 
@@ -35,20 +35,15 @@ class WMOGroupLoader {
 
       const worker = WorkerPool.enqueue('WMOGroup', path, index, rootData);
 
-      const promise = worker.then((args) => {
-        const remote = args;
-
-        const blueprint = new WMOGroupBlueprint().copy(remote);
-        blueprint.finish(root.blueprint);
-
-        return blueprint;
+      const promise = worker.then((definition) => {
+        return new WMOGroupBlueprint(definition);
       });
 
       this.cache.set(path, promise);
     }
 
     return this.cache.get(path).then((blueprint) => {
-      return blueprint.create();
+      return blueprint.create(root.blueprint);
     });
   }
 

@@ -1,33 +1,22 @@
 import THREE from 'three';
 
-import WMO from './';
-import WMOMaterial from './material';
+import WMO from '../';
+import WMOMaterial from '../material';
 
 class WMOBlueprint {
 
-  constructor() {
+  constructor(definition) {
     this.finished = false;
-  }
 
-  copy(other) {
-    this.path = other.path;
-    this.data = other.data;
+    this.path = definition.path;
+    this.data = definition.data;
 
-    this.groupCount = other.groupCount;
-    this.interiorGroupCount = other.interiorGroupCount;
-    this.exteriorGroupCount = other.exteriorGroupCount;
+    this.groupCount = definition.groupCount;
+    this.interiorGroupCount = definition.interiorGroupCount;
+    this.exteriorGroupCount = definition.exteriorGroupCount;
 
-    this.interiorGroupIndices = other.interiorGroupIndices;
-    this.exteriorGroupIndices = other.exteriorGroupIndices;
-
-    return this;
-  }
-
-  start(path, data) {
-    this.path = path;
-    this.data = data;
-
-    this.summarizeGroups(data);
+    this.interiorGroupIndices = definition.interiorGroupIndices;
+    this.exteriorGroupIndices = definition.exteriorGroupIndices;
   }
 
   finish() {
@@ -39,30 +28,11 @@ class WMOBlueprint {
   }
 
   create() {
-    return new WMO(this);
-  }
-
-  summarizeGroups(data) {
-    this.groupCount = data.MOGI.groups.length;
-    this.interiorGroupCount = 0;
-    this.exteriorGroupCount = 0;
-
-    this.interiorGroupIndices = [];
-    this.exteriorGroupIndices = [];
-
-    // Separate group indices by interior/exterior flag. This allows us to queue exterior groups to
-    // load before interior groups.
-    for (let index = 0; index < this.groupCount; ++index) {
-      const group = data.MOGI.groups[index];
-
-      if (group.interior) {
-        this.interiorGroupIndices.push(index);
-        this.interiorGroupCount++;
-      } else {
-        this.exteriorGroupIndices.push(index);
-        this.exteriorGroupCount++;
-      }
+    if (!this.finished) {
+      this.finish();
     }
+
+    return new WMO(this);
   }
 
   createGroupMaterial(refs) {

@@ -1,29 +1,8 @@
-import THREE from 'three';
+import MathUtil from '../../../../utils/math-util';
 
-import WMOGroup from './';
-import MathUtil from '../../../utils/math-util';
+class WMOGroupDefinition {
 
-class WMOGroupBlueprint {
-
-  constructor() {
-    this.finished = false;
-  }
-
-  copy(other) {
-    this.path = other.path;
-    this.index = other.index;
-
-    this.attributes = other.attributes;
-    this.materialReferences = other.materialReferences;
-    this.batches = other.batches;
-
-    this.doodadReferences = other.doodadReferences;
-
-    return this;
-  }
-
-  // Called when the blueprint is still on a worker thread. Handles data-heavy manipulations.
-  start(path, index, rootData, groupData) {
+  constructor(path, index, rootData, groupData) {
     this.path = path;
     this.index = index;
 
@@ -38,30 +17,6 @@ class WMOGroupBlueprint {
     this.doodadReferences = groupData.MODR ? groupData.MODR.doodadIndices : [];
   }
 
-  // Called after the blueprint returns to the main thread. Handles anything that wasn't completed
-  // while the blueprint was on a worker thread.
-  finish(rootBlueprint) {
-    if (!this.material) {
-      this.createMaterial(rootBlueprint, this.materialReferences);
-    }
-
-    if (!this.geometry) {
-      this.createGeometry(this.batches);
-    }
-
-    this.finished = true;
-  }
-
-  // From the blueprint, produce a new WMOGroup.
-  create() {
-    if (!this.finished) {
-      throw 'Unfinished blueprint!';
-    }
-
-    const { geometry, material } = this;
-    return new WMOGroup(this, geometry, material);
-  }
-
   createAttributes(rootData, groupData) {
     const indexCount = groupData.MOVI.triangles.length;
     const vertexCount = groupData.MOVT.vertices.length;
@@ -70,13 +25,13 @@ class WMOGroupBlueprint {
     this.assignIndices(indexCount, groupData.MOVI, indices);
 
     const positions = this.attributes.positions = new Float32Array(vertexCount * 3);
-    this.assignPositions(vertexCount, groupData.MOVT, positions);
+    this.assignVertexPositions(vertexCount, groupData.MOVT, positions);
 
     const uvs = this.attributes.uvs = new Float32Array(vertexCount * 2);
     this.assignUVs(vertexCount, groupData.MOTV, uvs);
 
     const normals = this.attributes.normals = new Float32Array(vertexCount * 3);
-    this.assignNormals(vertexCount, groupData.MONR, normals);
+    this.assignVertexNormals(vertexCount, groupData.MONR, normals);
 
     // Manipulate vertex colors a la FixColorVertexAlpha
     this.fixVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOBA, groupData.MOCV);
@@ -85,7 +40,7 @@ class WMOGroupBlueprint {
     this.assignVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOCV, colors);
   }
 
-  assignPositions(vertexCount, movt, attribute) {
+  assignVertexPositions(vertexCount, movt, attribute) {
     for (let index = 0; index < vertexCount; ++index) {
       const vertex = movt.vertices[index];
 
@@ -102,7 +57,7 @@ class WMOGroupBlueprint {
     }
   }
 
-  assignNormals(vertexCount, monr, attribute) {
+  assignVertexNormals(vertexCount, monr, attribute) {
     for (let index = 0; index < vertexCount; ++index) {
       const normal = monr.normals[index];
 
@@ -254,52 +209,6 @@ class WMOGroupBlueprint {
     }
   }
 
-  createMaterial(root, materialReferences) {
-    this.material = root.createGroupMaterial(materialReferences);
-  }
-
-  createGeometry(batches) {
-    const geometry = this.geometry = new THREE.BufferGeometry();
-
-    const { indices, positions, normals, uvs, colors } = this.attributes;
-
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
-    geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    geometry.addAttribute('acolor', new THREE.BufferAttribute(colors, 4));
-
-    // Mirror geometry over X and Y axes and rotate
-    const matrix = new THREE.Matrix4();
-    matrix.makeScale(-1, -1, 1);
-    geometry.applyMatrix(matrix);
-    geometry.rotateX(-Math.PI / 2);
-
-    this.assignBatches(geometry, batches);
-  }
-
-  assignBatches(geometry, batches) {
-    const batchCount = batches.length;
-
-    for (let index = 0; index < batchCount; ++index) {
-      const batch = batches[index];
-      geometry.addGroup(batch.firstIndex, batch.indexCount, index);
-    }
-  }
-
-  dispose() {
-    if (this.geometry) {
-      this.geometry.dispose();
-    }
-
-    // TODO ref counting over on root blueprint
-    if (this.material) {
-      for (const material of this.material.materials) {
-        material.dispose();
-      }
-    }
-  }
-
   // Returns an array of references to typed arrays that we'd like to transfer across worker
   // boundaries.
   transferable() {
@@ -316,4 +225,4 @@ class WMOGroupBlueprint {
 
 }
 
-export default WMOGroupBlueprint;
+export default WMOGroupDefinition;

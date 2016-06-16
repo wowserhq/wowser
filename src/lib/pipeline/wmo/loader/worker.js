@@ -2,7 +2,7 @@ import { DecodeStream } from 'blizzardry/lib/restructure';
 import WMO from 'blizzardry/lib/wmo';
 
 import Loader from '../../../net/loader';
-import WMOBlueprint from '../blueprint';
+import WMODefinition from './definition';
 
 const loader = new Loader();
 
@@ -13,8 +13,7 @@ export default function(path) {
 
     const data = WMO.decode(stream);
 
-    const blueprint = new WMOBlueprint();
-    blueprint.start(path, data);
+    const blueprint = new WMODefinition(path, data);
 
     return blueprint;
   });
