@@ -1,5 +1,5 @@
 import ContentQueue from '../content-queue';
-import WMOLoader from '../../../pipeline/wmo/loader';
+import WMORootLoader from '../../../pipeline/wmo/root/loader';
 import WMOGroupLoader from '../../../pipeline/wmo/group/loader';
 import M2Blueprint from '../../../pipeline/m2/blueprint';
 
@@ -245,7 +245,7 @@ class WMOHandler {
       M2Blueprint.unload(wmoDoodad);
     }
 
-    WMOLoader.unload(this.root);
+    WMORootLoader.unload(this.root);
 
     this.groups = new Map();
     this.doodads = new Map();

@@ -8,6 +8,7 @@ class WMOGroup extends THREE.Mesh {
     this.matrixAutoUpdate = false;
 
     this.blueprint = blueprint;
+
     this.geometry = geometry;
     this.material = material;
   }

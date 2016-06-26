@@ -1,8 +1,20 @@
-class WMODefinition {
+class WMORootDefinition {
 
   constructor(path, data) {
     this.path = path;
-    this.data = data;
+
+    this.rootID = data.MOHD.rootID;
+
+    this.header = {
+      flags: data.MOHD.flags,
+      ambientColor: data.MOHD.ambientColor
+    };
+
+    this.materials = data.MOMT.materials;
+    this.texturePaths = data.MOTX.filenames;
+
+    this.doodadSets = data.MODS.sets;
+    this.doodadEntries = data.MODD.doodads;
 
     this.summarizeGroups(data);
   }
@@ -32,4 +44,4 @@ class WMODefinition {
 
 }
 
-export default WMODefinition;
+export default WMORootDefinition;

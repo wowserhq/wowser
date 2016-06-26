@@ -1,11 +1,11 @@
 import WorkerPool from '../../../worker/pool';
-import WMOGroupBlueprint from './blueprint';
+import WMOGroupBlueprint from '../blueprint';
 
 class WMOGroupLoader {
 
   static cache = new Map();
 
-  static references = new Map();
+  static refCounts = new Map();
   static pendingUnload = new Set();
   static unloaderRunning = false;
 
@@ -26,24 +26,21 @@ class WMOGroupLoader {
     }
 
     // Keep track of references.
-    let refCount = this.references.get(path) || 0;
-    this.references.set(path, ++refCount);
+    const refCount = (this.refCounts.get(path) || 0) + 1;
+    this.refCounts.set(path, refCount);
 
     if (!this.cache.has(path)) {
-      // We only need root.MOHD in the group blueprint
-      const rootData = { MOHD: root.blueprint.data.MOHD };
+      const worker = WorkerPool.enqueue('WMOGroup', path, index, root.blueprint.header);
 
-      const worker = WorkerPool.enqueue('WMOGroup', path, index, rootData);
-
-      const promise = worker.then((definition) => {
-        return new WMOGroupBlueprint(definition);
+      const promise = worker.then((def) => {
+        return new WMOGroupBlueprint(root.blueprint, def);
       });
 
       this.cache.set(path, promise);
     }
 
     return this.cache.get(path).then((blueprint) => {
-      return blueprint.create(root.blueprint);
+      return blueprint.create();
     });
   }
 
@@ -57,13 +54,12 @@ class WMOGroupLoader {
   static unload(group) {
     const path = group.blueprint.path.toUpperCase();
 
-    let refCount = this.references.get(path) || 1;
-    --refCount;
+    const refCount = (this.refCounts.get(path) || 1) - 1;
 
-    if (refCount === 0) {
+    if (refCount <= 0) {
       this.pendingUnload.add(path);
     } else {
-      this.references.set(path, refCount);
+      this.refCounts.set(path, refCount);
     }
   }
 
@@ -76,7 +72,7 @@ class WMOGroupLoader {
       }
 
       this.cache.delete(path);
-      this.references.delete(path);
+      this.refCounts.delete(path);
       this.pendingUnload.delete(path);
     }
 

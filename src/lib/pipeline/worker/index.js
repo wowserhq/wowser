@@ -2,7 +2,7 @@ import ADT from '../adt/loader';
 import DBC from '../dbc/loader';
 import M2 from '../m2/loader';
 import WDT from '../wdt/loader';
-import WMO from '../wmo/loader/worker';
+import WMORoot from '../wmo/root/loader/worker';
 import WMOGroup from '../wmo/group/loader/worker';
 
 const worker = self;
@@ -12,7 +12,7 @@ const loaders = {
   DBC,
   M2,
   WDT,
-  WMO,
+  WMORoot,
   WMOGroup
 };
 
@@ -22,11 +22,7 @@ const fulfill = function(success, value) {
     value: value
   };
 
-  let transferable = [];
-
-  if (value.transferable) {
-    transferable = value.transferable();
-  }
+  const transferable = value.transferable || [];
 
   worker.postMessage(result, transferable);
 };

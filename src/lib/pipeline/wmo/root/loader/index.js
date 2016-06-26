@@ -1,11 +1,11 @@
-import WorkerPool from '../../worker/pool';
-import WMOBlueprint from './blueprint';
+import WorkerPool from '../../../worker/pool';
+import WMORootBlueprint from '../blueprint';
 
-class WMOLoader {
+class WMORootLoader {
 
   static cache = new Map();
 
-  static references = new Map();
+  static refCounts = new Map();
   static pendingUnload = new Set();
   static unloaderRunning = false;
 
@@ -14,7 +14,7 @@ class WMOLoader {
   static load(rawPath) {
     const path = rawPath.toUpperCase();
 
-    // Prevent unintended unloading.
+    // Intent to load overrides pending unload.
     if (this.pendingUnload.has(path)) {
       this.pendingUnload.delete(path);
     }
@@ -26,14 +26,14 @@ class WMOLoader {
     }
 
     // Keep track of references.
-    let refCount = this.references.get(path) || 0;
-    this.references.set(path, ++refCount);
+    const refCount = (this.refCounts.get(path) || 0) + 1;
+    this.refCounts.set(path, refCount);
 
     if (!this.cache.has(path)) {
-      const worker = WorkerPool.enqueue('WMO', path);
+      const worker = WorkerPool.enqueue('WMORoot', path);
 
-      const promise = worker.then((definition) => {
-        return new WMOBlueprint(definition);
+      const promise = worker.then((def) => {
+        return new WMORootBlueprint(def);
       });
 
       this.cache.set(path, promise);
@@ -44,24 +44,28 @@ class WMOLoader {
     });
   }
 
-  static unload(wmo) {
-    const path = wmo.blueprint.path.toUpperCase();
+  static unload(root) {
+    const path = root.blueprint.path.toUpperCase();
 
-    let refCount = this.references.get(path) || 1;
-
-    --refCount;
+    const refCount = (this.refCounts.get(path) || 1) - 1;
 
     if (refCount === 0) {
       this.pendingUnload.add(path);
     } else {
-      this.references.set(path, refCount);
+      this.refCounts.set(path, refCount);
     }
   }
 
   static backgroundUnload() {
     this.pendingUnload.forEach((path) => {
+      if (this.cache.has(path)) {
+        this.cache.get(path).then((blueprint) => {
+          blueprint.dispose();
+        });
+      }
+
       this.cache.delete(path);
-      this.references.delete(path);
+      this.refCounts.delete(path);
       this.pendingUnload.delete(path);
     });
 
@@ -70,4 +74,4 @@ class WMOLoader {
 
 }
 
-export default WMOLoader;
+export default WMORootLoader;

@@ -4,7 +4,6 @@ varying float vFogFactor;
 varying vec2 vCoord0;
 varying vec4 vColor0;
 
-uniform int textureCount;
 uniform sampler2D textures[4];
 uniform vec3 fogColor;
 

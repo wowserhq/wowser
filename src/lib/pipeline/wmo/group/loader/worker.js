@@ -6,15 +6,15 @@ import WMOGroupDefinition from './definition';
 
 const loader = new Loader();
 
-export default function(path, index, rootData) {
+export default function(path, index, rootHeader) {
   return loader.load(path).then((raw) => {
     const buffer = new Buffer(new Uint8Array(raw));
     const stream = new DecodeStream(buffer);
 
     const groupData = WMOGroup.decode(stream);
 
-    const blueprint = new WMOGroupDefinition(path, index, rootData, groupData);
+    const def = new WMOGroupDefinition(path, index, rootHeader, groupData);
 
-    return blueprint;
+    return def;
   });
 }

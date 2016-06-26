@@ -2,42 +2,41 @@ import MathUtil from '../../../../utils/math-util';
 
 class WMOGroupDefinition {
 
-  constructor(path, index, rootData, groupData) {
+  constructor(path, index, rootHeader, groupData) {
     this.path = path;
     this.index = index;
+    this.groupID = groupData.MOGP.groupID;
 
-    this.attributes = {};
-    this.materialReferences = {};
-    this.batches = [];
+    this.doodadRefs = groupData.MODR ? groupData.MODR.doodadIndices : [];
 
-    this.createAttributes(rootData, groupData);
-    this.createMaterialReferences(groupData);
+    this.createAttributes(rootHeader, groupData);
+    this.createMaterialRefs(groupData);
     this.batches = groupData.MOBA.batches;
-
-    this.doodadReferences = groupData.MODR ? groupData.MODR.doodadIndices : [];
   }
 
-  createAttributes(rootData, groupData) {
+  createAttributes(rootHeader, groupData) {
+    const attributes = this.attributes = {};
+
     const indexCount = groupData.MOVI.triangles.length;
     const vertexCount = groupData.MOVT.vertices.length;
 
-    const indices = this.attributes.indices = new Uint32Array(indexCount);
+    const indices = attributes.indices = new Uint32Array(indexCount);
     this.assignIndices(indexCount, groupData.MOVI, indices);
 
-    const positions = this.attributes.positions = new Float32Array(vertexCount * 3);
+    const positions = attributes.positions = new Float32Array(vertexCount * 3);
     this.assignVertexPositions(vertexCount, groupData.MOVT, positions);
 
-    const uvs = this.attributes.uvs = new Float32Array(vertexCount * 2);
+    const uvs = attributes.uvs = new Float32Array(vertexCount * 2);
     this.assignUVs(vertexCount, groupData.MOTV, uvs);
 
-    const normals = this.attributes.normals = new Float32Array(vertexCount * 3);
+    const normals = attributes.normals = new Float32Array(vertexCount * 3);
     this.assignVertexNormals(vertexCount, groupData.MONR, normals);
 
     // Manipulate vertex colors a la FixColorVertexAlpha
-    this.fixVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOBA, groupData.MOCV);
+    this.fixVertexColors(vertexCount, rootHeader, groupData.MOGP, groupData.MOBA, groupData.MOCV);
 
-    const colors = this.attributes.colors = new Float32Array(vertexCount * 4);
-    this.assignVertexColors(vertexCount, rootData.MOHD, groupData.MOGP, groupData.MOCV, colors);
+    const colors = attributes.colors = new Float32Array(vertexCount * 4);
+    this.assignVertexColors(vertexCount, rootHeader, groupData.MOGP, groupData.MOCV, colors);
   }
 
   assignVertexPositions(vertexCount, movt, attribute) {
@@ -70,7 +69,7 @@ class WMOGroupDefinition {
     attribute.set(movi.triangles, 0);
   }
 
-  assignVertexColors(vertexCount, mohd, mogp, mocv, attribute) {
+  assignVertexColors(vertexCount, rootHeader, mogp, mocv, attribute) {
     if (!mocv) {
       // Assign default vertex color.
       for (let index = 0; index < vertexCount; ++index) {
@@ -89,9 +88,9 @@ class WMOGroupDefinition {
 
     // For interior groups, add root ambient color to vertex colors.
     if (mogp.interior) {
-      mod.r = mohd.ambientColor.r / 2.0;
-      mod.g = mohd.ambientColor.g / 2.0;
-      mod.b = mohd.ambientColor.b / 2.0;
+      mod.r = rootHeader.ambientColor.r / 2.0;
+      mod.g = rootHeader.ambientColor.g / 2.0;
+      mod.b = rootHeader.ambientColor.b / 2.0;
     }
 
     for (let index = 0; index < vertexCount; ++index) {
@@ -106,7 +105,7 @@ class WMOGroupDefinition {
     }
   }
 
-  fixVertexColors(vertexCount, mohd, mogp, moba, mocv) {
+  fixVertexColors(vertexCount, rootHeader, mogp, moba, mocv) {
     if (!mocv) {
       return;
     }
@@ -121,7 +120,7 @@ class WMOGroupDefinition {
     }
 
     // Root Flag 0x08: something about outdoor groups
-    if (mohd.flags & 0x08) {
+    if (rootHeader.flags & 0x08) {
       for (let index = batchStartB; index < vertexCount; ++index) {
         const color = mocv.colors[index];
         color.a = mogp.exterior ? 255 : 0;
@@ -133,14 +132,14 @@ class WMOGroupDefinition {
     const mod = {};
 
     // Root Flag 0x02: skip ambient color when fixing vertex colors
-    if (mohd.flags & 0x02) {
+    if (rootHeader.flags & 0x02) {
       mod.r = 0;
       mod.g = 0;
       mod.b = 0;
     } else {
-      mod.r = mohd.ambientColor.r;
-      mod.g = mohd.ambientColor.g;
-      mod.b = mohd.ambientColor.b;
+      mod.r = rootHeader.ambientColor.r;
+      mod.g = rootHeader.ambientColor.g;
+      mod.b = rootHeader.ambientColor.b;
     }
 
     for (let index = 0; index < batchStartB; ++index) {
@@ -183,8 +182,8 @@ class WMOGroupDefinition {
     }
   }
 
-  createMaterialReferences(groupData) {
-    const refs = this.materialReferences = [];
+  createMaterialRefs(groupData) {
+    const refs = this.materialRefs = [];
 
     const { batchOffsets } = groupData.MOGP;
     const batchCount = groupData.MOBA.batches.length;
@@ -194,7 +193,7 @@ class WMOGroupDefinition {
 
       const ref = {};
 
-      ref.materialIndex = batch.materialID;
+      ref.materialIndex = batch.materialIndex;
       ref.interior = groupData.MOGP.interior;
 
       if (index >= batchOffsets.c) {
@@ -211,7 +210,7 @@ class WMOGroupDefinition {
 
   // Returns an array of references to typed arrays that we'd like to transfer across worker
   // boundaries.
-  transferable() {
+  get transferable() {
     const list = [];
 
     list.push(this.attributes.indices.buffer);

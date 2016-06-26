@@ -1,6 +1,6 @@
 import THREE from 'three';
 
-class WMO extends THREE.Group {
+class WMORoot extends THREE.Group {
 
   constructor(blueprint) {
     super();
@@ -16,4 +16,4 @@ class WMO extends THREE.Group {
 
 }
 
-export default WMO;
+export default WMORoot;

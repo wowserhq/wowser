@@ -6,13 +6,15 @@ import fragmentShader from './shaders/fragment.glsl';
 
 class WMOMaterial extends THREE.ShaderMaterial {
 
-  constructor(def, textureDefs) {
+  constructor(def) {
     super();
 
-    this.textures = [];
+    this.key = def.key;
+
+    this.loadTextures(def.textures);
 
     this.uniforms = {
-      textures: { type: 'tv', value: [] },
+      textures: { type: 'tv', value: this.textures },
 
       // Light Params: [dir.x, dir.y, dir.z, modifier]
       lightParams: { type: '4fv', value: new Float32Array([-1.0, -1.0, -1.0, 1.0]) },
@@ -33,7 +35,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
     }
 
     // Define blending mode
-    this.defines.BLENDING_MODE = def.blendMode;
+    this.defines.BLENDING_MODE = def.blendingMode;
 
     // Define batch type
     this.defines.BATCH_TYPE = def.batchType;
@@ -45,7 +47,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
     }
 
     // Transparent blending
-    if (def.blendMode === 1) {
+    if (def.blendingMode === 1) {
       this.transparent = true;
       this.side = THREE.DoubleSide;
     }
@@ -64,34 +66,50 @@ class WMOMaterial extends THREE.ShaderMaterial {
 
     this.vertexShader = vertexShader;
     this.fragmentShader = fragmentShader;
-
-    this.loadTextures(textureDefs);
   }
 
   // TODO: Handle texture flags and color.
-  loadTextures(textureDefs) {
-    const textures = [];
+  loadTextures(defs) {
+    const textures = this.textures = this.textures || [];
 
-    textureDefs.forEach((textureDef) => {
-      if (textureDef !== null) {
-        const texture = TextureLoader.load(textureDef.path, this.wrapping, this.wrapping, false);
+    // Ensure any existing textures are unloaded in the event we're changing to new textures.
+    this.unloadTextures();
+
+    for (let index = 0, textureCount = defs.length; index < textureCount; ++index) {
+      const def = defs[index];
+
+      if (def) {
+        const texture = TextureLoader.load(def.path, this.wrapping, this.wrapping, false);
         textures.push(texture);
       }
-    });
+    }
 
-    this.textures = textures;
+    // Update texture count
+    this.defines.TEXTURE_COUNT = textures.length;
 
-    // Update shader uniforms to reflect loaded textures.
-    this.uniforms.textures = { type: 'tv', value: textures };
-    this.uniforms.textureCount = { type: 'i', value: textures.length };
+    // Ensure changes propagate to renderer
+    this.needsUpdate = true;
+  }
+
+  unloadTextures() {
+    // Unload textures in the loader
+    for (const texture of this.textures) {
+      TextureLoader.unload(texture);
+    }
+
+    // Clear array
+    this.textures.splice(0);
+
+    // Update texture count
+    this.defines.TEXTURE_COUNT = 0;
+
+    // Ensure changes propagate to renderer
+    this.needsUpdate = true;
   }
 
   dispose() {
     super.dispose();
-
-    this.textures.forEach((texture) => {
-      TextureLoader.unload(texture);
-    });
+    this.unloadTextures();
   }
 }
 
