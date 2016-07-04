@@ -117,13 +117,13 @@ class WMOHandler {
 
     this.groups.set(wmoGroupID, wmoGroup);
 
-    if (wmoGroup.blueprint.doodadReferences) {
+    if (wmoGroup.blueprint.doodadRefs) {
       this.enqueueLoadGroupDoodads(wmoGroup);
     }
   }
 
   enqueueLoadGroupDoodads(wmoGroup) {
-    wmoGroup.blueprint.doodadReferences.forEach((doodadIndex) => {
+    wmoGroup.blueprint.doodadRefs.forEach((doodadIndex) => {
       const wmoDoodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
 
       // Since the doodad set is filtered based on the requested set in the entry, not all
