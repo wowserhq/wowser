@@ -59,8 +59,8 @@ class WMOHandler {
     this.unloading = false;
   }
 
-  load(wmoRoot) {
-    this.root = wmoRoot;
+  load(root) {
+    this.root = root;
 
     this.views.root = this.root.createView();
     this.placeRootView();
@@ -130,84 +130,84 @@ class WMOHandler {
     }
   }
 
-  enqueueLoadGroupDoodads(wmoGroup) {
-    wmoGroup.doodadRefs.forEach((doodadIndex) => {
-      const wmoDoodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
+  enqueueLoadGroupDoodads(group) {
+    group.doodadRefs.forEach((doodadIndex) => {
+      const doodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
 
       // Since the doodad set is filtered based on the requested set in the entry, not all
       // doodads referenced by a group will be present.
-      if (!wmoDoodadEntry) {
+      if (!doodadEntry) {
         return;
       }
 
       // Assign the index as an id property on the entry.
-      wmoDoodadEntry.id = doodadIndex;
+      doodadEntry.id = doodadIndex;
 
-      const refCount = this.addDoodadRef(wmoDoodadEntry, wmoGroup);
+      const refCount = this.addDoodadRef(doodadEntry, group);
 
       // Only enqueue load on the first reference, since it'll already have been enqueued on
       // subsequent references.
       if (refCount === 1) {
-        this.enqueueLoadDoodad(wmoDoodadEntry);
+        this.enqueueLoadDoodad(doodadEntry);
       }
     });
   }
 
-  enqueueLoadDoodad(wmoDoodadEntry) {
+  enqueueLoadDoodad(doodadEntry) {
     // Already loading or loaded.
-    if (this.queues.loadDoodad.has(wmoDoodadEntry.id) || this.doodads.has(wmoDoodadEntry.id)) {
+    if (this.queues.loadDoodad.has(doodadEntry.id) || this.doodads.has(doodadEntry.id)) {
       return;
     }
 
-    this.queues.loadDoodad.add(wmoDoodadEntry.id, wmoDoodadEntry);
+    this.queues.loadDoodad.add(doodadEntry.id, doodadEntry);
 
     this.manager.counters.loadingDoodads++;
     this.counters.loadingDoodads++;
   }
 
-  processLoadDoodad(wmoDoodadEntry) {
+  processLoadDoodad(doodadEntry) {
     // Already loaded.
-    if (this.doodads.has(wmoDoodadEntry.id)) {
+    if (this.doodads.has(doodadEntry.id)) {
       this.manager.counters.loadingDoodads--;
       this.counters.loadingDoodads--;
       return;
     }
 
-    M2Blueprint.load(wmoDoodadEntry.filename).then((wmoDoodad) => {
+    M2Blueprint.load(doodadEntry.filename).then((doodad) => {
       if (this.unloading) {
         return;
       }
 
-      this.loadDoodad(wmoDoodadEntry, wmoDoodad);
+      this.loadDoodad(doodadEntry, doodad);
 
       this.manager.counters.loadingDoodads--;
       this.counters.loadingDoodads--;
       this.manager.counters.loadedDoodads++;
       this.counters.loadedDoodads++;
 
-      if (wmoDoodad.animated) {
+      if (doodad.animated) {
         this.manager.counters.animatedDoodads++;
         this.counters.animatedDoodads++;
       }
     });
   }
 
-  loadDoodad(wmoDoodadEntry, wmoDoodad) {
-    wmoDoodad.entryID = wmoDoodadEntry.id;
+  loadDoodad(doodadEntry, doodad) {
+    doodad.entryID = doodadEntry.id;
 
-    this.placeDoodad(wmoDoodadEntry, wmoDoodad);
+    this.placeDoodad(doodadEntry, doodad);
 
-    if (wmoDoodad.animated) {
-      this.animatedDoodads.set(wmoDoodadEntry.id, wmoDoodad);
+    if (doodad.animated) {
+      this.animatedDoodads.set(doodadEntry.id, doodad);
 
-      if (wmoDoodad.animations.length > 0) {
+      if (doodad.animations.length > 0) {
         // TODO: Do WMO doodads have more than one animation? If so, which one should play?
-        wmoDoodad.animations.playAnimation(0);
-        wmoDoodad.animations.playAllSequences();
+        doodad.animations.playAnimation(0);
+        doodad.animations.playAllSequences();
       }
     }
 
-    this.doodads.set(wmoDoodadEntry.id, wmoDoodad);
+    this.doodads.set(doodadEntry.id, doodad);
   }
 
   scheduleUnload(unloadDelay = 0) {
@@ -243,14 +243,17 @@ class WMOHandler {
 
     this.manager.map.remove(this.views.root);
 
-    for (const wmoGroup of this.views.groups.values()) {
-      this.views.root.remove(wmoGroup);
-      WMOGroupLoader.unload(wmoGroup);
+    for (const groupView of this.views.groups.values()) {
+      this.views.root.remove(groupView);
     }
 
-    for (const wmoDoodad of this.doodads.values()) {
-      this.views.root.remove(wmoDoodad);
-      M2Blueprint.unload(wmoDoodad);
+    for (const group of this.groups.values()) {
+      WMOGroupLoader.unload(group);
+    }
+
+    for (const doodad of this.doodads.values()) {
+      this.views.root.remove(doodad);
+      M2Blueprint.unload(doodad);
     }
 
     WMORootLoader.unload(this.root);
@@ -298,23 +301,23 @@ class WMOHandler {
     groupView.updateMatrix();
   }
 
-  placeDoodad(wmoDoodadEntry, wmoDoodad) {
-    const { position, rotation, scale } = wmoDoodadEntry;
+  placeDoodad(doodadEntry, doodad) {
+    const { position, rotation, scale } = doodadEntry;
 
-    wmoDoodad.position.set(-position.x, -position.y, position.z);
+    doodad.position.set(-position.x, -position.y, position.z);
 
     // Adjust doodad rotation to match Wowser's axes.
-    const quat = wmoDoodad.quaternion;
+    const quat = doodad.quaternion;
     quat.set(rotation.x, rotation.y, -rotation.z, -rotation.w);
 
-    wmoDoodad.scale.set(scale, scale, scale);
+    doodad.scale.set(scale, scale, scale);
 
-    this.views.root.add(wmoDoodad);
-    wmoDoodad.updateMatrix();
+    this.views.root.add(doodad);
+    doodad.updateMatrix();
   }
 
-  addDoodadRef(wmoDoodadEntry, wmoGroup) {
-    const key = wmoDoodadEntry.id;
+  addDoodadRef(doodadEntry, group) {
+    const key = doodadEntry.id;
 
     let doodadRefs;
 
@@ -327,15 +330,15 @@ class WMOHandler {
     }
 
     // Add group reference to doodad.
-    doodadRefs.add(wmoGroup.id);
+    doodadRefs.add(group.id);
 
     const refCount = doodadRefs.size;
 
     return refCount;
   }
 
-  removeDoodadRef(wmoDoodadEntry, wmoGroup) {
-    const key = wmoDoodadEntry.id;
+  removeDoodadRef(doodadEntry, group) {
+    const key = doodadEntry.id;
 
     const doodadRefs = this.doodadRefs.get(key);
 
@@ -344,7 +347,7 @@ class WMOHandler {
     }
 
     // Remove group reference for doodad.
-    doodadRefs.delete(wmoGroup.id);
+    doodadRefs.delete(group.id);
 
     const refCount = doodadRefs.size;
 
@@ -355,55 +358,55 @@ class WMOHandler {
     return refCount;
   }
 
-  groupsForDoodad(wmoDoodad) {
-    const wmoGroupIDs = this.doodadRefs.get(wmoDoodad.entryID);
-    const wmoGroups = [];
+  groupsForDoodad(doodad) {
+    const groupIDs = this.doodadRefs.get(doodad.entryID);
+    const groups = [];
 
-    for (const wmoGroupID of wmoGroupIDs) {
-      const wmoGroup = this.groups.get(wmoGroupID);
+    for (const groupID of groupIDs) {
+      const group = this.groups.get(groupID);
 
-      if (wmoGroup) {
-        wmoGroups.push(wmoGroup);
+      if (group) {
+        groups.push(group);
       }
     }
 
-    return wmoGroups;
+    return groups;
   }
 
-  doodadsForGroup(wmoGroup) {
-    const wmoDoodads = [];
+  doodadsForGroup(group) {
+    const doodads = [];
 
     for (const refs of this.doodadRefs) {
-      const [wmoDoodadEntryID, wmoGroupIDs] = refs;
+      const [doodadEntryID, groupIDs] = refs;
 
-      if (wmoGroupIDs.has(wmoGroup.id)) {
-        const wmoDoodad = this.doodads.get(wmoDoodadEntryID);
+      if (groupIDs.has(group.id)) {
+        const doodad = this.doodads.get(doodadEntryID);
 
-        if (wmoDoodad) {
-          wmoDoodads.push(wmoDoodad);
+        if (doodad) {
+          doodads.push(doodad);
         }
       }
     }
 
-    return wmoDoodads;
+    return doodads;
   }
 
   animate(delta, camera, cameraMoved) {
-    for (const wmoDoodad of this.animatedDoodads.values()) {
-      if (!wmoDoodad.visible) {
+    for (const doodad of this.animatedDoodads.values()) {
+      if (!doodad.visible) {
         continue;
       }
 
-      if (wmoDoodad.receivesAnimationUpdates && wmoDoodad.animations.length > 0) {
-        wmoDoodad.animations.update(delta);
+      if (doodad.receivesAnimationUpdates && doodad.animations.length > 0) {
+        doodad.animations.update(delta);
       }
 
-      if (cameraMoved && wmoDoodad.billboards.length > 0) {
-        wmoDoodad.applyBillboards(camera);
+      if (cameraMoved && doodad.billboards.length > 0) {
+        doodad.applyBillboards(camera);
       }
 
-      if (wmoDoodad.skeletonHelper) {
-        wmoDoodad.skeletonHelper.update();
+      if (doodad.skeletonHelper) {
+        doodad.skeletonHelper.update();
       }
     }
   }
