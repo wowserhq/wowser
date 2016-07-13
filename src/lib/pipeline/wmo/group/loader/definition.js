@@ -7,6 +7,11 @@ class WMOGroupDefinition {
     this.index = index;
     this.groupID = groupData.MOGP.groupID;
 
+    this.header = {
+      batchCounts: groupData.MOGP.batchCounts,
+      batchOffsets: groupData.MOGP.batchOffsets
+    };
+
     this.doodadRefs = groupData.MODR ? groupData.MODR.doodadIndices : [];
 
     this.createAttributes(rootHeader, groupData);
@@ -178,7 +183,7 @@ class WMOGroupDefinition {
       color.g = MathUtil.clamp(color.g, 0, 255);
       color.b = MathUtil.clamp(color.b, 0, 255);
 
-      color.a = this.exterior ? 255 : 0;
+      color.a = mogp.exterior ? 255 : 0;
     }
   }
 

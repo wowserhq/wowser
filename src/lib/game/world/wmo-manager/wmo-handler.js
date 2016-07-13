@@ -26,6 +26,11 @@ class WMOHandler {
 
     this.doodadRefs = new Map();
 
+    this.views = {
+      root: null,
+      groups: new Map()
+    };
+
     this.counters = {
       loadingGroups: 0,
       loadingDoodads: 0,
@@ -57,15 +62,16 @@ class WMOHandler {
   load(wmoRoot) {
     this.root = wmoRoot;
 
-    this.doodadSet = this.root.blueprint.doodadSet(this.entry.doodadSet);
+    this.views.root = this.root.createView();
+    this.placeRootView();
 
-    this.placeRoot();
+    this.doodadSet = this.root.doodadSet(this.entry.doodadSet);
 
     this.enqueueLoadGroups();
   }
 
   enqueueLoadGroups() {
-    const { exteriorGroupIndices, interiorGroupIndices } = this.root.blueprint;
+    const { exteriorGroupIndices, interiorGroupIndices } = this.root;
 
     for (let egi = 0, eglen = exteriorGroupIndices.length; egi < eglen; ++egi) {
       const groupIndex = exteriorGroupIndices[egi];
@@ -98,12 +104,12 @@ class WMOHandler {
       return;
     }
 
-    WMOGroupLoader.loadByIndex(this.root, groupIndex).then((wmoGroup) => {
+    WMOGroupLoader.loadByIndex(this.root, groupIndex).then((group) => {
       if (this.unloading) {
         return;
       }
 
-      this.loadGroup(groupIndex, wmoGroup);
+      this.loadGroup(group);
 
       this.manager.counters.loadingGroups--;
       this.counters.loadingGroups--;
@@ -112,18 +118,20 @@ class WMOHandler {
     });
   }
 
-  loadGroup(wmoGroupID, wmoGroup) {
-    this.placeGroup(wmoGroup);
+  loadGroup(group) {
+    const groupView = group.createView();
+    this.views.groups.set(group.id, groupView);
+    this.placeGroupView(groupView);
 
-    this.groups.set(wmoGroupID, wmoGroup);
+    this.groups.set(group.id, group);
 
-    if (wmoGroup.blueprint.doodadRefs) {
-      this.enqueueLoadGroupDoodads(wmoGroup);
+    if (group.doodadRefs) {
+      this.enqueueLoadGroupDoodads(group);
     }
   }
 
   enqueueLoadGroupDoodads(wmoGroup) {
-    wmoGroup.blueprint.doodadRefs.forEach((doodadIndex) => {
+    wmoGroup.doodadRefs.forEach((doodadIndex) => {
       const wmoDoodadEntry = this.doodadSet.entries[doodadIndex - this.doodadSet.start];
 
       // Since the doodad set is filtered based on the requested set in the entry, not all
@@ -233,15 +241,15 @@ class WMOHandler {
     this.counters.loadedDoodads = 0;
     this.counters.animatedDoodads = 0;
 
-    this.manager.map.remove(this.root);
+    this.manager.map.remove(this.views.root);
 
-    for (const wmoGroup of this.groups.values()) {
-      this.root.remove(wmoGroup);
+    for (const wmoGroup of this.views.groups.values()) {
+      this.views.root.remove(wmoGroup);
       WMOGroupLoader.unload(wmoGroup);
     }
 
     for (const wmoDoodad of this.doodads.values()) {
-      this.root.remove(wmoDoodad);
+      this.views.root.remove(wmoDoodad);
       M2Blueprint.unload(wmoDoodad);
     }
 
@@ -252,37 +260,42 @@ class WMOHandler {
     this.animatedDoodads = new Map();
     this.doodadRefs = new Map();
 
+    this.views.root = null;
+    this.views.groups = new Map();
+
     this.root = null;
     this.entry = null;
   }
 
-  placeRoot() {
+  placeRootView() {
     const { position, rotation } = this.entry;
 
-    this.root.position.set(
+    this.views.root.position.set(
       -(position.z - this.manager.map.constructor.ZEROPOINT),
       -(position.x - this.manager.map.constructor.ZEROPOINT),
       position.y
     );
 
     // Provided as (Z, X, -Y)
-    this.root.rotation.set(
+    this.views.root.rotation.set(
       rotation.z * Math.PI / 180,
       rotation.x * Math.PI / 180,
       -rotation.y * Math.PI / 180
     );
 
     // Adjust WMO rotation to match Wowser's axes.
-    const quat = this.root.quaternion;
+    const quat = this.views.root.quaternion;
     quat.set(quat.x, quat.y, quat.z, -quat.w);
 
-    this.manager.map.add(this.root);
-    this.root.updateMatrix();
+    // Add to scene and update matrix
+    this.manager.map.add(this.views.root);
+    this.views.root.updateMatrix();
   }
 
-  placeGroup(wmoGroup) {
-    this.root.add(wmoGroup);
-    wmoGroup.updateMatrix();
+  placeGroupView(groupView) {
+    // Add to scene and update matrix
+    this.views.root.add(groupView);
+    groupView.updateMatrix();
   }
 
   placeDoodad(wmoDoodadEntry, wmoDoodad) {
@@ -296,7 +309,7 @@ class WMOHandler {
 
     wmoDoodad.scale.set(scale, scale, scale);
 
-    this.root.add(wmoDoodad);
+    this.views.root.add(wmoDoodad);
     wmoDoodad.updateMatrix();
   }
 
@@ -314,7 +327,7 @@ class WMOHandler {
     }
 
     // Add group reference to doodad.
-    doodadRefs.add(wmoGroup.groupID);
+    doodadRefs.add(wmoGroup.id);
 
     const refCount = doodadRefs.size;
 
@@ -331,7 +344,7 @@ class WMOHandler {
     }
 
     // Remove group reference for doodad.
-    doodadRefs.delete(wmoGroup.groupID);
+    doodadRefs.delete(wmoGroup.id);
 
     const refCount = doodadRefs.size;
 
@@ -363,7 +376,7 @@ class WMOHandler {
     for (const refs of this.doodadRefs) {
       const [wmoDoodadEntryID, wmoGroupIDs] = refs;
 
-      if (wmoGroupIDs.has(wmoGroup.groupID)) {
+      if (wmoGroupIDs.has(wmoGroup.id)) {
         const wmoDoodad = this.doodads.get(wmoDoodadEntryID);
 
         if (wmoDoodad) {

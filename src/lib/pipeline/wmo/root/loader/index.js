@@ -1,5 +1,5 @@
 import WorkerPool from '../../../worker/pool';
-import WMORootBlueprint from '../blueprint';
+import WMORoot from '../';
 
 class WMORootLoader {
 
@@ -33,15 +33,13 @@ class WMORootLoader {
       const worker = WorkerPool.enqueue('WMORoot', path);
 
       const promise = worker.then((def) => {
-        return new WMORootBlueprint(def);
+        return new WMORoot(def);
       });
 
       this.cache.set(path, promise);
     }
 
-    return this.cache.get(path).then((blueprint) => {
-      return blueprint.create();
-    });
+    return this.cache.get(path);
   }
 
   static unload(root) {

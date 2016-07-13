@@ -1,20 +1,74 @@
 import THREE from 'three';
 
-class WMOGroup extends THREE.Mesh {
+import WMOGroupView from './view';
 
-  constructor(blueprint, geometry, material) {
-    super();
+class WMOGroup {
 
-    this.matrixAutoUpdate = false;
+  constructor(root, def) {
+    this.root = root;
 
-    this.blueprint = blueprint;
+    this.path = def.path;
+    this.index = def.index;
+    this.id = def.groupID;
+    this.header = def.header;
 
-    this.geometry = geometry;
-    this.material = material;
+    this.doodadRefs = def.doodadRefs;
+
+    this.createMaterial(def.materialRefs);
+    this.createGeometry(def.attributes, def.batches);
   }
 
-  clone() {
-    return this.blueprint.create();
+  // Produce a new WMOGroupView suitable for placement in a scene.
+  createView() {
+    return new WMOGroupView(this, this.geometry, this.material);
+  }
+
+  // Materials are created on the root blueprint to take advantage of sharing materials across
+  // multiple groups (when possible).
+  createMaterial(materialRefs) {
+    const material = this.material = new THREE.MultiMaterial();
+    material.materials = this.root.loadMaterials(materialRefs);
+  }
+
+  createGeometry(attributes, batches) {
+    const geometry = this.geometry = new THREE.BufferGeometry();
+
+    const { indices, positions, normals, uvs, colors } = attributes;
+
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
+    geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.addAttribute('acolor', new THREE.BufferAttribute(colors, 4));
+
+    // Mirror geometry over X and Y axes and rotate
+    const matrix = new THREE.Matrix4();
+    matrix.makeScale(-1, -1, 1);
+    geometry.applyMatrix(matrix);
+    geometry.rotateX(-Math.PI / 2);
+
+    this.assignBatches(geometry, batches);
+
+    return geometry;
+  }
+
+  assignBatches(geometry, batches) {
+    const batchCount = batches.length;
+
+    for (let index = 0; index < batchCount; ++index) {
+      const batch = batches[index];
+      geometry.addGroup(batch.firstIndex, batch.indexCount, index);
+    }
+  }
+
+  dispose() {
+    if (this.geometry) {
+      this.geometry.dispose();
+    }
+
+    if (this.material) {
+      this.root.unloadMaterial(this.material);
+    }
   }
 
 }

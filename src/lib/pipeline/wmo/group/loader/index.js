@@ -1,5 +1,5 @@
 import WorkerPool from '../../../worker/pool';
-import WMOGroupBlueprint from '../blueprint';
+import WMOGroup from '../';
 
 class WMOGroupLoader {
 
@@ -30,29 +30,27 @@ class WMOGroupLoader {
     this.refCounts.set(path, refCount);
 
     if (!this.cache.has(path)) {
-      const worker = WorkerPool.enqueue('WMOGroup', path, index, root.blueprint.header);
+      const worker = WorkerPool.enqueue('WMOGroup', path, index, root.header);
 
       const promise = worker.then((def) => {
-        return new WMOGroupBlueprint(root.blueprint, def);
+        return new WMOGroup(root, def);
       });
 
       this.cache.set(path, promise);
     }
 
-    return this.cache.get(path).then((blueprint) => {
-      return blueprint.create();
-    });
+    return this.cache.get(path);
   }
 
   static loadByIndex(root, index) {
     const suffix = `000${index}`.slice(-3);
-    const path = root.blueprint.path.replace(/\.wmo/i, `_${suffix}.wmo`);
+    const path = root.path.replace(/\.wmo/i, `_${suffix}.wmo`);
 
     return this.load(root, index, path);
   }
 
   static unload(group) {
-    const path = group.blueprint.path.toUpperCase();
+    const path = group.path.toUpperCase();
 
     const refCount = (this.refCounts.get(path) || 1) - 1;
 
@@ -66,8 +64,8 @@ class WMOGroupLoader {
   static backgroundUnload() {
     for (const path in this.pendingUnload) {
       if (this.cache.has(path)) {
-        this.cache.get(path).then((blueprint) => {
-          blueprint.dispose();
+        this.cache.get(path).then((group) => {
+          group.dispose();
         });
       }
 
