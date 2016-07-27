@@ -28,7 +28,7 @@ class GameHandler extends Socket {
 
   // Connects to given host through given port
   connect(host, realm) {
-    this.realm=realm;
+    this.realm = realm;
     if (!this.connected) {
       super.connect(host, realm.port);
       console.info('connecting to game-server @', this.host, ':', this.port);
