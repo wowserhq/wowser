@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import THREE from 'three';
 
+import M2Blueprint from '../../pipeline/m2/blueprint';
 import WorldMap from './map';
 
 class WorldHandler extends EventEmitter {
@@ -127,6 +128,9 @@ class WorldHandler extends EventEmitter {
     if (this.map !== null) {
       this.map.animate(delta, camera, cameraMoved);
     }
+
+    // Send delta updates to instanced M2 animation managers.
+    M2Blueprint.animate(delta);
   }
 
   animateEntities(delta, camera, cameraMoved) {
@@ -137,7 +141,7 @@ class WorldHandler extends EventEmitter {
         return;
       }
 
-      if (model.animations.length > 0) {
+      if (model.receivesAnimationUpdates && model.animations.length > 0) {
         model.animations.update(delta);
       }
 

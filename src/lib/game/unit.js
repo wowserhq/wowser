@@ -82,7 +82,8 @@ class Unit extends Entity {
     // Auto-play animation index 0 in unit model, if present
     // TODO: Properly manage unit animations
     if (m2.animated && m2.animations.length > 0) {
-      m2.animations.play(0);
+      m2.animations.playAnimation(0);
+      m2.animations.playAllSequences();
     }
 
     this.emit('model:change', this, this._model, m2);

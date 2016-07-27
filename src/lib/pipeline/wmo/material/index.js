@@ -38,7 +38,7 @@ class WMOMaterial extends THREE.ShaderMaterial {
       const baseColor = new THREE.Color(
         def.baseColor.r / 255.0,
         def.baseColor.g / 255.0,
-        def.baseColor.b / 255.0,
+        def.baseColor.b / 255.0
       );
 
       const baseAlpha = def.baseColor.a / 255.0;
