@@ -30,8 +30,8 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(frag|vert)$/,
-        loader: 'raw-loader!glslify-loader',
+        test: /\.(frag|vert|glsl)$/,
+        loader: 'raw-loader!glslify-loader?transform[]=glslify-import',
         exclude: /node_modules/
       },
       {
@@ -50,7 +50,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       hash: true,
       inject: true,
-      template: 'src/index.html'
+      template: 'index.html'
     })
   ],
   devServer: {

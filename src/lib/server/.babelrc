@@ -4,11 +4,8 @@
     "transform-export-extensions",
     "transform-function-bind",
     "transform-es2015-block-scoping",
+    "transform-es2015-parameters",
     "add-module-exports",
     "transform-es2015-modules-commonjs"
-  ],
-
-  "presets": [
-    "react"
   ]
 }
