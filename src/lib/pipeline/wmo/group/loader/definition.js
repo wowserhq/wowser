@@ -11,7 +11,8 @@ class WMOGroupDefinition {
       batchCounts: groupData.MOGP.batchCounts,
       batchOffsets: groupData.MOGP.batchOffsets,
       portalCount: groupData.MOGP.portalCount,
-      portalOffset: groupData.MOGP.portalOffset
+      portalOffset: groupData.MOGP.portalOffset,
+      flags: groupData.MOGP.flags
     };
 
     this.doodadRefs = groupData.MODR ? groupData.MODR.doodadIndices : [];
