@@ -2,7 +2,6 @@ class WMORootDefinition {
 
   constructor(path, data) {
     this.path = path;
-
     this.rootID = data.MOHD.rootID;
 
     this.header = {
@@ -17,6 +16,66 @@ class WMORootDefinition {
     this.doodadEntries = data.MODD.doodads;
 
     this.summarizeGroups(data);
+
+    this.createPortals(data);
+  }
+
+  createPortals(data) {
+    const portalCount = data.MOPT.portals.length;
+    const portalVertexCount = data.MOPV.vertices.length;
+
+    this.portalRefs = data.MOPR.references;
+
+    const portals = this.portals = [];
+    this.assignPortals(portalCount, data.MOPT, portals);
+
+    const portalNormals = this.portalNormals = new Float32Array(3 * portalCount);
+    this.assignPortalNormals(portalCount, data.MOPT, portalNormals);
+
+    const portalConstants = this.portalConstants = new Float32Array(1 * portalCount);
+    this.assignPortalConstants(portalCount, data.MOPT, portalConstants);
+
+    const portalVertices = this.portalVertices = new Float32Array(3 * portalVertexCount);
+    this.assignPortalVertices(portalVertexCount, data.MOPV, portalVertices);
+  }
+
+  assignPortals(portalCount, mopt, attribute) {
+    for (let index = 0; index < portalCount; ++index) {
+      const portal = mopt.portals[index];
+
+      attribute.push({
+        vertexOffset: portal.vertexOffset,
+        vertexCount: portal.vertexCount
+      });
+    }
+  }
+
+  assignPortalNormals(portalCount, mopt, attribute) {
+    for (let index = 0; index < portalCount; ++index) {
+      const portal = mopt.portals[index];
+      const normal = portal.plane.normal;
+
+      // Provided as -X, -Y, Z
+      attribute.set([-normal[0], -normal[1], normal[2]], index * 3);
+    }
+  }
+
+  assignPortalConstants(portalCount, mopt, attribute) {
+    for (let index = 0; index < portalCount; ++index) {
+      const portal = mopt.portals[index];
+      const constant = portal.plane.constant;
+
+      attribute.set([constant], index);
+    }
+  }
+
+  assignPortalVertices(vertexCount, mopv, attribute) {
+    for (let index = 0; index < vertexCount; ++index) {
+      const vertex = mopv.vertices[index];
+
+      // Provided as -X, -Y, Z
+      attribute.set([-vertex[0], -vertex[1], vertex[2]], index * 3);
+    }
   }
 
   summarizeGroups(data) {
@@ -40,6 +99,18 @@ class WMORootDefinition {
         this.exteriorGroupCount++;
       }
     }
+  }
+
+  // Returns an array of references to typed arrays that we'd like to transfer across worker
+  // boundaries.
+  get transferable() {
+    const list = [];
+
+    list.push(this.portalNormals.buffer);
+    list.push(this.portalConstants.buffer);
+    list.push(this.portalVertices.buffer);
+
+    return list;
   }
 
 }

@@ -1,4 +1,7 @@
+import THREE from 'three';
+
 import WMORootView from './view';
+import WMOPortal from '../portal';
 import WMOMaterial from '../material';
 import WMOMaterialDefinition from '../material/loader/definition';
 
@@ -33,6 +36,10 @@ class WMORoot {
     };
 
     this.createMaterialDefs(def.materials, def.texturePaths);
+
+    this.createPortals(def.portals, def.portalNormals, def.portalConstants, def.portalVertices);
+
+    this.portalRefs = def.portalRefs;
   }
 
   createView() {
@@ -116,6 +123,30 @@ class WMORoot {
     const entries = this.doodadEntries.slice(start, start + count);
 
     return { start, count, entries };
+  }
+
+  createPortals(defs, normals, constants, vertices) {
+    const portals = this.portals = [];
+
+    const portalCount = defs.length;
+
+    for (let index = 0; index < portalCount; ++index) {
+      const def = defs[index];
+
+      const vindex = def.vertexOffset * 3;
+      const vlen = def.vertexCount * 3;
+
+      const nindex = index * 3;
+      const nlen = 3;
+
+      const portal = new WMOPortal({
+        vertices: vertices.subarray(vindex, vindex + vlen),
+        normal: normals.subarray(nindex, nindex + nlen),
+        constant: constants[index]
+      });
+
+      portals.push(portal);
+    }
   }
 
 }
