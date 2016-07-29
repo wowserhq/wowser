@@ -18,6 +18,29 @@ class WMORootDefinition {
     this.summarizeGroups(data);
 
     this.createPortals(data);
+    this.createBoundingBox(data.MOHD);
+  }
+
+  createBoundingBox(mohd) {
+    const boundingBox = this.boundingBox = {};
+
+    const orig = mohd.boundingBox;
+
+    // Convert to Wowser axes
+    const min = [-orig.min[0], -orig.min[1], orig.min[2]];
+    const max = [-orig.max[0], -orig.max[1], orig.max[2]];
+
+    // Swap positions if necessary (because conversion changes signs)
+    for (let i = 0; i < 3; ++i) {
+      if (min[i] > max[i]) {
+        const omin = min[i];
+        min[i] = max[i];
+        max[i] = omin;
+      }
+    }
+
+    boundingBox.min = min;
+    boundingBox.max = max;
   }
 
   createPortals(data) {

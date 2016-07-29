@@ -17,6 +17,7 @@ class WMOGroup {
     this.createPortals(root, def);
     this.createMaterial(def.materialRefs);
     this.createGeometry(def.attributes, def.batches);
+    this.createBoundingBox(def.boundingBox);
   }
 
   // Produce a new WMOGroupView suitable for placement in a scene.
@@ -88,6 +89,15 @@ class WMOGroup {
     if (this.material) {
       this.root.unloadMaterial(this.material);
     }
+  }
+
+  createBoundingBox(def) {
+    const boundingBox = this.boundingBox = new THREE.Box3;
+
+    const min = new THREE.Vector3(def.min[0], def.min[1], def.min[2]);
+    const max = new THREE.Vector3(def.max[0], def.max[1], def.max[2]);
+
+    boundingBox.set(min, max);
   }
 
 }

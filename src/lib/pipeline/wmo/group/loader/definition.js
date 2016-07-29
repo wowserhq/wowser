@@ -17,9 +17,33 @@ class WMOGroupDefinition {
 
     this.doodadRefs = groupData.MODR ? groupData.MODR.doodadIndices : [];
 
+    this.createBoundingBox(groupData.MOGP);
+
     this.createAttributes(rootHeader, groupData);
     this.createMaterialRefs(groupData);
     this.batches = groupData.MOBA.batches;
+  }
+
+  createBoundingBox(mogp) {
+    const boundingBox = this.boundingBox = {};
+
+    const orig = mogp.boundingBox;
+
+    // Convert to Wowser axes
+    const min = [-orig.min[0], -orig.min[1], orig.min[2]];
+    const max = [-orig.max[0], -orig.max[1], orig.max[2]];
+
+    // Swap positions if necessary (because conversion changes signs)
+    for (let i = 0; i < 3; ++i) {
+      if (min[i] > max[i]) {
+        const omin = min[i];
+        min[i] = max[i];
+        max[i] = omin;
+      }
+    }
+
+    boundingBox.min = min;
+    boundingBox.max = max;
   }
 
   createAttributes(rootHeader, groupData) {
