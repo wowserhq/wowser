@@ -14,6 +14,7 @@ class WMOGroup {
 
     this.doodadRefs = def.doodadRefs;
 
+    this.createPortals(root, def);
     this.createMaterial(def.materialRefs);
     this.createGeometry(def.attributes, def.batches);
   }
@@ -21,6 +22,24 @@ class WMOGroup {
   // Produce a new WMOGroupView suitable for placement in a scene.
   createView() {
     return new WMOGroupView(this, this.geometry, this.material);
+  }
+
+  createPortals(root, def) {
+    const portals = this.portals = [];
+    const portalRefs = this.portalRefs = [];
+
+    if (def.header.portalCount > 0) {
+      const pbegin = def.header.portalOffset;
+      const pend = pbegin + def.header.portalCount;
+
+      for (let pindex = pbegin; pindex < pend; ++pindex) {
+        const ref = root.portalRefs[pindex];
+        const portal = root.portals[ref.portalIndex];
+
+        portalRefs.push(ref);
+        portals.push(portal);
+      }
+    }
   }
 
   // Materials are created on the root blueprint to take advantage of sharing materials across
