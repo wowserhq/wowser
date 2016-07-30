@@ -50,12 +50,20 @@ class WMORoot {
 
   dispose() {
     for (const material of this.caches.material.values()) {
-      this.unloadMaterial(material);
+      material.dispose();
     }
 
-    this.caches = {};
-    this.refCounts = {};
-    this.defs = {};
+    this.caches = {
+      material: new Map()
+    };
+
+    this.refCounts = {
+      material: new Map()
+    };
+
+    this.defs = {
+      material: new Map()
+    };
   }
 
   // Because of the large number of reused texture paths, we create the material defs on the main
@@ -112,6 +120,7 @@ class WMORoot {
 
     if (refCount <= 0) {
       this.refCounts.material.delete(material.key);
+      this.caches.material.delete(material.key);
       material.dispose();
     } else {
       this.refCounts.material.set(material.key, refCount);
