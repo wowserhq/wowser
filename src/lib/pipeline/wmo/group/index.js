@@ -87,7 +87,9 @@ class WMOGroup {
     }
 
     if (this.material) {
-      this.root.unloadMaterial(this.material);
+      for (const material of this.material.materials) {
+        this.root.unloadMaterial(material);
+      }
     }
   }
 
