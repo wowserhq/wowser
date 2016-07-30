@@ -15,7 +15,7 @@ class TextureLoader {
     const path = rawPath.toUpperCase();
 
     // Ensure we cache based on texture settings. Some textures are reused with different settings.
-    const textureKey = `${path};ws:${wrapS.toString()};wt:${wrapT.toString()};fy:${flipY}}`;
+    const textureKey = `${path};ws:${wrapS.toString()};wt:${wrapT.toString()};fy:${flipY}`;
 
     // Prevent unintended unloading.
     if (this.pendingUnload.has(textureKey)) {
