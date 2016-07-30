@@ -62,7 +62,7 @@ class WMOGroupLoader {
   }
 
   static backgroundUnload() {
-    for (const path in this.pendingUnload) {
+    for (const path of this.pendingUnload) {
       if (this.cache.has(path)) {
         this.cache.get(path).then((group) => {
           group.dispose();
