@@ -43,7 +43,7 @@ class WMORootLoader {
   }
 
   static unload(root) {
-    const path = root.blueprint.path.toUpperCase();
+    const path = root.path.toUpperCase();
 
     const refCount = (this.refCounts.get(path) || 1) - 1;
 
@@ -57,8 +57,8 @@ class WMORootLoader {
   static backgroundUnload() {
     this.pendingUnload.forEach((path) => {
       if (this.cache.has(path)) {
-        this.cache.get(path).then((blueprint) => {
-          blueprint.dispose();
+        this.cache.get(path).then((root) => {
+          root.dispose();
         });
       }
 
