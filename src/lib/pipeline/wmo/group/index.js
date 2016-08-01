@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import WMOGroupView from './view';
+import BSPTree from '../../../utils/bsp-tree';
 
 class WMOGroup {
 
@@ -18,6 +19,7 @@ class WMOGroup {
     this.createMaterial(def.materialRefs);
     this.createGeometry(def.attributes, def.batches);
     this.createBoundingBox(def.boundingBox);
+    this.createBSPTree(def.bspNodes, def.bspPlaneIndices, def.attributes);
   }
 
   // Produce a new WMOGroupView suitable for placement in a scene.
@@ -100,6 +102,12 @@ class WMOGroup {
     const max = new THREE.Vector3(def.max[0], def.max[1], def.max[2]);
 
     boundingBox.set(min, max);
+  }
+
+  createBSPTree(nodes, planeIndices, attributes) {
+    const { indices, positions, normals } = attributes;
+
+    const bspTree = this.bspTree = new BSPTree(nodes, planeIndices, indices, positions, normals);
   }
 
 }

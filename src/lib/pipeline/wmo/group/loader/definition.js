@@ -22,6 +22,9 @@ class WMOGroupDefinition {
     this.createAttributes(rootHeader, groupData);
     this.createMaterialRefs(groupData);
     this.batches = groupData.MOBA.batches;
+
+    this.bspNodes = groupData.MOBN.nodes;
+    this.bspPlaneIndices = groupData.MOBR.indices;
   }
 
   createBoundingBox(mogp) {

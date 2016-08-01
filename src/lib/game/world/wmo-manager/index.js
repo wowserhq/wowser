@@ -162,6 +162,78 @@ class WMOManager {
     });
   }
 
+  locateCamera(camera) {
+    const candidates = [];
+
+    for (const handler of this.entries.values()) {
+      // The root view needs to have loaded before we can try locate the camera in this WMO
+      if (!handler.views.root) {
+        continue;
+      }
+
+      // All operations assume the camera position is in local space
+      const cameraLocal = handler.views.root.worldToLocal(camera.position.clone());
+
+      // Check if camera could be inside this WMO
+      const maybeInsideWMO = handler.root.boundingBox.containsPoint(cameraLocal);
+
+      // Camera cannot be inside this WMO
+      if (!maybeInsideWMO) {
+        continue;
+      }
+
+      // Check if camera is in any of this WMO's groups
+      for (const group of handler.groups.values()) {
+        // Check if camera could be inside this group
+        const maybeInsideGroup = group.boundingBox.containsPoint(cameraLocal);
+
+        // Camera cannot be inside this group
+        if (!maybeInsideGroup) {
+          continue;
+        }
+
+        // Check if BSP indicates camera is within group
+        if (group.bspTree.containsBoundedPoint(cameraLocal, group.boundingBox)) {
+          const location = {
+            wmo: {
+              handler: handler,
+              root: handler.root,
+              group: group,
+              views: {
+                root: handler.views.root,
+                group: handler.views.groups.get(group.id)
+              }
+            }
+          };
+
+          if (group.header.flags & 0x08) {
+            location.type = 'exterior';
+          } else {
+            location.type = 'interior';
+          }
+
+          candidates.push(location);
+        }
+      }
+    }
+
+    let chosen = null;
+
+    for (const location of candidates) {
+      // Always prefer interior groups to exterior groups
+      if (location.type === 'interior') {
+        chosen = location;
+        break;
+      }
+    }
+
+    if (chosen === null && candidates.length > 0) {
+      chosen = candidates[0];
+    }
+
+    camera.location = chosen;
+  }
+
 }
 
 export default WMOManager;
