@@ -24,7 +24,7 @@ class WMOGroupDefinition {
     this.batches = groupData.MOBA.batches;
 
     this.bspNodes = groupData.MOBN.nodes;
-    this.bspPlaneIndices = groupData.MOBR.indices;
+    this.bspPlaneIndices = new Uint16Array(groupData.MOBR.indices);
   }
 
   createBoundingBox(mogp) {
@@ -253,6 +253,8 @@ class WMOGroupDefinition {
     list.push(this.attributes.uvs.buffer);
     list.push(this.attributes.normals.buffer);
     list.push(this.attributes.colors.buffer);
+
+    list.push(this.bspPlaneIndices.buffer);
 
     return list;
   }
