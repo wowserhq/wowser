@@ -16,9 +16,10 @@ class WMOHandler {
   constructor(manager, entry) {
     this.manager = manager;
     this.entry = entry;
-    this.root = null;
 
+    this.root = null;
     this.groups = new Map();
+
     this.doodads = new Map();
     this.animatedDoodads = new Map();
 
@@ -28,7 +29,8 @@ class WMOHandler {
 
     this.views = {
       root: null,
-      groups: new Map()
+      groups: new Map(),
+      portals: new Map()
     };
 
     this.counters = {
@@ -64,6 +66,8 @@ class WMOHandler {
 
     this.views.root = this.root.createView();
     this.placeRootView();
+
+    this.loadPortals(this.root.portals);
 
     this.doodadSet = this.root.doodadSet(this.entry.doodadSet);
 
@@ -127,6 +131,15 @@ class WMOHandler {
 
     if (group.doodadRefs) {
       this.enqueueLoadGroupDoodads(group);
+    }
+  }
+
+  loadPortals(portals) {
+    for (let index = 0; index < portals.length; ++index) {
+      const portal = portals[index];
+      const portalView = portal.createView();
+      this.views.portals.set(index, portalView);
+      this.placePortalView(portalView);
     }
   }
 
@@ -265,6 +278,7 @@ class WMOHandler {
 
     this.views.root = null;
     this.views.groups = new Map();
+    this.views.portals = new Map();
 
     this.root = null;
     this.entry = null;
@@ -290,15 +304,23 @@ class WMOHandler {
     const quat = this.views.root.quaternion;
     quat.set(quat.x, quat.y, quat.z, -quat.w);
 
-    // Add to scene and update matrix
+    // Add to scene and update matrices
     this.manager.map.add(this.views.root);
     this.views.root.updateMatrix();
+    this.views.root.updateMatrixWorld();
   }
 
   placeGroupView(groupView) {
     // Add to scene and update matrix
     this.views.root.add(groupView);
     groupView.updateMatrix();
+  }
+
+  placePortalView(portalView) {
+    // Add to scene and update matrix
+    this.views.root.add(portalView);
+    portalView.updateMatrix();
+    portalView.updateMatrixWorld();
   }
 
   placeDoodad(doodadEntry, doodad) {
