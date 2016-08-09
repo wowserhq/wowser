@@ -105,9 +105,9 @@ class WMOGroup {
   }
 
   createBSPTree(nodes, planeIndices, attributes) {
-    const { indices, positions, normals } = attributes;
+    const { indices, positions } = attributes;
 
-    const bspTree = this.bspTree = new BSPTree(nodes, planeIndices, indices, positions, normals);
+    const bspTree = this.bspTree = new BSPTree(nodes, planeIndices, indices, positions);
   }
 
 }
