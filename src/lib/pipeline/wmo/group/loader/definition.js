@@ -55,7 +55,7 @@ class WMOGroupDefinition {
     const indexCount = groupData.MOVI.triangles.length;
     const vertexCount = groupData.MOVT.vertices.length;
 
-    const indices = attributes.indices = new Uint32Array(indexCount);
+    const indices = attributes.indices = new Uint16Array(indexCount);
     this.assignIndices(indexCount, groupData.MOVI, indices);
 
     const positions = attributes.positions = new Float32Array(vertexCount * 3);
