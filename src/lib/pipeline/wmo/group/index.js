@@ -110,6 +110,57 @@ class WMOGroup {
     const bspTree = this.bspTree = new BSPTree(nodes, planeIndices, indices, positions);
   }
 
+  /**
+   * Identify the closest portal to the given point (in local space). Projects point on portal
+   * plane and clamps to portal vertex bounds prior to calculating distance.
+   *
+   * See: CMapObj::ClosestPortal
+   *
+   * @param point - Point (in local space) for which distance is calculated
+   * @param max - Optional upper limit for distance
+   *
+   * @returns - Closest portal and corresponding ref
+   *
+   */
+  closestPortal(point, max = null) {
+    if (this.portals.length === 0) {
+      return null;
+    }
+
+    let shortestDistance = max;
+
+    const result = {
+      portal: null,
+      portalRef: null,
+      distance: null
+    };
+
+    for (let index = 0, count = this.portals.length; index < count; ++index) {
+      const portal = this.portals[index];
+      const portalRef = this.portalRefs[index];
+
+      const distance = portal.plane.projectPoint(point).
+        clamp(portal.boundingBox.min, portal.boundingBox.max).
+        distanceTo(point);
+
+      if (shortestDistance === null || distance < shortestDistance) {
+        shortestDistance = distance;
+
+        const sign = portal.plane.distanceToPoint(point) < 0.0 ? -1 : 1;
+
+        result.portal = portal;
+        result.portalRef = portalRef;
+        result.distance = distance * sign;
+      }
+    }
+
+    if (result.portal === null) {
+      return null;
+    } else {
+      return result;
+    }
+  }
+
 }
 
 export default WMOGroup;
