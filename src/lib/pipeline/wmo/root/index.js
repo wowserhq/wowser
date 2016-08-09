@@ -151,6 +151,7 @@ class WMORoot {
       const nlen = 3;
 
       const portal = new WMOPortal({
+        index: index,
         vertices: vertices.subarray(vindex, vindex + vlen),
         normal: normals.subarray(nindex, nindex + nlen),
         constant: constants[index]
