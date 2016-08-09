@@ -4,7 +4,7 @@ import THREEUtil from './three-util';
 
 class BSPTree {
 
-  constructor(nodes, planeIndices, faceIndices, vertices, normals) {
+  constructor(nodes, planeIndices, faceIndices, vertices) {
     this.nodes = nodes;
 
     this.indices = {
@@ -13,7 +13,6 @@ class BSPTree {
     };
 
     this.vertices = vertices;
-    this.normals = normals;
   }
 
   query(subject, startingNodeIndex) {
@@ -40,11 +39,11 @@ class BSPTree {
     const rightPlane = new THREE.Plane;
 
     if (node.planeType === 0) {
-      // Signs inverted for Wowser's axes
+      // X-axis signs inverted to align with Wowser's axes
       leftPlane.setComponents(1.0, 0.0, 0.0, node.distance);
       rightPlane.setComponents(-1.0, 0.0, 0.0, -node.distance);
     } else if (node.planeType === 1) {
-      // Signes inverted for Wowser's axes
+      // Y-axis signs inverted to align with Wowser's axes
       leftPlane.setComponents(0.0, 1.0, 0.0, node.distance);
       rightPlane.setComponents(0.0, -1.0, 0.0, -node.distance);
     } else if (node.planeType === 2) {
@@ -65,8 +64,8 @@ class BSPTree {
   }
 
   calculateZRange(point, leafIndices) {
-    let minZ = null;
-    let maxZ = null;
+    let rangeMin = null;
+    let rangeMax = null;
 
     for (let lindex = 0, lcount = leafIndices.length; lindex < lcount; ++lindex) {
       const node = this.nodes[leafIndices[lindex]];
@@ -100,14 +99,14 @@ class BSPTree {
         const triangle = new THREE.Triangle(vertex1, vertex2, vertex3);
 
         const minX = Math.min(triangle.a.x, triangle.b.x, triangle.c.x);
-        const minY = Math.min(triangle.a.y, triangle.b.y, triangle.c.y);
-
         const maxX = Math.max(triangle.a.x, triangle.b.x, triangle.c.x);
+
+        const minY = Math.min(triangle.a.y, triangle.b.y, triangle.c.y);
         const maxY = Math.max(triangle.a.y, triangle.b.y, triangle.c.y);
 
         const pointInBoundsXY =
-          point.x > minX && point.x < maxX &&
-          point.y > minY && point.y < maxY;
+          point.x >= minX && point.x <= maxX &&
+          point.y >= minY && point.y <= maxY;
 
         if (!pointInBoundsXY) {
           continue;
@@ -123,28 +122,21 @@ class BSPTree {
           continue;
         }
 
-        const normal1z = this.normals[3 * vindex1 + 2];
-        const normal2z = this.normals[3 * vindex2 + 2];
-        const normal3z = this.normals[3 * vindex3 + 2];
+        if (z < point.z && (rangeMin === null || z < rangeMin)) {
+          rangeMin = z;
+        }
 
-        const normalAverage =
-          bary.x * normal1z +
-          bary.y * normal2z +
-          bary.z * normal3z;
-
-        if (normalAverage > 0) {
-          if (!minZ || z < minZ) {
-            minZ = z;
-          }
-        } else {
-          if (!maxZ || z > maxZ) {
-            maxZ = z;
-          }
+        if (z > point.z && (rangeMax === null || z > rangeMax)) {
+          rangeMax = z;
         }
       }
     }
 
-    return [minZ, maxZ];
+    if (rangeMax - rangeMin < 0.001) {
+      rangeMax = null;
+    }
+
+    return [rangeMin, rangeMax];
   }
 
   calculateZFromTriangleAndXY(triangle, x, y) {
@@ -165,38 +157,33 @@ class BSPTree {
     return l1 * p1.z + l2 * p2.z + l3 * p3.z;
   }
 
-  containsBoundedPoint(point, bounding) {
+  queryBoundedPoint(point, bounding) {
+    const epsilon = 0.2;
+
     // Define a small bounding box for point
     const box = new THREE.Box3();
-    box.min.set(point.x - 0.2, point.y - 0.2, bounding.min.z);
-    box.max.set(point.x + 0.2, point.y + 0.2, bounding.max.z);
+    box.min.set(point.x - epsilon, point.y - epsilon, bounding.min.z);
+    box.max.set(point.x + epsilon, point.y + epsilon, bounding.max.z);
 
     // Query BSP tree
     const leafIndices = this.query(box, 0);
 
+    // If no leaves were found, there is no valid result
     if (leafIndices.length === 0) {
-      return false;
+      return null;
     }
 
-    let [minZ, maxZ] = this.calculateZRange(point, leafIndices);
+    // Determine upper and lower Z bounds of leaves
+    const zRange = this.calculateZRange(point, leafIndices);
+    const minZ = zRange[0];
+    const maxZ = zRange[1];
 
-    if (!minZ) {
-      minZ = box.min.z;
-    }
-
-    if (!maxZ) {
-      maxZ = box.max.z;
-    }
-
-    const pointInBoundsZ =
-      point.z >= minZ &&
-      point.z <= maxZ;
-
-    if (!pointInBoundsZ) {
-      return false;
-    }
-
-    return true;
+    return {
+      z: {
+        min: minZ,
+        max: maxZ
+      }
+    };
   }
 
 }
