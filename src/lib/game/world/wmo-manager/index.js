@@ -1,3 +1,5 @@
+import THREE from 'three';
+
 import ContentQueue from '../content-queue';
 import WMOHandler from './wmo-handler';
 import WMORootLoader from '../../../pipeline/wmo/root/loader';
@@ -165,6 +167,10 @@ class WMOManager {
   locateCamera(camera) {
     const candidates = [];
 
+    const raycaster = new THREE.Raycaster();
+    const raycastUp = new THREE.Vector3(0, 0, 1);
+    const raycastDown = new THREE.Vector3(0, 0, -1);
+
     for (const handler of this.entries.values()) {
       // The root view needs to have loaded before we can try locate the camera in this WMO
       if (!handler.views.root) {
@@ -184,6 +190,11 @@ class WMOManager {
 
       // Check if camera is in any of this WMO's groups
       for (const group of handler.groups.values()) {
+        // Only hunting for interior groups
+        if (group.header.flags & 0x08) {
+          continue;
+        }
+
         // Check if camera could be inside this group
         const maybeInsideGroup = group.boundingBox.containsPoint(cameraLocal);
 
@@ -192,46 +203,131 @@ class WMOManager {
           continue;
         }
 
-        // Check if BSP indicates camera is within group
-        if (group.bspTree.containsBoundedPoint(cameraLocal, group.boundingBox)) {
-          const location = {
-            wmo: {
-              handler: handler,
-              root: handler.root,
-              group: group,
-              views: {
-                root: handler.views.root,
-                group: handler.views.groups.get(group.id)
-              }
-            }
-          };
+        // Query BSP tree for matching leaves
+        let result = group.bspTree.queryBoundedPoint(cameraLocal, group.boundingBox);
 
-          if (group.header.flags & 0x08) {
-            location.type = 'exterior';
-          } else {
-            location.type = 'interior';
+        // Depending on group geometry, interior portions of a group may lack BSP leaves
+        if (result === null) {
+          result = {
+            z: {
+              min: null,
+              max: null
+            }
+          }
+        }
+
+        // Attempt to find unbounded Zs by raycasting the Z axis against portals
+        if (result.z.min === null || result.z.max === null) {
+          const portalViews = [];
+
+          for (const portalRef of group.portalRefs) {
+            const portalView = handler.views.portals.get(portalRef.portalIndex);
+            portalViews.push(portalView);
           }
 
-          candidates.push(location);
+          // Unbounded max Z (raycast up to try find portal)
+          if (result.z.max === null) {
+            raycaster.set(camera.position, raycastUp);
+            const upIntersections = raycaster.intersectObjects(portalViews);
+
+            if (upIntersections.length > 0) {
+              const closestUp = upIntersections[0];
+              result.z.max = closestUp.object.worldToLocal(closestUp.point).z;
+            }
+          }
+
+          // Unbounded min Z (raycast down to try find portal)
+          if (result.z.min === null) {
+            raycaster.set(camera.position, raycastDown);
+            const downIntersections = raycaster.intersectObjects(portalViews);
+
+            if (downIntersections.length > 0) {
+              const closestDown = downIntersections[0];
+              result.z.min = closestDown.object.worldToLocal(closestDown.point).z;
+            }
+          }
+        }
+
+        const location = {
+          type: 'interior',
+          query: result,
+          camera: {
+            local: cameraLocal,
+            world: camera.position
+          },
+          wmo: {
+            handler: handler,
+            root: handler.root,
+            group: group,
+            views: {
+              root: handler.views.root,
+              group: handler.views.groups.get(group.index)
+            }
+          }
+        };
+
+        candidates.push(location);
+      }
+    }
+
+    // Adjust bounds and mark invalid candidates
+    const adjustedCandidates = candidates.map((candidate) => {
+      const { camera, query } = candidate;
+      const { group } = candidate.wmo;
+
+      // If a query didn't get a min Z bound from the BSP tree or from raycasting for portals, the
+      // candidate is invalid.
+      if (query.z.min === null) {
+        return null;
+      }
+
+      // Assume the bounding box max in cases where max Z is unbounded
+      if (query.z.max === null) {
+        query.z.max = group.boundingBox.max.z;
+      }
+
+      const cameraInBoundsZ =
+        camera.local.z >= query.z.min &&
+        camera.local.z <= query.z.max;
+
+      if (!cameraInBoundsZ) {
+        return null;
+      }
+
+      // Get the closest portal within a small range and ensure we're inside it
+      const closestPortal = group.closestPortal(camera.local, 1.0);
+
+      if (closestPortal !== null) {
+        const outsidePortal = closestPortal.portalRef.side * closestPortal.distance < 0.0;
+
+        if (outsidePortal) {
+          return null;
         }
       }
+
+      return candidate;
+    });
+
+    // Remove invalid candidates
+    const validCandidates = adjustedCandidates.filter((candidate) => candidate !== null);
+
+    // No valid candidates
+    if (validCandidates.length === 0) {
+      return;
     }
 
-    let chosen = null;
-
-    for (const location of candidates) {
-      // Always prefer interior groups to exterior groups
-      if (location.type === 'interior') {
-        chosen = location;
-        break;
+    // The correct candidate has the highest min Z bound of all remaining candidates
+    validCandidates.sort((a, b) => {
+      if (a.query.z.min > b.query.z.min) {
+        return -1;
+      } else if (a.query.z.min < b.query.z.min) {
+        return 1;
+      } else {
+        return 0;
       }
-    }
+    });
 
-    if (chosen === null && candidates.length > 0) {
-      chosen = candidates[0];
-    }
-
-    camera.location = chosen;
+    camera.location = validCandidates[0];
   }
 
 }
