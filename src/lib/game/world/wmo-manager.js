@@ -40,14 +40,6 @@ class WMOManager {
     };
   }
 
-  add(view) {
-    this.map.add(view);
-  }
-
-  remove(view) {
-    this.map.remove(view);
-  }
-
   loadChunk(chunkIndex, wmoEntries) {
     for (let i = 0, len = wmoEntries.length; i < len; ++i) {
       const wmoEntry = wmoEntries[i];
