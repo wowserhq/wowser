@@ -96,13 +96,11 @@ class BSPTree {
           this.vertices[3 * vindex3 + 2]
         );
 
-        const triangle = new THREE.Triangle(vertex1, vertex2, vertex3);
+        const minX = Math.min(vertex1.x, vertex2.x, vertex3.x);
+        const maxX = Math.max(vertex1.x, vertex2.x, vertex3.x);
 
-        const minX = Math.min(triangle.a.x, triangle.b.x, triangle.c.x);
-        const maxX = Math.max(triangle.a.x, triangle.b.x, triangle.c.x);
-
-        const minY = Math.min(triangle.a.y, triangle.b.y, triangle.c.y);
-        const maxY = Math.max(triangle.a.y, triangle.b.y, triangle.c.y);
+        const minY = Math.min(vertex1.y, vertex2.y, vertex3.y);
+        const maxY = Math.max(vertex1.y, vertex2.y, vertex3.y);
 
         const pointInBoundsXY =
           point.x >= minX && point.x <= maxX &&
@@ -111,6 +109,8 @@ class BSPTree {
         if (!pointInBoundsXY) {
           continue;
         }
+
+        const triangle = new THREE.Triangle(vertex1, vertex2, vertex3);
 
         const z = this.calculateZFromTriangleAndXY(triangle, point.x, point.y);
 
