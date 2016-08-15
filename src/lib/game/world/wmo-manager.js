@@ -1,8 +1,7 @@
 import THREE from 'three';
 
-import ContentQueue from '../content-queue';
-import WMOHandler from './wmo-handler';
-import WMORootLoader from '../../../pipeline/wmo/root/loader';
+import ContentQueue from '../../utils/content-queue';
+import WMOHandler from '../../pipeline/wmo/handler';
 
 class WMOManager {
 
@@ -29,6 +28,8 @@ class WMOManager {
 
     this.entries = new Map();
 
+    this.pendingUnloads = new Map();
+
     this.queues = {
       loadEntry: new ContentQueue(
         ::this.processLoadEntry,
@@ -37,6 +38,14 @@ class WMOManager {
         this.constructor.LOAD_ENTRY_WORK_MIN
       )
     };
+  }
+
+  add(view) {
+    this.map.add(view);
+  }
+
+  remove(view) {
+    this.map.remove(view);
   }
 
   loadChunk(chunkIndex, wmoEntries) {
@@ -126,36 +135,94 @@ class WMOManager {
     this.counters.loadingEntries--;
   }
 
-  scheduleUnloadEntry(wmoEntry) {
-    const wmoHandler = this.entries.get(wmoEntry.id);
+  scheduleUnloadEntry(entry) {
+    const wmo = this.entries.get(entry.id);
 
-    if (!wmoHandler) {
+    if (!wmo) {
       return;
     }
 
-    wmoHandler.scheduleUnload(this.constructor.UNLOAD_DELAY_INTERVAL);
-  }
-
-  cancelUnloadEntry(wmoEntry) {
-    const wmoHandler = this.entries.get(wmoEntry.id);
-
-    if (!wmoHandler) {
+    if (this.pendingUnloads.has(entry.id)) {
       return;
     }
 
-    wmoHandler.cancelUnload();
+    const unload = () => {
+      this.unloadEntry(entry);
+    };
+
+    this.pendingUnloads.set(entry.id, setTimeout(unload, this.constructor.UNLOAD_DELAY_INTERVAL));
   }
 
-  processLoadEntry(wmoEntry) {
-    const wmoHandler = new WMOHandler(this, wmoEntry);
-    this.entries.set(wmoEntry.id, wmoHandler);
+  cancelUnloadEntry(entry) {
+    const wmo = this.entries.get(entry.id);
 
-    WMORootLoader.load(wmoEntry.filename).then((wmoRoot) => {
-      wmoHandler.load(wmoRoot);
+    if (!wmo) {
+      return;
+    }
+
+    if (this.pendingUnloads.has(entry.id)) {
+      return;
+    }
+
+    clearTimeout(this.pendingUnloads.get(entry.id));
+  }
+
+  unloadEntry(entry) {
+    this.pendingUnloads.delete(entry.id);
+
+    const wmo = this.entries.get(entry.id);
+
+    this.map.remove(wmo.views.root);
+
+    this.entries.delete(entry.id);
+    this.counters.loadedEntries--;
+
+    this.counters.loadingGroups -= wmo.counters.loadingGroups;
+    this.counters.loadedGroups -= wmo.counters.loadedGroups;
+    this.counters.loadingDoodads -= wmo.counters.loadingDoodads;
+    this.counters.loadedDoodads -= wmo.counters.loadedDoodads;
+    this.counters.animatedDoodads -= wmo.counters.animatedDoodads;
+
+    wmo.unload();
+  }
+
+  processLoadEntry(entry) {
+    const wmo = new WMOHandler(entry.filename, entry.doodadSet, entry.id, this.counters);
+
+    this.entries.set(entry.id, wmo);
+
+    wmo.load().then(() => {
+      this.placeWMOView(entry, wmo.views.root);
 
       this.counters.loadingEntries--;
       this.counters.loadedEntries++;
     });
+  }
+
+  placeWMOView(entry, view) {
+    const { position, rotation } = entry;
+
+    view.position.set(
+      -(position.z - this.map.constructor.ZEROPOINT),
+      -(position.x - this.map.constructor.ZEROPOINT),
+      position.y
+    );
+
+    // Provided as (Z, X, -Y)
+    view.rotation.set(
+      rotation.z * Math.PI / 180,
+      rotation.x * Math.PI / 180,
+      -rotation.y * Math.PI / 180
+    );
+
+    // Adjust WMO rotation to match Wowser's axes.
+    const quat = view.quaternion;
+    quat.set(quat.x, quat.y, quat.z, -quat.w);
+
+    view.updateMatrix();
+    view.updateMatrixWorld();
+
+    this.map.add(view);
   }
 
   animate(delta, camera, cameraMoved) {
@@ -171,7 +238,9 @@ class WMOManager {
     const raycastUp = new THREE.Vector3(0, 0, 1);
     const raycastDown = new THREE.Vector3(0, 0, -1);
 
-    for (const handler of this.entries.values()) {
+    const handlers = this.entries.values();
+
+    for (const handler of handlers) {
       // The root view needs to have loaded before we can try locate the camera in this WMO
       if (!handler.views.root) {
         continue;
@@ -213,7 +282,7 @@ class WMOManager {
               min: null,
               max: null
             }
-          }
+          };
         }
 
         // Attempt to find unbounded Zs by raycasting the Z axis against portals

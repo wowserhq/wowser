@@ -1,7 +1,7 @@
-import ContentQueue from '../content-queue';
-import WMORootLoader from '../../../pipeline/wmo/root/loader';
-import WMOGroupLoader from '../../../pipeline/wmo/group/loader';
-import M2Blueprint from '../../../pipeline/m2/blueprint';
+import ContentQueue from '../../utils/content-queue';
+import WMORootLoader from './root/loader';
+import WMOGroupLoader from './group/loader';
+import M2Blueprint from '../m2/blueprint';
 
 class WMOHandler {
 
@@ -13,9 +13,13 @@ class WMOHandler {
   static LOAD_DOODAD_WORK_FACTOR = 1 / 20;
   static LOAD_DOODAD_WORK_MIN = 2;
 
-  constructor(manager, entry) {
-    this.manager = manager;
-    this.entry = entry;
+  constructor(filename, doodadSetIndex = null, entryID = null, parentCounters = null) {
+    this.filename = filename;
+    this.doodadSetIndex = doodadSetIndex;
+    this.entryID = entryID;
+
+    this.counters = this.stubCounters();
+    this.parentCounters = parentCounters || this.stubCounters();
 
     this.root = null;
     this.groups = new Map();
@@ -25,20 +29,15 @@ class WMOHandler {
 
     this.doodadSet = [];
 
-    this.doodadRefs = new Map();
+    this.doodadRefs = {
+      doodad: new Map(),
+      group: new Map()
+    };
 
     this.views = {
       root: null,
       groups: new Map(),
       portals: new Map()
-    };
-
-    this.counters = {
-      loadingGroups: 0,
-      loadingDoodads: 0,
-      loadedGroups: 0,
-      loadedDoodads: 0,
-      animatedDoodads: 0
     };
 
     this.queues = {
@@ -61,17 +60,33 @@ class WMOHandler {
     this.unloading = false;
   }
 
-  load(root) {
-    this.root = root;
+  stubCounters() {
+    return {
+      loadingGroups: 0,
+      loadingDoodads: 0,
+      loadedGroups: 0,
+      loadedDoodads: 0,
+      animatedDoodads: 0
+    };
+  }
 
-    this.views.root = this.root.createView();
-    this.placeRootView();
+  load() {
+    return WMORootLoader.load(this.filename).then((root) => {
+      this.root = root;
 
-    this.loadPortals(this.root.portals);
+      const rootView = this.root.createView();
+      this.views.root = rootView;
 
-    this.doodadSet = this.root.doodadSet(this.entry.doodadSet);
+      this.loadPortals(this.root.portals);
 
-    this.enqueueLoadGroups();
+      if (this.doodadSetIndex) {
+        this.doodadSet = this.root.doodadSet(this.doodadSetIndex);
+      }
+
+      this.enqueueLoadGroups();
+
+      return this;
+    });
   }
 
   enqueueLoadGroups() {
@@ -96,14 +111,14 @@ class WMOHandler {
 
     this.queues.loadGroup.add(groupIndex, groupIndex);
 
-    this.manager.counters.loadingGroups++;
+    this.parentCounters.loadingGroups++;
     this.counters.loadingGroups++;
   }
 
   processLoadGroup(groupIndex) {
     // Already loaded.
     if (this.groups.has(groupIndex)) {
-      this.manager.counters.loadingGroups--;
+      this.parentCounters.loadingGroups--;
       this.counters.loadingGroups--;
       return;
     }
@@ -115,19 +130,19 @@ class WMOHandler {
 
       this.loadGroup(group);
 
-      this.manager.counters.loadingGroups--;
+      this.parentCounters.loadingGroups--;
       this.counters.loadingGroups--;
-      this.manager.counters.loadedGroups++;
+      this.parentCounters.loadedGroups++;
       this.counters.loadedGroups++;
     });
   }
 
   loadGroup(group) {
     const groupView = group.createView();
-    this.views.groups.set(group.id, groupView);
     this.placeGroupView(groupView);
+    this.views.groups.set(group.index, groupView);
 
-    this.groups.set(group.id, group);
+    this.groups.set(group.index, group);
 
     if (group.doodadRefs) {
       this.enqueueLoadGroupDoodads(group);
@@ -137,6 +152,7 @@ class WMOHandler {
   loadPortals(portals) {
     for (let index = 0; index < portals.length; ++index) {
       const portal = portals[index];
+
       const portalView = portal.createView();
       this.views.portals.set(index, portalView);
       this.placePortalView(portalView);
@@ -174,14 +190,14 @@ class WMOHandler {
 
     this.queues.loadDoodad.add(doodadEntry.id, doodadEntry);
 
-    this.manager.counters.loadingDoodads++;
+    this.parentCounters.loadingDoodads++;
     this.counters.loadingDoodads++;
   }
 
   processLoadDoodad(doodadEntry) {
     // Already loaded.
     if (this.doodads.has(doodadEntry.id)) {
-      this.manager.counters.loadingDoodads--;
+      this.parentCounters.loadingDoodads--;
       this.counters.loadingDoodads--;
       return;
     }
@@ -193,13 +209,13 @@ class WMOHandler {
 
       this.loadDoodad(doodadEntry, doodad);
 
-      this.manager.counters.loadingDoodads--;
+      this.parentCounters.loadingDoodads--;
       this.counters.loadingDoodads--;
-      this.manager.counters.loadedDoodads++;
+      this.parentCounters.loadedDoodads++;
       this.counters.loadedDoodads++;
 
       if (doodad.animated) {
-        this.manager.counters.animatedDoodads++;
+        this.parentCounters.animatedDoodads++;
         this.counters.animatedDoodads++;
       }
     });
@@ -223,30 +239,11 @@ class WMOHandler {
     this.doodads.set(doodadEntry.id, doodad);
   }
 
-  scheduleUnload(unloadDelay = 0) {
-    this.pendingUnload = setTimeout(::this.unload, unloadDelay);
-  }
-
-  cancelUnload() {
-    if (this.pendingUnload) {
-      clearTimeout(this.pendingUnload);
-    }
-  }
-
   unload() {
     this.unloading = true;
 
-    this.manager.entries.delete(this.entry.id);
-    this.manager.counters.loadedEntries--;
-
     this.queues.loadGroup.clear();
     this.queues.loadDoodad.clear();
-
-    this.manager.counters.loadingGroups -= this.counters.loadingGroups;
-    this.manager.counters.loadedGroups -= this.counters.loadedGroups;
-    this.manager.counters.loadingDoodads -= this.counters.loadingDoodads;
-    this.manager.counters.loadedDoodads -= this.counters.loadedDoodads;
-    this.manager.counters.animatedDoodads -= this.counters.animatedDoodads;
 
     this.counters.loadingGroups = 0;
     this.counters.loadedGroups = 0;
@@ -254,18 +251,11 @@ class WMOHandler {
     this.counters.loadedDoodads = 0;
     this.counters.animatedDoodads = 0;
 
-    this.manager.map.remove(this.views.root);
-
-    for (const groupView of this.views.groups.values()) {
-      this.views.root.remove(groupView);
-    }
-
     for (const group of this.groups.values()) {
       WMOGroupLoader.unload(group);
     }
 
     for (const doodad of this.doodads.values()) {
-      this.views.root.remove(doodad);
       M2Blueprint.unload(doodad);
     }
 
@@ -281,43 +271,20 @@ class WMOHandler {
     this.views.portals = new Map();
 
     this.root = null;
-    this.entry = null;
-  }
-
-  placeRootView() {
-    const { position, rotation } = this.entry;
-
-    this.views.root.position.set(
-      -(position.z - this.manager.map.constructor.ZEROPOINT),
-      -(position.x - this.manager.map.constructor.ZEROPOINT),
-      position.y
-    );
-
-    // Provided as (Z, X, -Y)
-    this.views.root.rotation.set(
-      rotation.z * Math.PI / 180,
-      rotation.x * Math.PI / 180,
-      -rotation.y * Math.PI / 180
-    );
-
-    // Adjust WMO rotation to match Wowser's axes.
-    const quat = this.views.root.quaternion;
-    quat.set(quat.x, quat.y, quat.z, -quat.w);
-
-    // Add to scene and update matrices
-    this.manager.map.add(this.views.root);
-    this.views.root.updateMatrix();
-    this.views.root.updateMatrixWorld();
+    this.doodadSetIndex = null;
+    this.entryID = null;
+    this.filename = null;
   }
 
   placeGroupView(groupView) {
-    // Add to scene and update matrix
+    // Add to scene and update matrices
     this.views.root.add(groupView);
     groupView.updateMatrix();
+    groupView.updateMatrixWorld();
   }
 
   placePortalView(portalView) {
-    // Add to scene and update matrix
+    // Add to scene and update matrices
     this.views.root.add(portalView);
     portalView.updateMatrix();
     portalView.updateMatrixWorld();
@@ -339,49 +306,48 @@ class WMOHandler {
   }
 
   addDoodadRef(doodadEntry, group) {
-    const key = doodadEntry.id;
-
-    let doodadRefs;
-
-    // Fetch or create group references for doodad.
-    if (this.doodadRefs.has(key)) {
-      doodadRefs = this.doodadRefs.get(key);
-    } else {
-      doodadRefs = new Set();
-      this.doodadRefs.set(key, doodadRefs);
+    if (!this.doodadRefs.doodad.has(doodadEntry.id)) {
+      this.doodadRefs.doodad.set(doodadEntry.id, new Set());
     }
 
-    // Add group reference to doodad.
-    doodadRefs.add(group.id);
+    if (!this.doodadRefs.group.has(group.index)) {
+      this.doodadRefs.group.set(group.index, new Set());
+    }
 
-    const refCount = doodadRefs.size;
+    const byDoodad = this.doodadRefs.doodad.get(doodadEntry.id);
+    const byGroup = this.doodadRefs.group.get(group.index);
+
+    byDoodad.add(group.index);
+    byGroup.add(doodadEntry.id);
+
+    const refCount = byDoodad.size;
 
     return refCount;
   }
 
   removeDoodadRef(doodadEntry, group) {
-    const key = doodadEntry.id;
+    const byDoodad = this.doodadRefs.doodad.get(doodadEntry.id);
+    const byGroup = this.doodadRefs.group.get(group.index);
 
-    const doodadRefs = this.doodadRefs.get(key);
-
-    if (!doodadRefs) {
+    if (!byDoodad) {
       return 0;
     }
 
-    // Remove group reference for doodad.
-    doodadRefs.delete(group.id);
+    byDoodad.delete(group.index);
+    byGroup.delete(doodadEntry.id);
 
-    const refCount = doodadRefs.size;
+    const refCount = doodadRefs.doodad.size;
 
-    if (doodadRefs.size === 0) {
-      this.doodadRefs.delete(key);
+    if (refCount === 0) {
+      this.doodadRefs.doodad.delete(doodadEntry.id);
+      this.doodadRefs.group.delete(group.index);
     }
 
     return refCount;
   }
 
   groupsForDoodad(doodad) {
-    const groupIDs = this.doodadRefs.get(doodad.entryID);
+    const groupIDs = this.doodadRefs.doodad.get(doodad.entryID) || [];
     const groups = [];
 
     for (const groupID of groupIDs) {
@@ -396,17 +362,14 @@ class WMOHandler {
   }
 
   doodadsForGroup(group) {
+    const doodadIDs = this.doodadRefs.group.get(group.index) || [];
     const doodads = [];
 
-    for (const refs of this.doodadRefs) {
-      const [doodadEntryID, groupIDs] = refs;
+    for (const doodadID of doodadIDs) {
+      const doodad = this.doodads.get(doodadID);
 
-      if (groupIDs.has(group.id)) {
-        const doodad = this.doodads.get(doodadEntryID);
-
-        if (doodad) {
-          doodads.push(doodad);
-        }
+      if (doodad) {
+        doodads.push(doodad);
       }
     }
 
@@ -414,7 +377,13 @@ class WMOHandler {
   }
 
   animate(delta, camera, cameraMoved) {
-    for (const doodad of this.animatedDoodads.values()) {
+    if (!this.views.root) {
+      return;
+    }
+
+    const doodads = this.animatedDoodads.values();
+
+    for (const doodad of doodads) {
       if (!doodad.visible) {
         continue;
       }
