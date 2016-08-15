@@ -57,17 +57,12 @@ class WMOGroup {
 
     const { indices, positions, normals, uvs, colors } = attributes;
 
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
     geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geometry.addAttribute('acolor', new THREE.BufferAttribute(colors, 4));
 
-    // Mirror geometry over X and Y axes and rotate
-    const matrix = new THREE.Matrix4();
-    matrix.makeScale(-1, -1, 1);
-    geometry.applyMatrix(matrix);
-    geometry.rotateX(-Math.PI / 2);
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
     this.assignBatches(geometry, batches);
 

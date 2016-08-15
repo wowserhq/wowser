@@ -78,8 +78,8 @@ class WMOGroupDefinition {
     for (let index = 0; index < vertexCount; ++index) {
       const vertex = movt.vertices[index];
 
-      // Provided as (X, Z, -Y)
-      attribute.set([vertex[0], vertex[2], -vertex[1]], index * 3);
+      // Provided as -X, -Y, Z
+      attribute.set([-vertex[0], -vertex[1], vertex[2]], index * 3);
     }
   }
 
@@ -95,8 +95,8 @@ class WMOGroupDefinition {
     for (let index = 0; index < vertexCount; ++index) {
       const normal = monr.normals[index];
 
-      // Provided as X, Z, -Y
-      attribute.set([normal[0], normal[2], -normal[1]], index * 3);
+      // Provided as -X, -Y, Z
+      attribute.set([-normal[0], -normal[1], normal[2]], index * 3);
     }
   }
 
