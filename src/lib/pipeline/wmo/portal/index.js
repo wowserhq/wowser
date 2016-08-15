@@ -62,6 +62,7 @@ class WMOPortal {
     material.opacity = 0.1;
     material.transparent = true;
     material.depthWrite = false;
+    material.visible = false;
   }
 
 }
