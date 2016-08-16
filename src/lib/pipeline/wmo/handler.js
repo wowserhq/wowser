@@ -79,7 +79,7 @@ class WMOHandler {
 
       this.loadPortals(this.root.portals);
 
-      if (this.doodadSetIndex) {
+      if (this.doodadSetIndex !== null) {
         this.doodadSet = this.root.doodadSet(this.doodadSetIndex);
       }
 
