@@ -301,8 +301,10 @@ class WMOHandler {
 
     doodad.scale.set(scale, scale, scale);
 
+    // Add to scene and update matrices
     this.views.root.add(doodad);
     doodad.updateMatrix();
+    doodad.updateMatrixWorld();
   }
 
   addDoodadRef(doodadEntry, group) {
