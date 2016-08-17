@@ -218,8 +218,8 @@ class WMOManager {
   }
 
   animate(delta, camera, cameraMoved) {
-    this.entries.forEach((wmoHandler) => {
-      wmoHandler.animate(delta, camera, cameraMoved);
+    this.entries.forEach((wmo) => {
+      wmo.animate(delta, camera, cameraMoved);
     });
   }
 
