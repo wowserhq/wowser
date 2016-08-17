@@ -230,19 +230,17 @@ class WMOManager {
     const raycastUp = new THREE.Vector3(0, 0, 1);
     const raycastDown = new THREE.Vector3(0, 0, -1);
 
-    const handlers = this.entries.values();
-
-    for (const handler of handlers) {
+    for (const wmo of this.entries.values()) {
       // The root view needs to have loaded before we can try locate the camera in this WMO
-      if (!handler.views.root) {
+      if (!wmo.views.root) {
         continue;
       }
 
       // All operations assume the camera position is in local space
-      const cameraLocal = handler.views.root.worldToLocal(camera.position.clone());
+      const cameraLocal = wmo.views.root.worldToLocal(camera.position.clone());
 
       // Check if camera could be inside this WMO
-      const maybeInsideWMO = handler.root.boundingBox.containsPoint(cameraLocal);
+      const maybeInsideWMO = wmo.root.boundingBox.containsPoint(cameraLocal);
 
       // Camera cannot be inside this WMO
       if (!maybeInsideWMO) {
@@ -250,7 +248,7 @@ class WMOManager {
       }
 
       // Check if camera is in any of this WMO's groups
-      for (const group of handler.groups.values()) {
+      for (const group of wmo.groups.values()) {
         // Only hunting for interior groups
         if (group.header.flags & 0x08) {
           continue;
@@ -282,7 +280,7 @@ class WMOManager {
           const portalViews = [];
 
           for (const portalRef of group.portalRefs) {
-            const portalView = handler.views.portals.get(portalRef.portalIndex);
+            const portalView = wmo.views.portals.get(portalRef.portalIndex);
             portalViews.push(portalView);
           }
 
@@ -317,12 +315,12 @@ class WMOManager {
             world: camera.position
           },
           wmo: {
-            handler: handler,
-            root: handler.root,
+            handler: wmo,
+            root: wmo.root,
             group: group,
             views: {
-              root: handler.views.root,
-              group: handler.views.groups.get(group.index)
+              root: wmo.views.root,
+              group: wmo.views.groups.get(group.index)
             }
           }
         };
