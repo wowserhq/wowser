@@ -1,7 +1,7 @@
 import THREE from 'three';
 
 import ContentQueue from '../../utils/content-queue';
-import WMOHandler from '../../pipeline/wmo/handler';
+import WMO from '../../pipeline/wmo';
 
 class WMOManager {
 
@@ -179,7 +179,7 @@ class WMOManager {
   }
 
   processLoadEntry(entry) {
-    const wmo = new WMOHandler(entry.filename, entry.doodadSet, entry.id, this.counters);
+    const wmo = new WMO(entry.filename, entry.doodadSet, entry.id, this.counters);
 
     this.entries.set(entry.id, wmo);
 

@@ -3,7 +3,7 @@ import WMORootLoader from './root/loader';
 import WMOGroupLoader from './group/loader';
 import M2Blueprint from '../m2/blueprint';
 
-class WMOHandler {
+class WMO {
 
   static LOAD_GROUP_INTERVAL = 1;
   static LOAD_GROUP_WORK_FACTOR = 1 / 10;
@@ -406,4 +406,4 @@ class WMOHandler {
 
 }
 
-export default WMOHandler;
+export default WMO;
