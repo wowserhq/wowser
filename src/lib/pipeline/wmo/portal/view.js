@@ -99,6 +99,10 @@ class WMOPortalView extends THREE.Mesh {
     for (let pindex = 0, pcount = planes.length; pindex < pcount; ++pindex) {
       const plane = planes[pindex];
 
+      if (!plane) {
+        continue;
+      }
+
       let inside = 0;
 
       for (let vindex = 0, vcount = vertices.length; vindex < vcount; ++vindex) {
