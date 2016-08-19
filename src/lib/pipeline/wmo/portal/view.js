@@ -1,5 +1,7 @@
 import THREE from 'three';
 
+import THREEUtil from '../../../utils/three-util';
+
 class WMOPortalView extends THREE.Mesh {
 
   constructor(portal, geometry, material) {
@@ -17,42 +19,68 @@ class WMOPortalView extends THREE.Mesh {
   }
 
   /**
-   * Project a partial frustum comprised of planes matching the camera and this portal view's
-   * vertices (in world space). Resulting frustum skips near and far planes, as these are not
-   * necessary for portal culling.
+   * Projects a new frustum from this portal using an origin point and restricting the new
+   * frustum to include only the spill from the given frustum.
    *
-   * @param camera - Camera object to use when producing the planes
-   * @param side - Optional side of the portal (-1 or 1), defaulting to 1
+   * @param origin - Position to use when projecting new frustum
+   * @param frustum - Previous frustum (used to clip portal vertices)
+   * @param flip - Optional, specify that the new frustum sides should be flipped
    *
-   * @returns - Partial frustum matching portal vertices and camera position
+   * @returns - Frustum clipped by this portal
    *
    */
-  createFrustum(camera, side = 1) {
+  createFrustum(camera, frustum, flip = false) {
     const planes = [];
+    const vertices = [];
 
-    const flip = side < 0;
+    const origin = camera.position;
 
-    const vertices = this.geometry.vertices;
+    // Obtain vertices in world space
+    for (let vindex = 0, vcount = this.geometry.vertices.length; vindex < vcount; ++vindex) {
+      const local = this.geometry.vertices[vindex].clone();
+      const world = this.localToWorld(local);
+      vertices.push(world);
+    }
 
-    for (let vindex = 0, vcount = vertices.length; vindex < vcount; ++vindex) {
-      const vertex1 = this.localToWorld(vertices[vindex].clone());
-      const vertex2 = this.localToWorld(vertices[(vindex + 1) % vcount].clone());
+    // Check distance to portal
+    const distance = this.portal.plane.distanceToPoint(this.worldToLocal(origin.clone()));
+    const close = distance < 1.0 && distance > -1.0;
 
-      const plane = new THREE.Plane();
-      plane.setFromCoplanarPoints(camera.position, vertex1, vertex2);
+    // If the portal is very close, use the portal vertices unedited; otherwise, clip the portal
+    // vertices by the provided frustum.
+    const clipped = close ? vertices : THREEUtil.clipVerticesByFrustum(vertices, frustum);
 
-      if (flip) {
-        plane.negate();
-      }
+    // If clipping the portal vertices resulted in a polygon with fewer than 3 vertices, return
+    // null to indicate a new frustum couldn't be produced.
+    if (clipped.length < 3) {
+      return null;
+    }
 
+    // Produce side planes for new frustum
+    for (let vindex = 0, vcount = clipped.length; vindex < vcount; ++vindex) {
+      const vertex1 = clipped[vindex];
+      const vertex2 = clipped[(vindex + 1) % vcount];
+
+      const plane = new THREE.Plane().setFromCoplanarPoints(origin, vertex1, vertex2);
+      if (flip) plane.negate();
       planes.push(plane);
     }
 
-    const frustum = {
+    // Copy the original far plane (index: last - 1)
+    const farPlaneIndex = frustum.planes.length - 2;
+    const farPlane = frustum.planes[farPlaneIndex];
+    planes.push(farPlane);
+
+    // Create a near plane matching the portal
+    const nearPlane = new THREE.Plane().setFromCoplanarPoints(clipped[0], clipped[1], clipped[2]);
+    if (flip) nearPlane.negate();
+    planes.push(nearPlane);
+
+    const newFrustum = {
       planes: planes
     };
 
-    return frustum;
+    return newFrustum;
   }
 
   /**
