@@ -30,6 +30,9 @@ class WMOPortal {
     const constant = this.constant = def.constant;
     this.plane = new THREE.Plane(normal, constant);
 
+    // Because X and Y are inverted in Wowser, the vertices' winding order is reversed
+    vertices.reverse();
+
     this.createGeometry(vertices);
     this.createMaterial();
   }
