@@ -9,6 +9,8 @@ class WMORootDefinition {
       ambientColor: data.MOHD.ambientColor
     };
 
+    this.groupInfo = data.MOGI.groups;
+
     this.materials = data.MOMT.materials;
     this.texturePaths = data.MOTX.filenames;
 

@@ -13,6 +13,7 @@ class WMORoot {
     this.id = def.rootID;
     this.header = def.header;
 
+    this.groupInfo = def.groupInfo;
     this.groupCount = def.groupCount;
     this.interiorGroupCount = def.interiorGroupCount;
     this.exteriorGroupCount = def.exteriorGroupCount;
