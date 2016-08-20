@@ -149,11 +149,7 @@ class WMOGroup {
       }
     }
 
-    if (result.portal === null) {
-      return null;
-    } else {
-      return result;
-    }
+    return (result.portal === null) ? null : result;
   }
 
 }
