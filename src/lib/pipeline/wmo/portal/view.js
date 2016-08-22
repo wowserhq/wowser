@@ -76,9 +76,7 @@ class WMOPortalView extends THREE.Mesh {
     if (flip) nearPlane.negate();
     planes.push(nearPlane);
 
-    const newFrustum = {
-      planes: planes
-    };
+    const newFrustum = { planes };
 
     return newFrustum;
   }
