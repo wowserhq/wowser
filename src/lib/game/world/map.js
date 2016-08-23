@@ -133,7 +133,6 @@ class WorldMap extends THREE.Group {
   }
 
   locateCamera(camera) {
-    camera.location = null;
     this.locationManager.update([camera]);
   }
 
