@@ -21,7 +21,7 @@ class VisibilityManager {
     }
 
     // Hide the exterior world (doodads and terrain) until a traversal reaches the exterior
-    this.map.hideExterior();
+    this.map.exterior.visible = false;
 
     this.hideAllWMOGroups();
     this.hideAllWMODoodads();
@@ -53,7 +53,7 @@ class VisibilityManager {
   }
 
   enablePortalsFromExterior(depth, camera, frustum = null, visitedPortals = new Set()) {
-    this.map.showExterior();
+    this.map.exterior.visible = true;
 
     const wmos = this.map.wmoManager.entries.values();
 

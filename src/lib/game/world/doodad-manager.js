@@ -11,8 +11,10 @@ class DoodadManager {
   // Number of milliseconds to wait before loading another portion of doodads.
   static LOAD_INTERVAL = 1;
 
-  constructor(map) {
-    this.map = map;
+  constructor(view, zeropoint) {
+    this.view = view;
+    this.zeropoint = zeropoint;
+
     this.chunkRefs = new Map();
 
     this.doodads = new Map();
@@ -177,7 +179,7 @@ class DoodadManager {
     const doodad = this.doodads.get(entry.id);
     this.doodads.delete(entry.id);
     this.animatedDoodads.delete(entry.id);
-    this.map.remove(doodad);
+    this.container.remove(doodad);
 
     M2Blueprint.unload(doodad);
   }
@@ -185,8 +187,8 @@ class DoodadManager {
   // Place a doodad on the world map, adhereing to a provided position, rotation, and scale.
   placeDoodad(doodad, position, rotation, scale) {
     doodad.position.set(
-      -(position.z - this.map.constructor.ZEROPOINT),
-      -(position.x - this.map.constructor.ZEROPOINT),
+      -(position.z - this.zeropoint),
+      -(position.x - this.zeropoint),
       position.y
     );
 
@@ -207,11 +209,15 @@ class DoodadManager {
     }
 
     // Add doodad to world map.
-    this.map.add(doodad);
+    this.view.add(doodad);
     doodad.updateMatrix();
   }
 
   animate(delta, camera, cameraMoved) {
+    if (!this.view.visible) {
+      return;
+    }
+
     this.animatedDoodads.forEach((doodad) => {
       if (!doodad.visible) {
         return;

@@ -9,8 +9,9 @@ class WMOManager {
 
   static UNLOAD_DELAY_INTERVAL = 30000;
 
-  constructor(map) {
-    this.map = map;
+  constructor(view, zeropoint) {
+    this.view = view;
+    this.zeropoint = zeropoint;
 
     this.chunkRefs = new Map();
 
@@ -162,7 +163,7 @@ class WMOManager {
 
     const wmo = this.entries.get(entry.id);
 
-    this.map.remove(wmo.views.root);
+    this.view.remove(wmo.views.root);
 
     this.entries.delete(entry.id);
     this.counters.loadedEntries--;
@@ -193,8 +194,8 @@ class WMOManager {
     const { position, rotation } = entry;
 
     view.position.set(
-      -(position.z - this.map.constructor.ZEROPOINT),
-      -(position.x - this.map.constructor.ZEROPOINT),
+      -(position.z - this.zeropoint),
+      -(position.x - this.zeropoint),
       position.y
     );
 
@@ -212,7 +213,7 @@ class WMOManager {
     view.updateMatrix();
     view.updateMatrixWorld();
 
-    this.map.add(view);
+    this.view.add(view);
   }
 
   animate(delta, camera, cameraMoved) {

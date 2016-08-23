@@ -1,16 +1,17 @@
 class TerrainManager {
 
-  constructor(map) {
-    this.map = map;
+  constructor(view, zeropoint) {
+    this.view = view;
+    this.zeropoint = zeropoint;
   }
 
   loadChunk(_index, terrain) {
-    this.map.add(terrain);
+    this.view.add(terrain);
     terrain.updateMatrix();
   }
 
   unloadChunk(_index, terrain) {
-    this.map.remove(terrain);
+    this.view.remove(terrain);
     terrain.dispose();
   }
 

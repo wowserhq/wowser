@@ -24,9 +24,15 @@ class WorldMap extends THREE.Group {
 
     this.matrixAutoUpdate = false;
 
-    this.terrainManager = new TerrainManager(this);
-    this.doodadManager = new DoodadManager(this);
-    this.wmoManager = new WMOManager(this);
+    this.exterior = new THREE.Group();
+    this.exterior.name = 'ExteriorView';
+    this.add(this.exterior);
+
+    // Set up geometry managers
+    this.terrainManager = new TerrainManager(this.exterior, this.constructor.ZEROPOINT);
+    this.doodadManager = new DoodadManager(this.exterior, this.constructor.ZEROPOINT);
+    this.wmoManager = new WMOManager(this, this.constructor.ZEROPOINT);
+
     this.visibilityManager = new VisibilityManager(this);
     this.locationManager = new LocationManager(this);
 
