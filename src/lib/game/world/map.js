@@ -7,6 +7,7 @@ import WDT from '../../pipeline/wdt';
 import DoodadManager from './doodad-manager';
 import WMOManager from './wmo-manager';
 import TerrainManager from './terrain-manager';
+import VisibilityManager from './visibility-manager';
 import LocationManager from './location-manager';
 
 class WorldMap extends THREE.Group {
@@ -26,6 +27,7 @@ class WorldMap extends THREE.Group {
     this.terrainManager = new TerrainManager(this);
     this.doodadManager = new DoodadManager(this);
     this.wmoManager = new WMOManager(this);
+    this.visibilityManager = new VisibilityManager(this);
     this.locationManager = new LocationManager(this);
 
     this.data = data;
@@ -127,6 +129,10 @@ class WorldMap extends THREE.Group {
   locateCamera(camera) {
     camera.location = null;
     this.locationManager.update([camera]);
+  }
+
+  updateVisibility(camera) {
+    this.visibilityManager.update([camera]);
   }
 
   static load(id) {
