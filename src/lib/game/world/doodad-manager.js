@@ -211,6 +211,7 @@ class DoodadManager {
     // Add doodad to world map.
     this.view.add(doodad);
     doodad.updateMatrix();
+    doodad.updateMatrixWorld();
   }
 
   animate(delta, camera, cameraMoved) {
