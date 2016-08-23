@@ -7,6 +7,7 @@ import WDT from '../../pipeline/wdt';
 import DoodadManager from './doodad-manager';
 import WMOManager from './wmo-manager';
 import TerrainManager from './terrain-manager';
+import LocationManager from './location-manager';
 
 class WorldMap extends THREE.Group {
 
@@ -25,6 +26,7 @@ class WorldMap extends THREE.Group {
     this.terrainManager = new TerrainManager(this);
     this.doodadManager = new DoodadManager(this);
     this.wmoManager = new WMOManager(this);
+    this.locationManager = new LocationManager(this);
 
     this.data = data;
     this.wdt = wdt;
@@ -122,28 +124,9 @@ class WorldMap extends THREE.Group {
     this.wmoManager.animate(delta, camera, cameraMoved);
   }
 
-  /**
-   * Identify the camera's location relative to map geometry. This location serves as the starting
-   * point when traversing WMO groups as part of portal culling.
-   *
-   * Possible location types:
-   * - exterior: camera is either not in a WMO, or is in a WMO group marked as exterior
-   * - interior: camera is in a specific WMO and WMO group, and WMO group is marked as interior
-   */
   locateCamera(camera) {
     camera.location = null;
-
-    // Try locate the camera in a loaded WMO
-    this.wmoManager.locateCamera(camera);
-
-    // If the camera wasn't located in a loaded WMO, consider it to be in the exterior
-    if (!camera.location) {
-      const location = {
-        type: 'exterior'
-      };
-
-      camera.location = location;
-    }
+    this.locationManager.update([camera]);
   }
 
   static load(id) {
