@@ -26,23 +26,8 @@ class WMORootDefinition {
   createBoundingBox(mohd) {
     const boundingBox = this.boundingBox = {};
 
-    const orig = mohd.boundingBox;
-
-    // Convert to Wowser axes
-    const min = [-orig.min[0], -orig.min[1], orig.min[2]];
-    const max = [-orig.max[0], -orig.max[1], orig.max[2]];
-
-    // Swap positions if necessary (because conversion changes signs)
-    for (let i = 0; i < 3; ++i) {
-      if (min[i] > max[i]) {
-        const omin = min[i];
-        min[i] = max[i];
-        max[i] = omin;
-      }
-    }
-
-    boundingBox.min = min;
-    boundingBox.max = max;
+    boundingBox.min = mohd.boundingBox.min;
+    boundingBox.max = mohd.boundingBox.max;
   }
 
   createPortals(data) {
@@ -80,8 +65,7 @@ class WMORootDefinition {
       const portal = mopt.portals[index];
       const normal = portal.plane.normal;
 
-      // Provided as -X, -Y, Z
-      attribute.set([-normal[0], -normal[1], normal[2]], index * 3);
+      attribute.set([normal[0], normal[1], normal[2]], index * 3);
     }
   }
 
@@ -98,8 +82,7 @@ class WMORootDefinition {
     for (let index = 0; index < vertexCount; ++index) {
       const vertex = mopv.vertices[index];
 
-      // Provided as -X, -Y, Z
-      attribute.set([-vertex[0], -vertex[1], vertex[2]], index * 3);
+      attribute.set([vertex[0], vertex[1], vertex[2]], index * 3);
     }
   }
 
