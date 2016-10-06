@@ -39,13 +39,11 @@ class BSPTree {
     const rightPlane = new THREE.Plane;
 
     if (node.planeType === 0) {
-      // X-axis signs inverted to align with Wowser's axes
-      leftPlane.setComponents(1.0, 0.0, 0.0, node.distance);
-      rightPlane.setComponents(-1.0, 0.0, 0.0, -node.distance);
+      leftPlane.setComponents(-1.0, 0.0, 0.0, node.distance);
+      rightPlane.setComponents(1.0, 0.0, 0.0, -node.distance);
     } else if (node.planeType === 1) {
-      // Y-axis signs inverted to align with Wowser's axes
-      leftPlane.setComponents(0.0, 1.0, 0.0, node.distance);
-      rightPlane.setComponents(0.0, -1.0, 0.0, -node.distance);
+      leftPlane.setComponents(0.0, -1.0, 0.0, node.distance);
+      rightPlane.setComponents(0.0, 1.0, 0.0, -node.distance);
     } else if (node.planeType === 2) {
       leftPlane.setComponents(0.0, 0.0, -1.0, node.distance);
       rightPlane.setComponents(0.0, 0.0, 1.0, -node.distance);
