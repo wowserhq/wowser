@@ -30,23 +30,8 @@ class WMOGroupDefinition {
   createBoundingBox(mogp) {
     const boundingBox = this.boundingBox = {};
 
-    const orig = mogp.boundingBox;
-
-    // Convert to Wowser axes
-    const min = [-orig.min[0], -orig.min[1], orig.min[2]];
-    const max = [-orig.max[0], -orig.max[1], orig.max[2]];
-
-    // Swap positions if necessary (because conversion changes signs)
-    for (let i = 0; i < 3; ++i) {
-      if (min[i] > max[i]) {
-        const omin = min[i];
-        min[i] = max[i];
-        max[i] = omin;
-      }
-    }
-
-    boundingBox.min = min;
-    boundingBox.max = max;
+    boundingBox.min = mogp.boundingBox.min;
+    boundingBox.max = mogp.boundingBox.max;
   }
 
   createAttributes(rootHeader, groupData) {
@@ -78,8 +63,7 @@ class WMOGroupDefinition {
     for (let index = 0; index < vertexCount; ++index) {
       const vertex = movt.vertices[index];
 
-      // Provided as -X, -Y, Z
-      attribute.set([-vertex[0], -vertex[1], vertex[2]], index * 3);
+      attribute.set([vertex[0], vertex[1], vertex[2]], index * 3);
     }
   }
 
@@ -95,8 +79,7 @@ class WMOGroupDefinition {
     for (let index = 0; index < vertexCount; ++index) {
       const normal = monr.normals[index];
 
-      // Provided as -X, -Y, Z
-      attribute.set([-normal[0], -normal[1], normal[2]], index * 3);
+      attribute.set([normal[0], normal[1], normal[2]], index * 3);
     }
   }
 
