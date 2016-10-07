@@ -30,11 +30,6 @@ class WorldLight {
 
   static dayNightProgression = 0.0;
 
-  static active = {
-    sources: [],
-    blend: null
-  };
-
   static sunDirection = {
     phi: 0.0,
     theta: 0.0,
@@ -42,6 +37,13 @@ class WorldLight {
       raw: new THREE.Vector3(),
       transformed: new THREE.Vector3()
     }
+  };
+
+  static selfIlluminatedScalar = 0.0;
+
+  static active = {
+    sources: [],
+    blend: null
   };
 
   static uniforms = {
@@ -77,6 +79,8 @@ class WorldLight {
     this.dayNightProgression = queryTime / 2880.0;
 
     this.updateSunDirection(frame.camera);
+
+    this.updateSelfIlluminatedScalar();
 
     this.query(mapID, x, y, z, queryTime).then((results) => {
       this.sortLights(results);
@@ -124,6 +128,13 @@ class WorldLight {
       vector.y,
       vector.z,
     ], 0);
+  }
+
+  static updateSelfIlluminatedScalar() {
+    const sidnTable = this.tables.sidnTable;
+    const factor = this.dayNightProgression;
+
+    this.selfIlluminatedScalar = this.interpolateDayNightTable(sidnTable, 4, factor);
   }
 
   static revertUniforms() {
