@@ -126,6 +126,10 @@ class WorldHandler extends EventEmitter {
     this.animateEntities(delta, camera, cameraMoved);
 
     if (this.map !== null) {
+      if (cameraMoved) {
+        this.map.locateCamera(camera);
+      }
+
       this.map.animate(delta, camera, cameraMoved);
     }
 

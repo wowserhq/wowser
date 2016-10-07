@@ -1,158 +1,238 @@
 import THREE from 'three';
 
-import WMOMaterial from '../material';
+import WMORootFlags from '../root/flags';
+import WMOGroupView from './view';
+import BSPTree from '../../../utils/bsp-tree';
 
-class WMOGroup extends THREE.Mesh {
+class WMOGroup {
 
-  static cache = {};
+  constructor(root, def) {
+    this.root = root;
 
-  constructor(wmo, id, data, path) {
-    super();
+    this.path = def.path;
+    this.index = def.index;
+    this.id = def.groupID;
+    this.header = def.header;
 
-    this.dispose = ::this.dispose;
+    this.doodadRefs = def.doodadRefs;
 
-    this.matrixAutoUpdate = false;
+    this.createPortals(root, def);
+    this.createMaterial(def.materialRefs);
+    this.attenuateVertexColors(root, def.attributes, def.batches);
+    this.createGeometry(def.attributes, def.batches);
+    this.createBoundingBox(def.boundingBox);
+    this.createBSPTree(def.bspNodes, def.bspPlaneIndices, def.attributes);
+  }
 
-    this.wmo = wmo;
-    this.groupID = id;
-    this.data = data;
-    this.path = path;
+  // Produce a new WMOGroupView suitable for placement in a scene.
+  createView() {
+    return new WMOGroupView(this, this.geometry, this.material);
+  }
 
-    this.indoor = data.indoor;
-    this.animated = false;
+  createPortals(root, def) {
+    const portals = this.portals = [];
+    const portalRefs = this.portalRefs = [];
 
-    const vertexCount = data.MOVT.vertices.length;
-    const textureCoords = data.MOTV.textureCoords;
+    if (def.header.portalCount > 0) {
+      const pbegin = def.header.portalOffset;
+      const pend = pbegin + def.header.portalCount;
 
-    const positions = new Float32Array(vertexCount * 3);
-    const normals = new Float32Array(vertexCount * 3);
-    const uvs = new Float32Array(vertexCount * 2);
-    const colors = new Float32Array(vertexCount * 3);
-    const alphas = new Float32Array(vertexCount);
+      for (let pindex = pbegin; pindex < pend; ++pindex) {
+        const ref = root.portalRefs[pindex];
+        const portal = root.portals[ref.portalIndex];
 
-    data.MOVT.vertices.forEach(function(vertex, index) {
-      // Provided as (X, Z, -Y)
-      positions[index * 3] = vertex[0];
-      positions[index * 3 + 1] = vertex[2];
-      positions[index * 3 + 2] = -vertex[1];
-
-      uvs[index * 2] = textureCoords[index][0];
-      uvs[index * 2 + 1] = textureCoords[index][1];
-    });
-
-    data.MONR.normals.forEach(function(normal, index) {
-      normals[index * 3] = normal[0];
-      normals[index * 3 + 1] = normal[2];
-      normals[index * 3 + 2] = -normal[1];
-    });
-
-    if ('MOCV' in data) {
-      data.MOCV.colors.forEach(function(color, index) {
-        colors[index * 3] = color.r / 255.0;
-        colors[index * 3 + 1] = color.g / 255.0;
-        colors[index * 3 + 2] = color.b / 255.0;
-        alphas[index] = color.a / 255.0;
-      });
-    } else if (this.indoor) {
-      // Default indoor vertex color: rgba(0.5, 0.5, 0.5, 1.0)
-      data.MOVT.vertices.forEach(function(_vertex, index) {
-        colors[index * 3] = 127.0 / 255.0;
-        colors[index * 3 + 1] = 127.0 / 255.0;
-        colors[index * 3 + 2] = 127.0 / 255.0;
-        alphas[index] = 1.0;
-      });
+        portalRefs.push(ref);
+        portals.push(portal);
+      }
     }
+  }
 
-    const indices = new Uint32Array(data.MOVI.triangles);
+  // Materials are created on the root blueprint to take advantage of sharing materials across
+  // multiple groups (when possible).
+  createMaterial(materialRefs) {
+    const material = this.material = new THREE.MultiMaterial();
+    material.materials = this.root.loadMaterials(materialRefs);
+  }
 
+  createGeometry(attributes, batches) {
     const geometry = this.geometry = new THREE.BufferGeometry();
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+    const { indices, positions, normals, uvs, colors } = attributes;
+
     geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
     geometry.addAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.addAttribute('acolor', new THREE.BufferAttribute(colors, 4));
 
-    // TODO: Perhaps it is possible to directly use a vec4 here? Currently, color + alpha is
-    // combined into a vec4 in the material's vertex shader. For some reason, attempting to
-    // directly use a BufferAttribute with a length of 4 resulted in incorrect ordering for the
-    // values in the shader.
-    geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.addAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-    // Mirror geometry over X and Y axes and rotate
-    const matrix = new THREE.Matrix4();
-    matrix.makeScale(-1, -1, 1);
-    geometry.applyMatrix(matrix);
-    geometry.rotateX(-Math.PI / 2);
+    this.assignBatches(geometry, batches);
 
-    const materialIDs = [];
-
-    data.MOBA.batches.forEach(function(batch) {
-      materialIDs.push(batch.materialID);
-      geometry.addGroup(batch.firstIndex, batch.indexCount, batch.materialID);
-    });
-
-    const materialDefs = this.wmo.data.MOMT.materials;
-    const texturePaths = this.wmo.data.MOTX.filenames;
-
-    this.material = this.createMultiMaterial(materialIDs, materialDefs, texturePaths);
+    return geometry;
   }
 
-  createMultiMaterial(materialIDs, materialDefs, texturePaths) {
-    const multiMaterial = new THREE.MultiMaterial();
+  assignBatches(geometry, batches) {
+    const batchCount = batches.length;
 
-    materialIDs.forEach((materialID) => {
-      const materialDef = materialDefs[materialID];
-
-      if (this.indoor) {
-        materialDef.indoor = true;
-      } else {
-        materialDef.indoor = false;
-      }
-
-      if (!this.wmo.data.MOHD.skipBaseColor) {
-        materialDef.useBaseColor = true;
-        materialDef.baseColor = this.wmo.data.MOHD.baseColor;
-      } else {
-        materialDef.useBaseColor = false;
-      }
-
-      const material = this.createMaterial(materialDefs[materialID], texturePaths);
-
-      multiMaterial.materials[materialID] = material;
-    });
-
-    return multiMaterial;
-  }
-
-  createMaterial(materialDef, texturePaths) {
-    const textureDefs = [];
-
-    materialDef.textures.forEach((textureDef) => {
-      const texturePath = texturePaths[textureDef.offset];
-
-      if (texturePath !== undefined) {
-        textureDef.path = texturePath;
-        textureDefs.push(textureDef);
-      } else {
-        textureDefs.push(null);
-      }
-    });
-
-    const material = new WMOMaterial(materialDef, textureDefs);
-
-    return material;
-  }
-
-  clone() {
-    return new this.constructor(this.wmo, this.groupID, this.data, this.path);
+    for (let index = 0; index < batchCount; ++index) {
+      const batch = batches[index];
+      geometry.addGroup(batch.firstIndex, batch.indexCount, index);
+    }
   }
 
   dispose() {
-    this.geometry.dispose();
+    if (this.geometry) {
+      this.geometry.dispose();
+    }
 
-    this.material.materials.forEach((material) => {
-      material.dispose();
-    });
+    if (this.material) {
+      for (const material of this.material.materials) {
+        this.root.unloadMaterial(material);
+      }
+    }
+  }
+
+  createBoundingBox(def) {
+    const boundingBox = this.boundingBox = new THREE.Box3;
+
+    const min = new THREE.Vector3(def.min[0], def.min[1], def.min[2]);
+    const max = new THREE.Vector3(def.max[0], def.max[1], def.max[2]);
+
+    boundingBox.set(min, max);
+  }
+
+  createBSPTree(nodes, planeIndices, attributes) {
+    const { indices, positions } = attributes;
+
+    const bspTree = this.bspTree = new BSPTree(nodes, planeIndices, indices, positions);
+  }
+
+  /**
+   * Identify the closest portal to the given point (in local space). Projects point on portal
+   * plane and clamps to portal vertex bounds prior to calculating distance.
+   *
+   * See: CMapObj::ClosestPortal
+   *
+   * @param point - Point (in local space) for which distance is calculated
+   * @param max - Optional upper limit for distance
+   *
+   * @returns - Closest portal and corresponding ref
+   *
+   */
+  closestPortal(point, max = null) {
+    if (this.portals.length === 0) {
+      return null;
+    }
+
+    let shortestDistance = max;
+
+    const result = {
+      portal: null,
+      portalRef: null,
+      distance: null
+    };
+
+    for (let index = 0, count = this.portals.length; index < count; ++index) {
+      const portal = this.portals[index];
+      const portalRef = this.portalRefs[index];
+
+      const distance = portal.plane.projectPoint(point).
+        clamp(portal.boundingBox.min, portal.boundingBox.max).
+        distanceTo(point);
+
+      if (shortestDistance === null || distance < shortestDistance) {
+        shortestDistance = distance;
+
+        const sign = portal.plane.distanceToPoint(point) < 0.0 ? -1 : 1;
+
+        result.portal = portal;
+        result.portalRef = portalRef;
+        result.distance = distance * sign;
+      }
+    }
+
+    return (result.portal === null) ? null : result;
+  }
+
+  attenuateVertexColors(root, attributes, batches) {
+    if (root.header.flags & WMORootFlags.SKIP_MOCV_ATTENUATION) {
+      return;
+    }
+
+    const { batchCounts, batchOffsets } = this.header;
+
+    if (batchCounts.a === 0) {
+      return;
+    }
+
+    const firstBatchB = batches[batchOffsets.b];
+
+    const vertices = attributes.positions;
+    const colors = attributes.colors;
+
+    const vmax = firstBatchB ? firstBatchB.firstVertex : vertices.length;
+
+    for (let vindex = 0; vindex < vmax; ++vindex) {
+      const color = colors.subarray(vindex * 4, vindex * 4 + 4);
+      const vertex = vertices.subarray(vindex * 3, vindex * 3 + 3);
+
+      // In the case of no portals, there is no world light
+      if (this.portals.length === 0) {
+        color[3] = 0.0;
+        continue;
+      }
+
+      const origin = new THREE.Vector3(vertex[0], vertex[1], vertex[2]);
+      const closestPortal = this.closestPortal(origin, 6.0);
+
+      if (!closestPortal) {
+        color[3] = 0.0;
+        continue;
+      }
+
+      let attenuation = 0.0;
+      let newAlpha = 0.0;
+
+      const distance = closestPortal.distance;
+
+      const destinationFlags = root.groupInfo[closestPortal.portalRef.groupIndex].flags;
+
+      if (destinationFlags & (0x08 | 0x40)) {
+        if (distance < 0.0) {
+          attenuation = 1.0;
+        } else {
+          attenuation = 1.0 - (distance / 6.0);
+        }
+      }
+
+      if (attenuation <= 0.001) {
+        attenuation = 0.0;
+        newAlpha = 0.0;
+      } else if (attenuation <= 1.0) {
+        newAlpha = attenuation * 255.0;
+      } else {
+        attenuation = 1.0;
+        newAlpha = 255.0;
+      }
+
+      // Red
+      const tempR = color[0] * 255.0;
+      const newR = ((127.0 - tempR) * attenuation) + tempR;
+      color[0] = newR / 255.0;
+
+      // Green
+      const tempG = color[1] * 255.0;
+      const newG = ((127.0 - tempG) * attenuation) + tempG;
+      color[1] = newG / 255.0;
+
+      // Blue
+      const tempB = color[2] * 255.0;
+      const newB = ((127.0 - tempB) * attenuation) + tempB;
+      color[2] = newB / 255.0;
+
+      // Alpha
+      color[3] = newAlpha / 255.0;
+    }
   }
 
 }

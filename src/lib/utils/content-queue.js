@@ -9,6 +9,8 @@ class ContentQueue {
 
     this.queue = new Map();
 
+    this.previousTimestamp = performance.now();
+
     this.schedule = ::this.schedule;
     this.run = ::this.run;
 
@@ -39,16 +41,21 @@ class ContentQueue {
   }
 
   schedule() {
-    setTimeout(this.run, this.interval);
+    requestAnimationFrame(this.run);
   }
 
-  run() {
+  run(now) {
+    if (now - this.previousTimestamp < this.interval) {
+      this.schedule();
+      return;
+    }
+
+    this.previousTimestamp = now;
+
     let count = 0;
-    const max = Math.min(this.queue.size * this.workFactor, this.minWork);
+    const max = Math.max(this.queue.size * this.workFactor, this.minWork);
 
-    for (const entry of this.queue) {
-      const [key, job] = entry;
-
+    for (const [key, job] of this.queue) {
       this.processor(job);
       this.queue.delete(key);
 

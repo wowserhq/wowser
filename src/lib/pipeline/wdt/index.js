@@ -11,7 +11,7 @@ class WDT {
   static load(path) {
     if (!(path in this.cache)) {
       this.cache[path] = WorkerPool.enqueue('WDT', path).then((args) => {
-        const [data] = args;
+        const data = args;
         return new this(data);
       });
     }

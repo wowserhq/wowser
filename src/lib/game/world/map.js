@@ -7,6 +7,8 @@ import WDT from '../../pipeline/wdt';
 import DoodadManager from './doodad-manager';
 import WMOManager from './wmo-manager';
 import TerrainManager from './terrain-manager';
+import VisibilityManager from './visibility-manager';
+import LocationManager from './location-manager';
 
 class WorldMap extends THREE.Group {
 
@@ -22,9 +24,17 @@ class WorldMap extends THREE.Group {
 
     this.matrixAutoUpdate = false;
 
-    this.terrainManager = new TerrainManager(this);
-    this.doodadManager = new DoodadManager(this);
-    this.wmoManager = new WMOManager(this);
+    this.exterior = new THREE.Group();
+    this.exterior.name = 'ExteriorView';
+    this.add(this.exterior);
+
+    // Set up geometry managers
+    this.terrainManager = new TerrainManager(this.exterior, this.constructor.ZEROPOINT);
+    this.doodadManager = new DoodadManager(this.exterior, this.constructor.ZEROPOINT);
+    this.wmoManager = new WMOManager(this, this.constructor.ZEROPOINT);
+
+    this.visibilityManager = new VisibilityManager(this);
+    this.locationManager = new LocationManager(this);
 
     this.data = data;
     this.wdt = wdt;
@@ -120,6 +130,14 @@ class WorldMap extends THREE.Group {
   animate(delta, camera, cameraMoved) {
     this.doodadManager.animate(delta, camera, cameraMoved);
     this.wmoManager.animate(delta, camera, cameraMoved);
+  }
+
+  locateCamera(camera) {
+    this.locationManager.update([camera]);
+  }
+
+  updateVisibility(camera) {
+    this.visibilityManager.update([camera]);
   }
 
   static load(id) {

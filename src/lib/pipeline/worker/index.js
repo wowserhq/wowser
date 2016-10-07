@@ -2,8 +2,8 @@ import ADT from '../adt/loader';
 import DBC from '../dbc/loader';
 import M2 from '../m2/loader';
 import WDT from '../wdt/loader';
-import WMO from '../wmo/loader';
-import WMOGroup from '../wmo/group/loader';
+import WMORoot from '../wmo/root/loader/worker';
+import WMOGroup from '../wmo/group/loader/worker';
 
 const worker = self;
 
@@ -12,12 +12,19 @@ const loaders = {
   DBC,
   M2,
   WDT,
-  WMO,
+  WMORoot,
   WMOGroup
 };
 
-const fulfill = function(type, result) {
-  worker.postMessage([type].concat(result));
+const fulfill = function(success, value) {
+  const result = {
+    success: success,
+    value: value
+  };
+
+  const transferable = value.transferable || [];
+
+  worker.postMessage(result, transferable);
 };
 
 const resolve = function(value) {
