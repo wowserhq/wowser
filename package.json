@@ -85,7 +85,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-remember": "^0.3.0",
     "gulp-stylus": "^2.4.0",
-    "html-webpack-plugin": "^2.20.0",
+    "html-webpack-plugin": "^2.21.0",
     "istanbul": "^0.4.0",
     "json-loader": "^0.5.4",
     "mocha": "^2.5.0",
