@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 import TextureLoader from '../../texture-loader';
 import vertexShader from './shaders/vertex.glsl';
