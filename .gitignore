@@ -5,3 +5,5 @@
 /public/styles/
 /public/templates/
 /spec/
+/nbproject/private/
+/npm-debug.log
