@@ -3,16 +3,15 @@ uniform int fragmentShaderMode;
 uniform int textureCount;
 uniform sampler2D textures[4];
 
-varying vec2 texture1Coord;
-varying vec2 texture2Coord;
+varying vec2 uv1;
+varying vec2 uv2;
 
 varying float cameraDistance;
 
 varying vec3 vertexWorldNormal;
 
-varying vec4 vertexColor;
-
-uniform float animatedTransparencies[4];
+varying vec4 animatedVertexColor;
+uniform float animatedTransparency;
 
 uniform float alphaKey;
 
@@ -25,17 +24,9 @@ uniform float fogStart;
 uniform float fogEnd;
 uniform vec3 fogColor;
 
-vec3 saturate(vec3 value) {
-  vec3 result = clamp(value, 0.0, 1.0);
-  return result;
-}
+uniform int blendingMode;
 
-float saturate(float value) {
-  float result = clamp(value, 0.0, 1.0);
-  return result;
-}
-
-vec4 fragCombinersWotlkSingle(sampler2D texture1, vec2 uv1) {
+vec4 fragCombinersWrath1Pass(sampler2D texture1, vec2 uv1) {
   vec4 texture1Color = texture2D(texture1, uv1);
 
   if (alphaKey == 1.0 && texture1Color.a <= 0.5) {
@@ -45,20 +36,26 @@ vec4 fragCombinersWotlkSingle(sampler2D texture1, vec2 uv1) {
   vec4 c1 = texture1Color;
 
   // Apply animated transparency (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
+  c1.a *= animatedTransparency;
 
   // Blend with vertex color
-  c1.rgb *= (vertexColor.rgb * vertexColor.a);
+  c1.rgb *= (animatedVertexColor.rgb * animatedVertexColor.a);
 
   // Restore full color intensity after blending with vertexColor
   c1.rgb *= 2.0;
+
+  // Force transparent pixels to fully opaque if in opaque blending mode (0). Needed to prevent
+  // transparent pixels from becoming inappropriately bright.
+  if (blendingMode == 0) {
+    c1.a = 1.0;
+  }
 
   vec4 outputColor = c1;
 
   return outputColor;
 }
 
-vec4 fragCombinersWotlkMulti2(sampler2D texture1, vec2 uv1, sampler2D texture2, vec2 uv2) {
+vec4 fragCombinersWrath2Pass(sampler2D texture1, vec2 uv1, sampler2D texture2, vec2 uv2) {
   vec4 texture1Color = texture2D(texture1, uv1);
   vec4 texture2Color = texture2D(texture2, uv2);
 
@@ -69,67 +66,14 @@ vec4 fragCombinersWotlkMulti2(sampler2D texture1, vec2 uv1, sampler2D texture2, 
   vec4 c1 = texture1Color;
   vec4 c2 = texture2Color;
 
-  // Apply animated transparencies (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
-  c2.a *= animatedTransparencies[1];
+  // Apply animated transparency (defaults to 1.0)
+  c1.a *= animatedTransparency;
 
   // Blend texture alphas
   c1.a *= c2.a;
 
   // Blend with vertex color
-  c1.rgb *= (vertexColor.rgb * vertexColor.a);
-
-  // Restore full color intensity after blending with vertexColor
-  c1.rgb *= 2.0;
-
-  vec4 outputColor = c1;
-
-  return outputColor;
-}
-
-vec4 fragCombinersOpaque(sampler2D texture1, vec2 uv1) {
-  vec4 texture1Color = texture2D(texture1, uv1);
-
-  if (alphaKey == 1.0 && texture1Color.a <= 0.5) {
-    discard;
-  }
-
-  vec4 c1 = texture1Color;
-
-  // Apply animated transparency (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
-
-  // Blend with vertex color
-  c1.rgb *= (vertexColor.rgb * vertexColor.a);
-
-  // Restore full color intensity after blending with vertexColor
-  c1.rgb *= 2.0;
-
-  vec4 outputColor = c1;
-
-  return outputColor;
-}
-
-vec4 fragCombinersOpaqueAlpha(sampler2D texture1, vec2 uv1, sampler2D texture2, vec2 uv2) {
-  vec4 texture1Color = texture2D(texture1, uv1);
-  vec4 texture2Color = texture2D(texture2, uv2);
-
-  if (alphaKey == 1.0 && texture1Color.a <= 0.5) {
-    discard;
-  }
-
-  vec4 c1 = texture1Color;
-  vec4 c2 = texture2Color;
-
-  // Apply animated transparencies (defaults to 1.0)
-  c1.a *= animatedTransparencies[0];
-  c2.a *= animatedTransparencies[1];
-
-  c2.rgb = -c1.rgb + c2.rgb;
-  c1.rgb = c2.a * c2.rgb + c1.rgb;
-
-  // Blend with vertex color
-  c1.rgb *= (vertexColor.rgb * vertexColor.a);
+  c1.rgb *= (animatedVertexColor.rgb * animatedVertexColor.a);
 
   // Restore full color intensity after blending with vertexColor
   c1.rgb *= 2.0;
@@ -155,14 +99,23 @@ vec4 applyDiffuseLighting(vec4 color) {
 
 vec4 applyFog(vec4 color) {
   float fogFactor = (fogEnd - cameraDistance) / (fogEnd - fogStart);
-  fogFactor = fogFactor * fogModifier;
-  fogFactor = clamp(fogFactor, 0.0, 1.0);
-  color.rgb = mix(fogColor.rgb, color.rgb, fogFactor);
+  fogFactor = 1.0 - clamp(fogFactor, 0.0, 1.0);
+  float fogColorFactor = fogFactor * fogModifier;
 
-  // Ensure alpha channel is gone once a sufficient distance into the fog is reached. Prevents
-  // texture artifacts from overlaying alpha values.
-  if (cameraDistance > fogEnd * 1.5) {
+  // Only mix fog color for simple blending modes.
+  if (blendingMode <= 2) {
+    color.rgb = mix(color.rgb, fogColor.rgb, fogColorFactor);
+  }
+
+  // Ensure certain blending mode pixels become fully opaque by fog end.
+  if (cameraDistance >= fogEnd) {
+    color.rgb = fogColor.rgb;
     color.a = 1.0;
+  }
+
+  // Ensure certain blending mode pixels fade out as fog increases.
+  if (blendingMode >= 2 && blendingMode < 6) {
+    color.a *= 1.0 - fogFactor;
   }
 
   return color;
@@ -173,17 +126,12 @@ vec4 finalizeColor(vec4 color) {
     color = applyDiffuseLighting(color);
   }
 
-  if (fogModifier > 0.0) {
-    color = applyFog(color);
-  }
+  color = applyFog(color);
 
   return color;
 }
 
 void main() {
-  vec2 uv1 = vec2(texture1Coord);
-  vec2 uv2 = vec2(texture2Coord);
-
   vec4 color;
 
   // -1 = unknown / unhandled
@@ -192,9 +140,9 @@ void main() {
   if (fragmentShaderMode == -1) {
     color = texture2D(textures[0], uv1);
   } else if (fragmentShaderMode == 0) {
-    color = fragCombinersWotlkSingle(textures[0], uv1);
+    color = fragCombinersWrath1Pass(textures[0], uv1);
   } else if (fragmentShaderMode == 1) {
-    color = fragCombinersWotlkMulti2(textures[0], uv1, textures[1], uv2);
+    color = fragCombinersWrath2Pass(textures[0], uv1, textures[1], uv2);
   }
 
   // Apply lighting and fog.

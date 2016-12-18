@@ -32,7 +32,7 @@ class WMOManager {
         ::this.processLoadEntry,
         this.constructor.LOAD_ENTRY_INTERVAL,
         this.constructor.LOAD_ENTRY_WORK_FACTOR,
-        this.constructor.LOAD_ENTRY_WORK_MIN,
+        this.constructor.LOAD_ENTRY_WORK_MIN
       )
     };
   }

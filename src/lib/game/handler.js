@@ -26,9 +26,9 @@ class GameHandler extends Socket {
     this.on('packet:receive:SMSG_LOGIN_VERIFY_WORLD', ::this.handleWorldLogin);
   }
 
-  // Connects to given host through given port
+  // Connects to given host through given realm information
   connect(host, realm) {
-    this.realm=realm;
+    this.realm = realm;
     if (!this.connected) {
       super.connect(host, realm.port);
       console.info('connecting to game-server @', this.host, ':', this.port);

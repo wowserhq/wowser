@@ -3,6 +3,7 @@ import THREE from 'three';
 import Submesh from './submesh';
 import M2Material from './material';
 import AnimationManager from './animation-manager';
+import BatchManager from './batch-manager';
 
 class M2 extends THREE.Group {
 
@@ -13,17 +14,21 @@ class M2 extends THREE.Group {
 
     this.matrixAutoUpdate = false;
 
+    this.eventListeners = [];
+
     this.name = path.split('\\').slice(-1).pop();
 
     this.path = path;
     this.data = data;
     this.skinData = skinData;
 
-    // Instanceable M2s can share geometry and texture units.
+    this.batchManager = new BatchManager();
+
+    // Instanceable M2s share geometry, texture units, and animations.
     this.canInstance = data.canInstance;
 
     this.animated = data.animated;
-    this.animations = new AnimationManager(this, data.animations);
+
     this.billboards = [];
 
     // Keep track of whether or not to use skinning. If the M2 has bone animations, useSkinning is
@@ -43,15 +48,32 @@ class M2 extends THREE.Group {
     this.bones = [];
     this.rootBones = [];
 
+    if (instance) {
+      this.animations = instance.animations;
+
+      // To prevent over-updating animation timelines, instanced M2s shouldn't receive animation
+      // time deltas. Instead, only the original M2 should receive time deltas.
+      this.receivesAnimationUpdates = false;
+    } else {
+      this.animations = new AnimationManager(this, data.animations, data.sequences);
+
+      if (this.animated) {
+        this.receivesAnimationUpdates = true;
+      } else {
+        this.receivesAnimationUpdates = false;
+      }
+    }
+
     this.createSkeleton(data.bones);
 
     // Instanced M2s can share geometries and texture units.
     if (instance) {
-      this.textureUnits = instance.textureUnits;
+      this.batches = instance.batches;
       this.geometry = instance.geometry;
       this.submeshGeometries = instance.submeshGeometries;
     } else {
-      this.createTextureUnits(data, skinData);
+      this.createTextureAnimations(data);
+      this.createBatches(data, skinData);
       this.createGeometry(data.vertices);
     }
 
@@ -72,7 +94,7 @@ class M2 extends THREE.Group {
 
       // M2 bone positioning seems to be inverted on X and Y
       const { pivotPoint } = boneDef;
-      const correctedPosition = new THREE.Vector3(-pivotPoint.x, -pivotPoint.y, pivotPoint.z);
+      const correctedPosition = new THREE.Vector3(-pivotPoint[0], -pivotPoint[1], pivotPoint[2]);
       bone.position.copy(correctedPosition);
 
       if (boneDef.parentID > -1) {
@@ -111,11 +133,11 @@ class M2 extends THREE.Group {
           trackType: 'VectorKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Vector3(
-              bone.position.x + -value.x,
-              bone.position.y + -value.y,
-              bone.position.z + value.z
-            );
+            return [
+              bone.position.x + -value[0],
+              bone.position.y + -value[1],
+              bone.position.z + value[2]
+            ];
           }
         });
       }
@@ -129,7 +151,7 @@ class M2 extends THREE.Group {
           trackType: 'QuaternionKeyframeTrack',
 
           valueTransform: function(value) {
-            return new THREE.Quaternion(value.x, value.y, -value.z, -value.w);
+            return [value[0], value[1], -value[2], -value[3]];
           }
         });
       }
@@ -140,11 +162,7 @@ class M2 extends THREE.Group {
           target: bone,
           property: 'scale',
           animationBlock: boneDef.scaling,
-          trackType: 'VectorKeyframeTrack',
-
-          valueTransform: function(value) {
-            return new THREE.Vector3(value.x, value.y, value.z);
-          }
+          trackType: 'VectorKeyframeTrack'
         });
       }
     }
@@ -160,76 +178,35 @@ class M2 extends THREE.Group {
     this.skeleton.matrixAutoUpdate = this.matrixAutoUpdate;
   }
 
-  // Returns a map of M2Materials indexed by submesh. Each material represents a texture unit,
+  // Returns a map of M2Materials indexed by submesh. Each material represents a batch,
   // to be rendered in the order of appearance in the map's entry for the submesh index.
-  createTextureUnits(data, skinData) {
-    const textureUnits = new Map();
+  createBatches(data, skinData) {
+    const batches = new Map();
 
-    const textureUnitDefs = skinData.textureUnits;
+    const batchDefs = this.batchManager.createDefs(data, skinData);
 
-    const { textureLookups, textures, renderFlags } = data;
-    const { transparencyLookups, transparencies, colors } = data;
+    const batchLen = batchDefs.length;
+    for (let batchIndex = 0; batchIndex < batchLen; ++batchIndex) {
+      const batchDef = batchDefs[batchIndex];
 
-    const tuLen = textureUnitDefs.length;
-    for (let tuIndex = 0; tuIndex < tuLen; ++tuIndex) {
-      const textureUnit = textureUnitDefs[tuIndex];
-      const { submeshIndex, textureUnitNumber, opCount } = textureUnit;
+      const { submeshIndex } = batchDef;
 
-      if (!textureUnits.has(submeshIndex)) {
-        textureUnits.set(submeshIndex, []);
+      if (!batches.has(submeshIndex)) {
+        batches.set(submeshIndex, []);
       }
 
-      // Array that will contain materials matching each texture unit.
-      const submeshTextureUnits = textureUnits.get(submeshIndex);
-
-      const materialDef = {
-        shaderID: null,
-        opCount: textureUnit.opCount,
-        renderFlags: null,
-        blendingMode: null,
-        color: null,
-        textures: [],
-        transparencies: []
-      };
-
-      // Shader ID (needs to be unmasked to get actual shader ID)
-      materialDef.shaderID = textureUnit.shaderID;
-
-      // Render flags and blending mode
-      const renderFlagsIndex = textureUnit.renderFlagsIndex;
-      materialDef.renderFlags = renderFlags[renderFlagsIndex].flags;
-      materialDef.blendingMode = renderFlags[renderFlagsIndex].blendingMode;
-
-      // Vertex color animation block
-      if (textureUnit.colorIndex > -1) {
-        materialDef.color = colors[textureUnit.colorIndex];
-      }
-
-      for (let opIndex = 0; opIndex < opCount; ++opIndex) {
-        // Texture
-        const textureLookup = textureUnit.textureIndex + opIndex;
-        const textureIndex = textureLookups[textureLookup];
-        const texture = textures[textureIndex];
-        materialDef.textures[opIndex] = texture;
-
-        // Texture transparency animation block
-        const transparencyLookup = textureUnit.transparencyIndex + opIndex;
-        const transparencyIndex = transparencyLookups[transparencyLookup];
-        const transparency = transparencies[transparencyIndex];
-        if (transparency) {
-          materialDef.transparencies[opIndex] = transparency;
-        }
-      }
+      // Array that will contain materials matching each batch.
+      const submeshBatches = batches.get(submeshIndex);
 
       // Observe the M2's skinning flag in the M2Material.
-      materialDef.useSkinning = this.useSkinning;
+      batchDef.useSkinning = this.useSkinning;
 
-      const tuMaterial = new M2Material(materialDef);
+      const batchMaterial = new M2Material(this, batchDef);
 
-      submeshTextureUnits[textureUnitNumber] = tuMaterial;
+      submeshBatches.unshift(batchMaterial);
     }
 
-    this.textureUnits = textureUnits;
+    this.batches = batches;
   }
 
   createGeometry(vertices) {
@@ -284,6 +261,10 @@ class M2 extends THREE.Group {
 
     mesh.matrixAutoUpdate = this.matrixAutoUpdate;
 
+    // Never display the mesh
+    // TODO: We shouldn't really even have this mesh in the first place, should we?
+    mesh.visible = false;
+
     // Add mesh to the group
     this.add(mesh);
 
@@ -300,19 +281,19 @@ class M2 extends THREE.Group {
     for (let submeshIndex = 0; submeshIndex < subLen; ++submeshIndex) {
       const submeshDef = submeshes[submeshIndex];
 
-      // Bring up relevant texture units and geometry.
-      const submeshTextureUnits = this.textureUnits.get(submeshIndex);
+      // Bring up relevant batches and geometry.
+      const submeshBatches = this.batches.get(submeshIndex);
       const submeshGeometry = this.submeshGeometries.get(submeshIndex) ||
         this.createSubmeshGeometry(submeshDef, indices, triangles, vertices);
 
-      const submesh = this.createSubmesh(submeshDef, submeshGeometry, submeshTextureUnits);
+      const submesh = this.createSubmesh(submeshDef, submeshGeometry, submeshBatches);
 
       this.parts.set(submesh.userData.partID, submesh);
       this.submeshes.push(submesh);
 
       this.submeshGeometries.set(submeshIndex, submeshGeometry);
 
-      this.mesh.add(submesh);
+      this.add(submesh);
     }
   }
 
@@ -343,7 +324,7 @@ class M2 extends THREE.Group {
 
         const { textureCoords, normal } = vertices[index];
 
-        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0], textureCoords[1]));
+        uvs[faceIndex].push(new THREE.Vector2(textureCoords[0][0], textureCoords[0][1]));
 
         face.vertexNormals.push(new THREE.Vector3(normal[0], normal[1], normal[2]));
       }
@@ -356,7 +337,7 @@ class M2 extends THREE.Group {
     return bufferGeometry;
   }
 
-  createSubmesh(submeshDef, geometry, textureUnits) {
+  createSubmesh(submeshDef, geometry, batches) {
     const rootBone = this.bones[submeshDef.rootBone];
 
     const opts = {
@@ -369,11 +350,123 @@ class M2 extends THREE.Group {
 
     const submesh = new Submesh(opts);
 
-    submesh.applyTextureUnits(textureUnits);
+    submesh.applyBatches(batches);
 
-    submesh.userData.partID = submeshDef.id;
+    submesh.userData.partID = submeshDef.partID;
 
     return submesh;
+  }
+
+  createTextureAnimations(data) {
+    this.textureAnimations = new THREE.Object3D();
+    this.uvAnimationValues = [];
+    this.transparencyAnimationValues = [];
+    this.vertexColorAnimationValues = [];
+
+    const { uvAnimations, transparencyAnimations, vertexColorAnimations } = data;
+
+    this.createUVAnimations(uvAnimations);
+    this.createTransparencyAnimations(transparencyAnimations);
+    this.createVertexColorAnimations(vertexColorAnimations);
+  }
+
+  // TODO: Add support for rotation and scaling in UV animations.
+  createUVAnimations(uvAnimationDefs) {
+    if (uvAnimationDefs.length === 0) {
+      return;
+    }
+
+    uvAnimationDefs.forEach((uvAnimationDef, index) => {
+      // Default value
+      this.uvAnimationValues[index] = {
+        translation: [1.0, 1.0, 1.0],
+        rotation: [0.0, 0.0, 0.0, 1.0],
+        scaling: [1.0, 1.0, 1.0],
+        matrix: new THREE.Matrix4()
+      };
+
+      const { translation } = uvAnimationDef;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'uvAnimationValues[' + index + '].translation',
+        animationBlock: translation,
+        trackType: 'VectorKeyframeTrack'
+      });
+
+      // Set up event subscription to produce matrix from translation, rotation, and scaling
+      // values.
+      const updater = () => {
+        const animationValue = this.uvAnimationValues[index];
+
+        // Set up matrix for use in uv transform in vertex shader.
+        animationValue.matrix = new THREE.Matrix4().compose(
+          new THREE.Vector3(...animationValue.translation),
+          new THREE.Quaternion(...animationValue.rotation),
+          new THREE.Vector3(...animationValue.scaling)
+        );
+      };
+
+      this.animations.on('update', updater);
+
+      this.eventListeners.push([this.animations, 'update', updater]);
+    });
+  }
+
+  createTransparencyAnimations(transparencyAnimationDefs) {
+    if (transparencyAnimationDefs.length === 0) {
+      return;
+    }
+
+    transparencyAnimationDefs.forEach((transparencyAnimationDef, index) => {
+      // Default value
+      this.transparencyAnimationValues[index] = 1.0;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'transparencyAnimationValues[' + index + ']',
+        animationBlock: transparencyAnimationDef,
+        trackType: 'NumberKeyframeTrack',
+
+        valueTransform: function(value) {
+          return [value];
+        }
+      });
+    });
+  }
+
+  createVertexColorAnimations(vertexColorAnimationDefs) {
+    if (vertexColorAnimationDefs.length === 0) {
+      return;
+    }
+
+    vertexColorAnimationDefs.forEach((vertexColorAnimationDef, index) => {
+      // Default value
+      this.vertexColorAnimationValues[index] = {
+        color: [1.0, 1.0, 1.0],
+        alpha: 1.0
+      };
+
+      const { color, alpha } = vertexColorAnimationDef;
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'vertexColorAnimationValues[' + index + '].color',
+        animationBlock: color,
+        trackType: 'VectorKeyframeTrack'
+      });
+
+      this.animations.registerTrack({
+        target: this,
+        property: 'vertexColorAnimationValues[' + index + '].alpha',
+        animationBlock: alpha,
+        trackType: 'NumberKeyframeTrack',
+
+        valueTransform: function(value) {
+          return [value];
+        }
+      });
+    });
   }
 
   applyBillboards(camera) {
@@ -460,7 +553,17 @@ class M2 extends THREE.Group {
     }
   }
 
+  detachEventListeners() {
+    this.eventListeners.forEach((entry) => {
+      const [target, event, listener] = entry;
+      target.removeListener(event, listener);
+    });
+  }
+
   dispose() {
+    this.detachEventListeners();
+    this.eventListeners = [];
+
     this.geometry.dispose();
     this.mesh.geometry.dispose();
 
@@ -473,9 +576,10 @@ class M2 extends THREE.Group {
     let instance = {};
 
     if (this.canInstance) {
+      instance.animations = this.animations;
       instance.geometry = this.geometry;
       instance.submeshGeometries = this.submeshGeometries;
-      instance.textureUnits = this.textureUnits;
+      instance.batches = this.batches;
     } else {
       instance = null;
     }

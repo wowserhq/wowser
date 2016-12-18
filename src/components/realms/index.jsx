@@ -32,7 +32,7 @@ class RealmsScreen extends React.Component {
   }
 
   connect(realm) {
-    session.game.connect(session.authstate.host, realm);
+    session.game.connect(session.auth.host, realm);
   }
 
   refresh() {
@@ -46,8 +46,7 @@ class RealmsScreen extends React.Component {
   _onRealmSelect(event) {
     const realms = session.realms.list;
     this.setState({
-        realm: realms[event.target.selectedIndex],
-        realms: realms
+        realm: realms[event.target.selectedIndex]
     });
   }
 

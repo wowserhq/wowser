@@ -138,7 +138,8 @@ class DoodadManager {
     // Auto-play animation index 0 in doodad, if animations are present.
     // TODO: Properly manage doodad animations.
     if (doodad.animations.length > 0) {
-      doodad.animations.play(0);
+      doodad.animations.playAnimation(0);
+      doodad.animations.playAllSequences();
     }
   }
 
@@ -216,7 +217,7 @@ class DoodadManager {
         return;
       }
 
-      if (doodad.animations.length > 0) {
+      if (doodad.receivesAnimationUpdates && doodad.animations.length > 0) {
         doodad.animations.update(delta);
       }
 
