@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 
 import Message from './message';
+import GamePacket from '../packet';
+import GameOpcode from '../opcode';
 
 class ChatHandler extends EventEmitter {
 
@@ -36,19 +38,25 @@ class ChatHandler extends EventEmitter {
 
   // Sends given message
   send(_message) {
-    throw new Error('sending chat messages is not yet implemented');
+    const app = new GamePacket(GameOpcode.CMSG_MESSAGE_CHAT, 64+_message.length);
+    app.writeUnsignedInt(1); // type , 1: say [TODO: select channel ]
+    app.writeUnsignedInt(1); // lang , 0: universal [TODO: use race specific ]
+    app.writeString(_message);
+
+    this.session.game.send(app);
+    return true;
   }
 
   // Message handler (SMSG_MESSAGE_CHAT)
   handleMessage(gp) {
-    gp.readUnsignedByte(); // type
-    gp.readUnsignedInt(); // language
+    const type = gp.readUnsignedByte(); // type
+    const lang = gp.readUnsignedInt(); // language
     const guid1 = gp.readGUID();
-    gp.readUnsignedInt();
-    gp.readGUID(); // guid2
+    const unk1 = gp.readUnsignedInt();
+    const guid2 = gp.readGUID(); // guid2
     const len = gp.readUnsignedInt();
     const text = gp.readString(len);
-    gp.readUnsignedByte(); // flags
+    const flags = gp.readUnsignedByte(); // flags
 
     const message = new Message();
     message.text = text;

@@ -29,7 +29,7 @@ class ChatPanel extends React.Component {
   send(text) {
     const message = session.chat.create();
     message.text = text;
-    session.chat.messages.push(message);
+    session.chat.send(text);
   }
 
   _onChange(event) {
