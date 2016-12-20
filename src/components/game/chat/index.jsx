@@ -1,5 +1,6 @@
 import React from 'react';
 import classes from 'classnames';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import './index.styl';
 
@@ -11,62 +12,185 @@ class ChatPanel extends React.Component {
     super();
 
     this.state = {
-      text: '',
-      messages: session.chat.messages
+      playerNames : session.chat.playerNames,
+      sayText: '',
+      guildText: '',
+      worldText: '',
+      sayMessages: session.chat.sayMessages,
+      guildMessages: [],
+      worldMessages: []
     };
 
-    this._onChange = ::this._onChange;
-    this._onMessage = ::this._onMessage;
-    this._onSubmit = ::this._onSubmit;
+    this._onChangeSay = ::this._onChangeSay;
+    this._onMessageSay = ::this._onMessageSay;
+    this._onSubmitSay = ::this._onSubmitSay;
+    this._onChangeGuild = ::this._onChangeGuild;
+    this._onMessageGuild = ::this._onMessageGuild;
+    this._onSubmitGuild = ::this._onSubmitGuild;
+    this._onChangeWorld = ::this._onChangeWorld;
+    this._onMessageWorld = ::this._onMessageGuild;
+    this._onSubmitWorld = ::this._onSubmitGuild;
 
-    session.chat.on('message', this._onMessage);
+    session.chat.on('message', this._onMessageSay);
   }
 
   componentDidUpdate() {
-    this.refs.messages.scrollTop = this.refs.messages.scrollHeight;
+    if (document.getElementById("sayMessages"))
+      document.getElementById("sayMessages").scrollTop   = document.getElementById("sayMessages").scrollHeight;
+    else if (document.getElementById("worldMessages"))
+      document.getElementById("worldMessages").scrollTop   = document.getElementById("worldMessages").scrollHeight;
+    else if (document.getElementById("guildMessages"))
+      document.getElementById("guildMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
   }
 
-  send(text) {
+/*
+ * SAY
+ */
+
+  sendSay(text) {
     const message = session.chat.create();
     message.text = text;
     session.chat.send(text);
   }
 
-  _onChange(event) {
-    this.setState({ text: event.target.value });
+  _onChangeSay(event) {
+    this.setState({ sayText: event.target.value });
   }
 
-  _onMessage() {
-    this.setState({ messages: session.chat.messages });
+  _onMessageSay() {
+    this.setState({ sayMessages: session.chat.sayMessages });
   }
 
-  _onSubmit(event) {
+  _onSubmitSay(event) {
     event.preventDefault();
-    if (this.state.text) {
-      this.send(this.state.text);
-      this.setState({ text: '' });
+    if (this.state.sayText) {
+      this.sendSay(this.state.sayText);
+      this.setState({ sayText: '' });
     }
+  }
+  
+  /*
+   * GUILD
+   */
+  
+  sendGuild(text) {
+    const message = session.chat.create();
+    message.text = text;
+    session.chat.send(text);
+  }
+
+  _onChangeGuild(event) {
+    this.setState({ guildText: event.target.value });
+  }
+
+  _onMessageGuild() {
+    this.setState({ guildMessages: session.chat.guildMessages });
+  }
+
+  _onSubmitGuild(event) {
+    event.preventDefault();
+    if (this.state.guildText) {
+      this.sendGuild(this.state.guildText);
+      this.setState({ guildText: '' });
+    }
+  }
+  
+  /**
+   *  WORLD
+   */
+  sendWorld(text) {
+    const message = session.chat.create();
+    message.text = text;
+    session.chat.send(text);
+  }
+
+  _onChangeWorld(event) {
+    this.setState({ worldText: event.target.value });
+  }
+
+  _onMessageWorld() {
+    this.setState({ worldMessages: session.chat.worldMessages });
+  }
+
+  _onSubmitWorld(event) {
+    event.preventDefault();
+    if (this.state.worldText) {
+      this.sendWorld(this.state.worldText);
+      this.setState({ worldText: '' });
+    }
+  }
+  
+  _getTime(local) {
+      return local.getHours() + ":" + local.getMinutes() + ":" + local.getSeconds();
   }
 
   render() {
     return (
-      <chat className="chat frame">
-        <ul ref="messages">
-          { this.state.messages.map((message, index) => {
-            const className = classes('message', message.kind);
-            return (
-              <li className={ className } key={ index }>
-                { message.text }
-              </li>
-            );
-          }) }
-        </ul>
+        <chat className="chat frame" ref="chat">
+            <Tabs
+                onSelect={this.handleSelect}
+                selectedIndex={0}
+              >
+                <TabList>
+                  <Tab>Say</Tab>
+                  <Tab>Guild</Tab>
+                  <Tab>World</Tab>
+                </TabList>
+                <TabPanel>
+                      <ul id="sayMessages">
+                        { this.state.sayMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li className={ className } key={ index }>
+                                <span class="time">[{this._getTime(message.timestamp)}] </span>
+                                <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                                Says: { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
 
-        <form onSubmit={ this._onSubmit }>
-          <input type="text" onChange={ this._onChange }
-                 name="text" value={ this.state.text } />
-        </form>
-      </chat>
+                      <form onSubmit={ this._onSubmitSay }>
+                        <input type="text" onChange={ this._onChangeSay }
+                               name="text" value={ this.state.sayText } />
+                      </form>
+                </TabPanel>
+                <TabPanel>
+                      <ul ref="guildMessages">
+                        { this.state.guildMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li className={ className } key={ index }>
+                              { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
+
+                      <form onSubmit={ this._onSubmitGuild }>
+                        <input type="text" onChange={ this._onChangeGuild }
+                               name="text" value={ this.state.guildText } />
+                      </form>
+                </TabPanel>
+                <TabPanel>
+                      <ul id="worldMessages">
+                        { this.state.worldMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li class="message.guid" className={ className } key={ index }>
+                              { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
+
+                      <form onSubmit={ this._onSubmitWorld }>
+                        <input type="text" onChange={ this._onChangeWorld }
+                               name="text" value={ this.state.worldText } />
+                      </form>
+                </TabPanel>
+            </Tabs>
+        </chat>
     );
   }
 

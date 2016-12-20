@@ -9,6 +9,9 @@ class GameOpcode {
   static SMSG_CHARACTER_LOGIN_FAILED        = 0x0041;
   static SMSG_LOGIN_SETTIMESPEED            = 0x0042;
 
+  static CMSG_NAME_QUERY                    = 0x0050;
+  static SMSG_NAME_QUERY_RESPONSE           = 0x0051;
+
   static SMSG_CONTACT_LIST                  = 0x0067;
 
   static CMSG_MESSAGE_CHAT                  = 0x0095;
