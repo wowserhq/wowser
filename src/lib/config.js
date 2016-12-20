@@ -4,7 +4,7 @@ class Raw {
   }
 
   raw(value) {
-    return ('\u0000\u0000\u0000\u0000' + value.split('').reverse().join('')).slice(-4);
+    return (value.split('').reverse().join('')+'\u0000' ).slice(0,4);
   }
 
   get locale() {
