@@ -225,7 +225,7 @@ class GameHandler extends Socket {
   joinWorldChannel() {
       console.log("join world");
 
-      var channel="world";
+      var channel=ChatEnum.channel;
       var pass="";
 
       var size=1 + 16 +  4 + 4 + channel.length + pass.length;

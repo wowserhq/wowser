@@ -51,7 +51,7 @@ class ChatHandler extends EventEmitter {
   send(_message,type) {
     var size=64+_message.length;
 
-    var channel = "world\0";
+    var channel = ChatEnum.channel+"\0";
 
 
     if (type==ChatEnum.CHAT_MSG_CHANNEL) {
@@ -79,11 +79,11 @@ class ChatHandler extends EventEmitter {
   }
   
   handleName(gp) {
-    //const guid = gp.readUnsignedByte();
+    const unk = gp.readUnsignedByte();
+    const guid = unk > 1 ? gp.readUnsignedInt() : gp.readUnsignedByte(); // strange behaviour 
     //const name_known = gp.readUnsignedByte();
-    const unk  = gp.readUnsignedByte();
-    const guid = gp.readUnsignedByte();
     const name = gp.readString();
+
     
     // the buffer is empty now o_O
     /*
@@ -106,6 +106,7 @@ class ChatHandler extends EventEmitter {
   
   askName(guid) {
     const app = new GamePacket(GameOpcode.CMSG_NAME_QUERY, 64);
+
     app.writeGUID(guid);
 
     this.session.game.send(app);
@@ -150,11 +151,11 @@ class ChatHandler extends EventEmitter {
     {
         // hardcoded channel
         channelName = gp.readString(5);
-        if (channelName !== "world")
+        if (channelName !== ChatEnum.channel)
           return;
 
-        len = gp.length - 26; // channel buffer min size
-
+        var _unk=gp.readUnsignedInt();
+        len = gp.length - gp.index - 1; // channel buffer min size
         text = gp.readString(len);
     } else {
       const guid2 = gp.readGUID(); // guid2
@@ -167,7 +168,6 @@ class ChatHandler extends EventEmitter {
       len = gp.readUnsignedInt();
 
       text = gp.readString(len);
-
       flags = gp.readUnsignedByte(); // flags
     }
 
