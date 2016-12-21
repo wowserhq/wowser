@@ -40,7 +40,10 @@ class CharactersScreen extends React.Component {
   }
 
   _onCharacterSelect(event) {
-    this.setState({ character: event.target.value });
+    this.setState({ 
+      index : event.target.value,
+      character: this.state.characters[event.target.value] 
+    });
   }
 
   _onJoin() {
@@ -74,11 +77,11 @@ class CharactersScreen extends React.Component {
 
           <form onSubmit={ this._onSubmit }>
             <fieldset>
-              <select value={ this.state.character }
+              <select value={ this.state.index }
                       onChange={ this._onCharacterSelect }>
-                { this.state.characters.map((character) => {
+                { this.state.characters.map((character, index) => {
                   return (
-                    <option key={ character.guid } value={ character }>
+                    <option key={index} value={ index }>
                       { character.name }
                     </option>
                   );
