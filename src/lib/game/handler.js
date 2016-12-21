@@ -7,6 +7,7 @@ import GamePacket from './packet';
 import GUID from '../game/guid';
 import SHA1 from '../crypto/hash/sha1';
 import Socket from '../net/socket';
+import ChatEnum from '../game/chat/chatEnum';
 
 class GameHandler extends Socket {
 
@@ -120,7 +121,7 @@ class GameHandler extends Socket {
   ping() {
     console.log("ping");
     if (this.pingRecv === false) {
-       location.reload();
+        location.reload();
     }
 
     const app = new GamePacket(GameOpcode.CMSG_PING, GamePacket.OPCODE_SIZE_INCOMING + 64);
@@ -202,7 +203,7 @@ class GameHandler extends Socket {
     var that=this;
     setInterval(function() {
       that.ping()
-    },10000)
+    },50000)
 
     this.joinWorldChannel();
 
