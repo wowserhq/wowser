@@ -19,8 +19,8 @@ class GUID {
 
   // Short string representation of this GUID
   toString() {
-    const high = ('0000' + this.high.toString(16)).slice(-4);
-    const low = ('0000' + this.low.toString(16)).slice(-4);
+    const high = ('00000000' + this.high.toString(16)).slice(-8);
+    const low = ('00000000' + this.low.toString(16)).slice(-8);
     return `[GUID; Hex: 0x${high}${low}]`;
   }
 
