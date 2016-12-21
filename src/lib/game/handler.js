@@ -10,6 +10,8 @@ import Socket from '../net/socket';
 
 class GameHandler extends Socket {
 
+  static pingRecv = true;
+
   // Creates a new game handler
   constructor(session) {
     super();
@@ -21,6 +23,7 @@ class GameHandler extends Socket {
     this.on('data:receive', ::this.dataReceived);
 
     // Delegate packets
+    this.on('packet:receive:SMSG_PONG', ::this.handlePong);
     this.on('packet:receive:SMSG_AUTH_CHALLENGE', ::this.handleAuthChallenge);
     this.on('packet:receive:SMSG_AUTH_RESPONSE', ::this.handleAuthResponse);
     this.on('packet:receive:SMSG_LOGIN_VERIFY_WORLD', ::this.handleWorldLogin);
@@ -107,6 +110,28 @@ class GameHandler extends Socket {
     }
   }
 
+  // Pong handler (SMSG_PONG)
+  handlePong(gp) {
+    console.log("pong");
+    this.pingRecv = true;
+    var ping=gp.readUnsignedInt(); // (0x01)
+  }
+
+  ping() {
+    console.log("ping");
+    if (this.pingRecv === false) {
+       location.reload();
+    }
+
+    const app = new GamePacket(GameOpcode.CMSG_PING, GamePacket.OPCODE_SIZE_INCOMING + 64);
+    app.writeUnsignedInt(1);      // ping ( unknown value)
+    app.writeUnsignedInt(10);     // latency, 10ms for now
+
+    this.pingRecv = false;
+
+    this.send(app);
+  }
+
   // Auth challenge handler (SMSG_AUTH_CHALLENGE)
   handleAuthChallenge(gp) {
     console.info('handling auth challenge');
@@ -174,7 +199,34 @@ class GameHandler extends Socket {
 
   // World login handler (SMSG_LOGIN_VERIFY_WORLD)
   handleWorldLogin(_gp) {
+    var that=this;
+    setInterval(function() {
+      that.ping()
+    },10000)
+
+    this.joinWorldChannel();
+
+
     this.emit('join');
+  }
+
+
+  joinWorldChannel() {
+      console.log("join world");
+
+      var channel="world";
+      var pass="";
+
+      var size=1 + 16 +  4 + 4 + channel.length + pass.length;
+      const app = new GamePacket(GameOpcode.CMSG_JOIN_CHANNEL, size);
+      app.writeUnsignedInt(0);
+      app.writeByte(0);
+      app.writeByte(0);
+      app.writeString(channel);
+      app.writeString(pass);
+
+      this.session.game.send(app);
+      return true;
   }
 
 }

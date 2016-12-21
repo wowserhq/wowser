@@ -1,6 +1,7 @@
 import React from 'react';
 import classes from 'classnames';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import ChatEnum from '../../../lib/game/chat/chatEnum';
 
 import './index.styl';
 
@@ -17,8 +18,8 @@ class ChatPanel extends React.Component {
       guildText: '',
       worldText: '',
       sayMessages: session.chat.sayMessages,
-      guildMessages: [],
-      worldMessages: []
+      guildMessages: session.chat.guildMessages,
+      worldMessages: session.chat.worldMessages
     };
 
     this._onChangeSay = ::this._onChangeSay;
@@ -28,8 +29,8 @@ class ChatPanel extends React.Component {
     this._onMessageGuild = ::this._onMessageGuild;
     this._onSubmitGuild = ::this._onSubmitGuild;
     this._onChangeWorld = ::this._onChangeWorld;
-    this._onMessageWorld = ::this._onMessageGuild;
-    this._onSubmitWorld = ::this._onSubmitGuild;
+    this._onMessageWorld = ::this._onMessageWorld;
+    this._onSubmitWorld = ::this._onSubmitWorld;
 
     session.chat.on('message', this._onMessageSay);
   }
@@ -50,7 +51,7 @@ class ChatPanel extends React.Component {
   sendSay(text) {
     const message = session.chat.create();
     message.text = text;
-    session.chat.send(text);
+    session.chat.send(text,ChatEnum.CHAT_MSG_SAY);
   }
 
   _onChangeSay(event) {
@@ -76,7 +77,7 @@ class ChatPanel extends React.Component {
   sendGuild(text) {
     const message = session.chat.create();
     message.text = text;
-    session.chat.send(text);
+    session.chat.send(text,ChatEnum.CHAT_MSG_GUILD);
   }
 
   _onChangeGuild(event) {
@@ -101,7 +102,7 @@ class ChatPanel extends React.Component {
   sendWorld(text) {
     const message = session.chat.create();
     message.text = text;
-    session.chat.send(text);
+    session.chat.send(text,ChatEnum.CHAT_MSG_CHANNEL);
   }
 
   _onChangeWorld(event) {
@@ -129,7 +130,6 @@ class ChatPanel extends React.Component {
         <chat className="chat frame" ref="chat">
             <Tabs
                 onSelect={this.handleSelect}
-                selectedIndex={0}
               >
                 <TabList>
                   <Tab>Say</Tab>
@@ -142,9 +142,10 @@ class ChatPanel extends React.Component {
                           const className = classes('message', message.kind);
                           return (
                             <li className={ className } key={ index }>
-                                <span class="time">[{this._getTime(message.timestamp)}] </span>
-                                <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
-                                Says: { message.text }
+                              <span class="time">[{this._getTime(message.timestamp)}] </span>
+                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                              Says: { message.text }
                             </li>
                           );
                         }) }
@@ -161,7 +162,11 @@ class ChatPanel extends React.Component {
                           const className = classes('message', message.kind);
                           return (
                             <li className={ className } key={ index }>
-                              { message.text }
+                              <span class="time">[{this._getTime(message.timestamp)}] </span>
+                              <span class="type">[Guild]</span>
+                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                              : { message.text }
                             </li>
                           );
                         }) }
@@ -178,7 +183,11 @@ class ChatPanel extends React.Component {
                           const className = classes('message', message.kind);
                           return (
                             <li class="message.guid" className={ className } key={ index }>
-                              { message.text }
+                              <span class="time">[{this._getTime(message.timestamp)}] </span>
+                              <span class="type">[World]</span>
+                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                              : { message.text }
                             </li>
                           );
                         }) }
