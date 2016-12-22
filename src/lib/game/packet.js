@@ -6,6 +6,7 @@ import ObjectUtil from '../utils/object-util';
 class GamePacket extends BasePacket {
 
   // Header sizes in bytes for both incoming and outgoing packets
+  static HEADER_LARGE_SIZE_INCOMING = 5;
   static HEADER_SIZE_INCOMING = 4;
   static HEADER_SIZE_OUTGOING = 6;
 
@@ -13,11 +14,21 @@ class GamePacket extends BasePacket {
   static OPCODE_SIZE_INCOMING = 2;
   static OPCODE_SIZE_OUTGOING = 4;
 
-  constructor(opcode, source, outgoing = true) {
+  static LARGE_PACKET_FLAG = 0x80;
+
+  constructor(opcode, source, outgoing = true, isLarge = false) {
     if (!source) {
-      source = (outgoing) ? GamePacket.HEADER_SIZE_OUTGOING : GamePacket.HEADER_SIZE_INCOMING;
+      if (outgoing === true) {
+        source = GamePacket.HEADER_SIZE_OUTGOING
+      } else {
+        source = (isLarge === true ? GamePacket.HEADER_LARGE_SIZE_INCOMING : GamePacket.HEADER_SIZE_INCOMING);
+      }
     }
+
     super(opcode, source, outgoing);
+
+    // is it a large package ?
+    this.isLarge = isLarge;
   }
 
   // Retrieves the name of the opcode for this packet (if available)
@@ -30,7 +41,8 @@ class GamePacket extends BasePacket {
     if (this.outgoing) {
       return this.constructor.HEADER_SIZE_OUTGOING;
     }
-    return this.constructor.HEADER_SIZE_INCOMING;
+
+    return this.isLarge === true ? GamePacket.HEADER_LARGE_SIZE_INCOMING : GamePacket.HEADER_SIZE_INCOMING;
   }
 
   // Reads GUID from this packet

@@ -76,6 +76,8 @@ class GameHandler extends Socket {
         return;
       }
 
+      var isLarge = false;
+
       if (this.remaining === false) {
 
         if (this.buffer.available < GamePacket.HEADER_SIZE_INCOMING) {
@@ -87,12 +89,20 @@ class GameHandler extends Socket {
           this._crypt.decrypt(new Uint8Array(this.buffer.buffer, this.buffer.index, GamePacket.HEADER_SIZE_INCOMING));
         }
 
-        this.remaining = this.buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN);
+        var firstByte=this.buffer.raw[this.buffer.index];
+        isLarge = firstByte & GamePacket.LARGE_PACKET_FLAG;
+
+        if (isLarge) {
+          this._crypt.decrypt(new Uint8Array(this.buffer.buffer, this.buffer.index +  GamePacket.HEADER_SIZE_INCOMING, 1));
+          this.remaining = this.buffer.readUnsignedByte(ByteBuffer.BIG_ENDIAN) | this.buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN);
+        } else {
+          this.remaining = this.buffer.readUnsignedShort(ByteBuffer.BIG_ENDIAN);
+        }
       }
 
       if (this.remaining > 0 && this.buffer.available >= this.remaining) {
         const size = GamePacket.OPCODE_SIZE_INCOMING + this.remaining;
-        const gp = new GamePacket(this.buffer.readUnsignedShort(), this.buffer.seek(-GamePacket.HEADER_SIZE_INCOMING).read(size), false);
+        const gp = new GamePacket(this.buffer.readUnsignedShort(), this.buffer.seek(-GamePacket.HEADER_SIZE_INCOMING).read(size), false , isLarge);
 
         this.remaining = false;
 
