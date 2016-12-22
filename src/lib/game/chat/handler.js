@@ -161,42 +161,53 @@ class ChatHandler extends EventEmitter {
 
     const message = null;
 
+    var chatLimit=300;
+
     switch(type) {
         case ChatEnum.CHAT_MSG_SAY:
             message = new Message("area", text, guid1.low);
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_SYSTEM:
             message = new Message("system", text, 0); // hardcoded guid
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_EMOTE:
             message = new Message("me", text, guid1.low);
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_YELL:
             message = new Message("yell", text, guid1.low);
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_GUILD:
             message = new Message("guild", text, guid1.low);
             this.guildMessages.push(message);
+            this.guildMessages.length > chatLimit && this.guildMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_CHANNEL:
             message = new Message("channel", text, guid1.low);
             this.worldMessages.push(message);
+            this.worldMessages.length > chatLimit && this.worldMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_WHISPER:
             message = new Message("whisper incoming", text, guid1.low, guid2.low);
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_WHISPER_FOREIGN:
             message = new Message("whisper incoming", text, senderName, recvGuid.low);
             this.sayMessages.push(message);
+            this.sayMessages.length > chatLimit && this.sayMessages.shift();
         break;
         default:
             message = new Message("info", text, guid1.low);
             this.logsMessages.push(message);
+            this.logsMessages.length > chatLimit && this.logsMessages.shift();
         break;
     }
 
