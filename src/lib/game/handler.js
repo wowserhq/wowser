@@ -151,7 +151,7 @@ class GameHandler extends Socket {
     const declined = gp.readUnsignedByte();
     */
 
-    this.player.name=name;
+    this.session.player.name=name;
     
     this.playerNames[guid] = {
         name : name
