@@ -72,7 +72,7 @@ class CharactersScreen extends React.Component {
           <div className="divider"></div>
 
           <p>
-            At some point this screen will allow managing characters. Soon™
+            If you want to create a character, please use the official WoW Client
           </p>
 
           <form onSubmit={ this._onSubmit }>

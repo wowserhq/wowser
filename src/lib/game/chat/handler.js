@@ -46,6 +46,7 @@ class ChatHandler extends EventEmitter {
     // Listen for messages
     this.session.game.on('packet:receive:SMSG_GM_MESSAGECHAT', ::this.handleGmMessage);
     this.session.game.on('packet:receive:SMSG_MESSAGE_CHAT', ::this.handleMessage);
+    this.session.game.on('packet:receive:SMSG_CHANNEL_NOTIFY', ::this.handleNotify);
   }
 
   // Creates chat message
@@ -84,9 +85,14 @@ class ChatHandler extends EventEmitter {
     return true;
   }
 
+  handleNotify(gp) {
+    console.log(gp);
+  }
+
   handleGmMessage(gp) {
     this.handleMessage(gp,true);
   }
+
 
   // Message handler (SMSG_MESSAGE_CHAT)
   handleMessage(gp,isGm) {

@@ -35,6 +35,8 @@ class Socket extends EventEmitter {
   // Connects to given host through given port (if any; default port is implementation specific)
   connect(host, port = NaN) {
     if (!this.connected) {
+      var that = this;
+
       this.host = host;
       this.port = port;
       this.uri = 'ws://' + this.host + ':' + this.port;
@@ -50,7 +52,7 @@ class Socket extends EventEmitter {
       };
 
       this.socket.onclose = (e) => {
-        this.emit('disconnect', e);
+        that.disconnect();
       };
 
       this.socket.onmessage = (e) => {
@@ -86,6 +88,10 @@ class Socket extends EventEmitter {
     if (this.connected) {
       this.socket.close();
     }
+
+    alert("You have been disconnected");
+    location.reload();
+
     return this;
   }
 

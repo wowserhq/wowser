@@ -19,6 +19,8 @@ class GameOpcode {
 
   static CMSG_JOIN_CHANNEL                  = 0x0097;
 
+  static SMSG_CHANNEL_NOTIFY                = 0x0099;
+
   static SMSG_UPDATE_OBJECT                 = 0x00A9;
 
   static SMSG_MONSTER_MOVE                  = 0x00DD;
