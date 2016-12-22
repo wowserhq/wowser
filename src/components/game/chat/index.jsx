@@ -19,7 +19,8 @@ class ChatPanel extends React.Component {
       worldText: '',
       sayMessages: session.chat.sayMessages,
       guildMessages: session.chat.guildMessages,
-      worldMessages: session.chat.worldMessages
+      worldMessages: session.chat.worldMessages,
+      logsMessages: session.chat.logsMessages
     };
 
     this._onChangeSay = ::this._onChangeSay;
@@ -31,6 +32,7 @@ class ChatPanel extends React.Component {
     this._onChangeWorld = ::this._onChangeWorld;
     this._onMessageWorld = ::this._onMessageWorld;
     this._onSubmitWorld = ::this._onSubmitWorld;
+    this._onMessageLogs = ::this._onMessageLogs;
 
     session.chat.on('message', this._onMessageSay);
   }
@@ -42,6 +44,17 @@ class ChatPanel extends React.Component {
       document.getElementById("worldMessages").scrollTop   = document.getElementById("worldMessages").scrollHeight;
     else if (document.getElementById("guildMessages"))
       document.getElementById("guildMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
+    else if (document.getElementById("logsMessages"))
+      document.getElementById("logsMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
+  }
+
+  forceScroll() {
+    if (document.getElementById("sayMessages"))
+      document.getElementById("sayMessages").scrollTop   = document.getElementById("sayMessages").scrollHeight;
+    if (document.getElementById("worldMessages"))
+      document.getElementById("worldMessages").scrollTop   = document.getElementById("worldMessages").scrollHeight;
+    if (document.getElementById("guildMessages"))
+      document.getElementById("guildMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
   }
 
 /*
@@ -51,7 +64,7 @@ class ChatPanel extends React.Component {
   sendSay(text) {
     const message = session.chat.create();
     message.text = text;
-    session.chat.send(text,ChatEnum.CHAT_MSG_SAY);
+    session.chat.send(text, ChatEnum.CHAT_MSG_SAY);
   }
 
   _onChangeSay(event) {
@@ -120,7 +133,16 @@ class ChatPanel extends React.Component {
       this.setState({ worldText: '' });
     }
   }
+
+  /*
+    LOGS
+   */
+
+  _onMessageLogs() {
+    this.setState({ logsMessages: session.chat.logsMessages });
+  }
   
+
   _getTime(local) {
       return local.getHours() + ":" + local.getMinutes() + ":" + local.getSeconds();
   }
@@ -129,15 +151,16 @@ class ChatPanel extends React.Component {
     return (
         <chat className="chat frame" ref="chat">
             <Tabs
-                onSelect={this.handleSelect}
+                onSelect={this.forceScroll}
               >
                 <TabList>
                   <Tab>Say</Tab>
                   <Tab>Guild</Tab>
                   <Tab>World</Tab>
+                  <Tab>Logs</Tab>
                 </TabList>
                 <TabPanel>
-                      <ul id="sayMessages">
+                      <ul id="sayMessages" className="chat-box">
                         { this.state.sayMessages.map((message, index) => {
                           const className = classes('message', message.kind);
                           return (
@@ -145,7 +168,7 @@ class ChatPanel extends React.Component {
                               <span class="time">[{this._getTime(message.timestamp)}] </span>
                               <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
                               <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
-                              Says: { message.text }
+                              {message.kind === "whisper incoming" ? "whispers" : "Says"}: { message.text }
                             </li>
                           );
                         }) }
@@ -157,7 +180,7 @@ class ChatPanel extends React.Component {
                       </form>
                 </TabPanel>
                 <TabPanel>
-                      <ul ref="guildMessages">
+                      <ul id="guildMessages" className="chat-box">
                         { this.state.guildMessages.map((message, index) => {
                           const className = classes('message', message.kind);
                           return (
@@ -178,7 +201,7 @@ class ChatPanel extends React.Component {
                       </form>
                 </TabPanel>
                 <TabPanel>
-                      <ul id="worldMessages">
+                      <ul id="worldMessages" className="chat-box">
                         { this.state.worldMessages.map((message, index) => {
                           const className = classes('message', message.kind);
                           return (
@@ -197,6 +220,22 @@ class ChatPanel extends React.Component {
                         <input type="text" onChange={ this._onChangeWorld }
                                name="text" value={ this.state.worldText } />
                       </form>
+                </TabPanel>
+                <TabPanel>
+                      <ul id="logsMessages" className="chat-box">
+                        { this.state.logsMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li class="message.guid" className={ className } key={ index }>
+                              <span class="time">[{this._getTime(message.timestamp)}] </span>
+                              <span class="type">[World]</span>
+                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                              : { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
                 </TabPanel>
             </Tabs>
         </chat>

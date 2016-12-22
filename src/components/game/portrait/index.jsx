@@ -13,6 +13,7 @@ class Portrait extends React.Component {
 
   render() {
     const unit = this.props.unit;
+
     const className = classes('portrait', {
       self: this.props.self,
       target: this.props.target

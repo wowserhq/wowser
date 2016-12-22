@@ -6,8 +6,10 @@ import M2Blueprint from '../pipeline/m2/blueprint';
 
 class Unit extends Entity {
 
-  constructor() {
+  constructor(guid) {
     super();
+
+    this.guid = guid;
 
     this.name = '<unknown>';
     this.level = '?';

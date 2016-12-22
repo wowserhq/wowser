@@ -8,6 +8,7 @@ import GUID from '../game/guid';
 import SHA1 from '../crypto/hash/sha1';
 import Socket from '../net/socket';
 import ChatEnum from '../game/chat/chatEnum';
+import Player from './player';
 
 class GameHandler extends Socket {
 
@@ -20,6 +21,13 @@ class GameHandler extends Socket {
     // Holds session
     this.session = session;
 
+    this.session.player = new Player("Player",-1);
+
+    // [guid] = name
+    this.playerNames = [];
+
+    this.playerNames[0] = { name : "SYSTEM" };
+
     // Listen for incoming data
     this.on('data:receive', ::this.dataReceived);
 
@@ -28,6 +36,7 @@ class GameHandler extends Socket {
     this.on('packet:receive:SMSG_AUTH_CHALLENGE', ::this.handleAuthChallenge);
     this.on('packet:receive:SMSG_AUTH_RESPONSE', ::this.handleAuthResponse);
     this.on('packet:receive:SMSG_LOGIN_VERIFY_WORLD', ::this.handleWorldLogin);
+    this.on('packet:receive:SMSG_NAME_QUERY_RESPONSE', ::this.handleName);
   }
 
   // Connects to given host through given realm information
@@ -58,6 +67,11 @@ class GameHandler extends Socket {
 
   // Attempts to join game with given character
   join(character) {
+    var name = character.toString();
+
+    this.session.player.name = character.name;
+    this.session.player.guid = character.guid;
+
     if (character) {
       console.info('joining game with', character.toString());
 
@@ -119,6 +133,43 @@ class GameHandler extends Socket {
         return;
       }
     }
+  }
+
+  handleName(gp) {
+    const unk = gp.readUnsignedByte();
+    const guid = unk > 1 ? gp.readUnsignedInt() : gp.readUnsignedByte(); // strange behaviour 
+    //const name_known = gp.readUnsignedByte();
+    const name = gp.readString();
+
+    
+    // the buffer is empty now o_O
+    /*
+    const realm_name = gp.readUnsignedByte(); // only for crossrealm
+    const race = gp.readUnsignedByte();
+    const gender = gp.readUnsignedByte(); // guid2
+    const playerClass = gp.readUnsignedByte();
+    const declined = gp.readUnsignedByte();
+    */
+
+    this.player.name=name;
+    
+    this.playerNames[guid] = {
+        name : name
+        //race : race,
+        //gender : gender,
+        //playerClass : playerClass
+    };
+    
+    this.emit("message",null); // to refresh
+  }
+  
+  askName(guid) {
+    const app = new GamePacket(GameOpcode.CMSG_NAME_QUERY, 64);
+
+    app.writeGUID(guid);
+
+    this.session.game.send(app);
+    return true;
   }
 
   // Pong handler (SMSG_PONG)
