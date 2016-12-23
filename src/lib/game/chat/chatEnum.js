@@ -1,4 +1,3 @@
-
 class ChatEnum {
     static channel = "world"; // hacky workaround
     static CHAT_MSG_ADDON                  = 0xFFFFFFFF;

@@ -72,6 +72,10 @@ class GameHandler extends Socket {
     this.session.player.name = character.name;
     this.session.player.guid = character.guid;
 
+    this.playerNames[character.guid.low] = {
+      name : character.name
+    }
+
     if (character) {
       console.info('joining game with', character.toString());
 
@@ -136,20 +140,15 @@ class GameHandler extends Socket {
   }
 
   handleName(gp) {
-    const unk = gp.readUnsignedByte();
-    const guid = unk > 1 ? gp.readUnsignedInt() : gp.readUnsignedByte(); // strange behaviour 
-    //const name_known = gp.readUnsignedByte();
-    const name = gp.readString();
+    const guid = gp.readPackedGUID();
+    const name_known = gp.readUnsignedByte();
+    const name = gp.readCString();
+    const realm = gp.readCString(); // only for crossrealm
 
-    
-    // the buffer is empty now o_O
-    /*
-    const realm_name = gp.readUnsignedByte(); // only for crossrealm
     const race = gp.readUnsignedByte();
     const gender = gp.readUnsignedByte(); // guid2
     const playerClass = gp.readUnsignedByte();
     const declined = gp.readUnsignedByte();
-    */
 
     this.session.player.name=name;
     

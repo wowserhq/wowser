@@ -2,7 +2,6 @@ import React from 'react';
 import classes from 'classnames';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import ChatEnum from '../../../lib/game/chat/chatEnum';
-
 import './index.styl';
 
 import session from '../../wowser/session';
@@ -13,11 +12,15 @@ class ChatPanel extends React.Component {
     super();
 
     this.state = {
+      selectedIndex : 0,
       playerNames : session.chat.playerNames,
       sayText: '',
+      wispText: '',
       guildText: '',
       worldText: '',
+      wispDest: null,
       sayMessages: session.chat.sayMessages,
+      wispMessages: session.chat.wispMessages,
       guildMessages: session.chat.guildMessages,
       worldMessages: session.chat.worldMessages,
       logsMessages: session.chat.logsMessages
@@ -32,9 +35,16 @@ class ChatPanel extends React.Component {
     this._onChangeWorld = ::this._onChangeWorld;
     this._onMessageWorld = ::this._onMessageWorld;
     this._onSubmitWorld = ::this._onSubmitWorld;
+    this._onChangeWisp = ::this._onChangeWisp;
+    this._onChangeWispDest = ::this._onChangeWispDest;
+    this._onMessageWisp = ::this._onMessageWisp;
+    this._onSubmitWisp = ::this._onSubmitWisp;
+    this._setWispDest  = ::this._setWispDest;
     this._onMessageLogs = ::this._onMessageLogs;
+    this._selTab = ::this._selTab;
+    this._onMessageDispatch = ::this._onMessageDispatch;
 
-    session.chat.on('message', this._onMessageSay);
+    session.chat.on('message', this._onMessageDispatch);
   }
 
   componentDidUpdate() {
@@ -44,17 +54,44 @@ class ChatPanel extends React.Component {
       document.getElementById("worldMessages").scrollTop   = document.getElementById("worldMessages").scrollHeight;
     else if (document.getElementById("guildMessages"))
       document.getElementById("guildMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
+    else if (document.getElementById("wispMessages"))
+      document.getElementById("wispMessages").scrollTop   = document.getElementById("wispMessages").scrollHeight;
     else if (document.getElementById("logsMessages"))
-      document.getElementById("logsMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
+      document.getElementById("logsMessages").scrollTop   = document.getElementById("logsMessages").scrollHeight;
   }
 
-  forceScroll() {
-    if (document.getElementById("sayMessages"))
-      document.getElementById("sayMessages").scrollTop   = document.getElementById("sayMessages").scrollHeight;
-    if (document.getElementById("worldMessages"))
-      document.getElementById("worldMessages").scrollTop   = document.getElementById("worldMessages").scrollHeight;
-    if (document.getElementById("guildMessages"))
-      document.getElementById("guildMessages").scrollTop   = document.getElementById("guildMessages").scrollHeight;
+  _selTab(e) {
+    this.setState({selectedIndex : e });
+    session.chat.emit("message",null); // workaround to keep chat box at bottom
+  }
+
+  _onMessageDispatch(message, type) {
+      switch(type) {
+        case ChatEnum.CHAT_MSG_CHANNEL:
+            this._onMessageWorld();
+            document.getElementById("react-tabs-0").setAttribute("aria-selected", "true");
+        break;
+        case ChatEnum.CHAT_MSG_GUILD:
+            this._onMessageGuild();
+            document.getElementById("react-tabs-2").setAttribute("aria-selected", "true");
+        break;
+        case ChatEnum.CHAT_MSG_WHISPER:
+        case ChatEnum.CHAT_MSG_WHISPER_INFORM:
+        case ChatEnum.CHAT_MSG_WHISPER_FOREIGN:
+            this._onMessageWisp();
+            document.getElementById("react-tabs-4").setAttribute("aria-selected", "true");
+        break;
+        case ChatEnum.CHAT_MSG_SAY:
+        case ChatEnum.CHAT_MSG_SYSTEM:
+        case ChatEnum.CHAT_MSG_EMOTE:
+        case ChatEnum.CHAT_MSG_YELL:
+            this._onMessageSay();
+            document.getElementById("react-tabs-6").setAttribute("aria-selected", "true");
+        break;
+        default:
+            this._onMessageLogs();
+        break;
+    }
   }
 
 /*
@@ -134,6 +171,53 @@ class ChatPanel extends React.Component {
     }
   }
 
+  /**
+   *  WISP
+   */
+  sendWisp(text) {
+    const message = session.chat.create();
+    message.text = text;
+    session.chat.send(text, ChatEnum.CHAT_MSG_WHISPER, this.state.wispDest);
+  }
+
+  _onChangeWisp(event) {
+    this.setState({ wispText: event.target.value });
+  }
+
+  _onChangeWispDest(event) {
+    this.setState({ wispDest: event.target.value });
+  }
+
+  _onMessageWisp() {
+    this.setState({ wispMessages: session.chat.wispMessages });
+  }
+
+  _setWispDest(e) {
+    e.preventDefault();
+    var guid=e.target.parentElement.classList[0];
+    guid = parseInt(guid);
+    
+    if (guid>0) {
+      var name = this.state.playerNames[guid].name;
+      var nome = "Gnoma";
+
+      var equal=name.length == nome.length;
+
+      this.setState({
+        wispDest : (' ' + name).slice(1),
+        selectedIndex : 2
+      });
+    }
+  }
+
+  _onSubmitWisp(event) {
+    event.preventDefault();
+    if (this.state.wispText) {
+      this.sendWisp(this.state.wispText);
+      this.setState({ wispText: '' });
+    }
+  }
+
   /*
     LOGS
    */
@@ -151,68 +235,27 @@ class ChatPanel extends React.Component {
     return (
         <chat className="chat frame" ref="chat">
             <Tabs
-                onSelect={this.forceScroll}
+                selectedIndex={this.state.selectedIndex}
+                onSelect={this._selTab}
               >
                 <TabList>
-                  <Tab>Say</Tab>
-                  <Tab>Guild</Tab>
                   <Tab>World</Tab>
+                  <Tab>Guild</Tab>
+                  <Tab>Wisp</Tab>
+                  <Tab>Say in area</Tab>
                   <Tab>Logs</Tab>
                 </TabList>
-                <TabPanel>
-                      <ul id="sayMessages" className="chat-box">
-                        <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
-                        { this.state.sayMessages.map((message, index) => {
-                          const className = classes('message', message.kind);
-                          return (
-                            <li className={ className } key={ index }>
-                              <span class="time">[{this._getTime(message.timestamp)}] </span>
-                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
-                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
-                              {message.kind === "whisper incoming" ? "whispers" : "Says"}: { message.text }
-                            </li>
-                          );
-                        }) }
-                      </ul>
-
-                      <form onSubmit={ this._onSubmitSay }>
-                        <input type="text" onChange={ this._onChangeSay }
-                               name="text" value={ this.state.sayText } />
-                      </form>
-                </TabPanel>
-                <TabPanel>
-                      <ul id="guildMessages" className="chat-box">
-                        <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
-                        { this.state.guildMessages.map((message, index) => {
-                          const className = classes('message', message.kind);
-                          return (
-                            <li className={ className } key={ index }>
-                              <span class="time">[{this._getTime(message.timestamp)}] </span>
-                              <span class="type">[Guild]</span>
-                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
-                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
-                              : { message.text }
-                            </li>
-                          );
-                        }) }
-                      </ul>
-
-                      <form onSubmit={ this._onSubmitGuild }>
-                        <input type="text" onChange={ this._onChangeGuild }
-                               name="text" value={ this.state.guildText } />
-                      </form>
-                </TabPanel>
                 <TabPanel>
                       <ul id="worldMessages" className="chat-box">
                         <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
                         { this.state.worldMessages.map((message, index) => {
                           const className = classes('message', message.kind);
                           return (
-                            <li class="message.guid" className={ className } key={ index }>
-                              <span class="time">[{this._getTime(message.timestamp)}] </span>
-                              <span class="type">[World]</span>
-                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
-                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                            <li className="message.guid" className={ className } key={ index }>
+                              <span className="time">[{this._getTime(message.timestamp)}] </span>
+                              <span className="type">[World]</span>
+                              <span className="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <a style={{cursor: 'pointer'}} className={ message.guid1 } onClick={ this._setWispDest }>[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </a>
                               : { message.text }
                             </li>
                           );
@@ -225,16 +268,93 @@ class ChatPanel extends React.Component {
                       </form>
                 </TabPanel>
                 <TabPanel>
+                      <ul id="guildMessages" className="chat-box">
+                        <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                        { this.state.guildMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li className={ className } key={ index }>
+                              <span className="time">[{this._getTime(message.timestamp)}] </span>
+                              <span className="type">[Guild]</span>
+                              <span className="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <a style={{cursor: 'pointer'}} className={ message.guid1 } onClick={ this._setWispDest }>[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </a>
+                              : { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
+
+                      <form onSubmit={ this._onSubmitGuild }>
+                        <input type="text" onChange={ this._onChangeGuild }
+                               name="text" value={ this.state.guildText } />
+                      </form>
+                </TabPanel>
+                <TabPanel>
+                      <ul id="wispMessages" className="chat-box">
+                        <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                        { this.state.wispMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li className={ className } key={ index }>
+                              <span className="time">[{this._getTime(message.timestamp)}] </span>
+                              <span className="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              {message.kind === "whisper incoming" ? "" : "To "}
+                              <a style={{cursor: 'pointer'}} className={ message.guid1 } onClick={ this._setWispDest }>[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </a>
+                              {message.kind === "whisper incoming" ? "whispers" : ""}: { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
+
+                      <form onSubmit={ this._onSubmitWisp } className="message whisper outgoing">
+                        <div className="wisp-form">
+                            <div className="wisp-to">
+                              <span>
+                                <input className="wisp-dest" type="text" onChange={ this._onChangeWispDest } name="name" value={ this.state.wispDest } placeholder="To:" />
+                              </span>
+                            </div>
+                            <div className="wisp-input">
+                              <input className="wisp-input" type="text" onChange={ this._onChangeWisp }
+                                name="text" value={ this.state.wispText } />
+                            </div>
+                            <div style={{display: 'table-cell'}}>
+                              <button className="send" type='submit'>></button>
+                            </div>
+                        </div>
+                      </form>
+                </TabPanel>
+                <TabPanel>
+                      <ul id="sayMessages" className="chat-box">
+                        <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                        { this.state.sayMessages.map((message, index) => {
+                          const className = classes('message', message.kind);
+                          return (
+                            <li className={ className } key={ index }>
+                              <span className="time">[{this._getTime(message.timestamp)}] </span>
+                              <span className="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <a style={{cursor: 'pointer'}} className={ message.guid1 } onClick={ this._setWispDest }>[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </a>
+                              Says: { message.text }
+                            </li>
+                          );
+                        }) }
+                      </ul>
+
+                      <form onSubmit={ this._onSubmitSay }>
+                        <input type="text" onChange={ this._onChangeSay }
+                               name="text" value={ this.state.sayText } />
+                      </form>
+                </TabPanel>
+                <TabPanel>
                       <ul id="logsMessages" className="chat-box">
                         <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
                         { this.state.logsMessages.map((message, index) => {
                           const className = classes('message', message.kind);
                           return (
-                            <li class="message.guid" className={ className } key={ index }>
-                              <span class="time">[{this._getTime(message.timestamp)}] </span>
-                              <span class="type">[World]</span>
-                              <span class="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
-                              <span class="{message.guid1}">[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </span>
+                            <li className="message.guid" className={ className } key={ index }>
+                              <span className="time">[{this._getTime(message.timestamp)}] </span>
+                              <span className="type">[Logs]</span>
+                              <span className="flags">{this.state.playerNames[message.guid1] && this.state.playerNames[message.guid1].isGm ? "[GM]" : ""}</span>
+                              <a style={{cursor: 'pointer'}} className={ message.guid1 } onClick={ this._setWispDest }>[{this.state.playerNames[message.guid1] ? this.state.playerNames[message.guid1].name : message.guid1}] </a>
                               : { message.text }
                             </li>
                           );

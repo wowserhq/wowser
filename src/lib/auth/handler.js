@@ -145,6 +145,7 @@ class AuthHandler extends Socket {
         break;
       case AuthChallengeOpcode.ACCOUNT_INVALID:
         console.warn('account invalid');
+        alert("Invalid Account!");
         this.emit('reject');
         break;
       case AuthChallengeOpcode.BUILD_INVALID:
@@ -162,11 +163,18 @@ class AuthHandler extends Socket {
 
     console.info('received proof response');
 
-    const M2 = ap.read(20);
+    var M2;
 
-    if (this.srp.validate(M2)) {
+    try {
+      M2 = ap.read(20);
+    } catch (e) {
+      // reject
+    }
+
+    if (M2 && this.srp.validate(M2)) {
       this.emit('authenticate');
     } else {
+      alert("Invalid account!");
       this.emit('reject');
     }
   }

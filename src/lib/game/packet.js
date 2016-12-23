@@ -61,6 +61,27 @@ class GamePacket extends BasePacket {
   // readPackedGUID: ->
   //   return null
 
+  readPackedGUID() {
+      var guidMark = this.readUnsignedByte();
+
+      var guid = 0;
+
+      var i;
+      for (i = 0; i < 8; ++i)
+      {
+          if(guidMark & (1 << i))
+          {
+              if(this.index + 1 > this.length) 
+                  throw "Buffer exception "+this.index+" >= "+this.lenght;
+
+              var bit = this.readUnsignedByte();
+              guid |= (bit << (i * 8));
+          }
+      }
+
+      return guid;
+  }
+
   // // Writes given GUID to this packet in packed form
   // // TODO: Implementation
   // writePackedGUID: (guid) ->

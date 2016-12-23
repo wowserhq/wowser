@@ -4,6 +4,7 @@ import Message from './message';
 import GamePacket from '../packet';
 import GameOpcode from '../opcode';
 import ChatEnum from './chatEnum';
+import Language from './langEnum';
 
 class ChatHandler extends EventEmitter {
 
@@ -25,17 +26,22 @@ class ChatHandler extends EventEmitter {
         new Message('info', 'This is an info message',0),
         new Message('error', 'This is an error message',0),
         new Message('area', 'Player: This is a message emitted nearby',0),
-        new Message('whisper outgoing', 'To Someone: This is an outgoing whisper',0),
-        new Message('whisper incoming', 'Someone: This is an incoming whisper',0)
     ];
 
     this.guildMessages = [
         welcome,
         new Message('guild', '[Guild] Someone: This is your guild channel (if you have a guild)',0)
     ];
+
     this.worldMessages = [
         welcome,
         new Message('channel', '[World]: This is the official world channel',0),
+    ]
+
+    this.wispMessages = [
+        welcome,
+        new Message('whisper outgoing', 'To [Someone]: This is an outgoing whisper',0),
+        new Message('whisper incoming', 'wispers: This is an incoming whisper',0),
     ]
 
     this.logsMessages = [
@@ -55,7 +61,7 @@ class ChatHandler extends EventEmitter {
   }
 
   // Sends given message
-  send(_message,type) {
+  send(_message,type, dest) {
     var size=64+_message.length;
 
     var channel = ChatEnum.channel+"\0";
@@ -79,6 +85,10 @@ class ChatHandler extends EventEmitter {
               app.writeString(channel);
               app.writeString(_message);
         break;
+        case ChatEnum.CHAT_MSG_WHISPER:
+              app.writeString(dest+"\0");
+              app.writeString(_message);
+        break;
     }
 
     this.session.game.send(app);
@@ -98,10 +108,12 @@ class ChatHandler extends EventEmitter {
   handleMessage(gp,isGm) {
     var guid2 = 0;
 
-    const type = gp.readUnsignedByte(); // type
+    var type = gp.readUnsignedByte(); // type
     const lang = gp.readUnsignedInt(); // language
     const guid1 = gp.readGUID();
     const unk1 = gp.readUnsignedInt();
+
+    var isAddon = lang == Language.LANG_ADDON;
 
     if (isGm === true)
     {
@@ -136,8 +148,7 @@ class ChatHandler extends EventEmitter {
           return;
 
         var _unk=gp.readUnsignedInt();
-        len = gp.length - gp.index - 1; // channel buffer min size
-        text = gp.readString(len);
+        text = gp.readCString();
       break;
       case ChatEnum.CHAT_MSG_WHISPER_FOREIGN:
         len = gp.readUnsignedInt();
@@ -168,6 +179,10 @@ class ChatHandler extends EventEmitter {
     const message = null;
 
     var chatLimit=300;
+
+    if (isAddon) {
+        type = ChatEnum.CHAT_MSG_ADDON;
+    }
 
     switch(type) {
         case ChatEnum.CHAT_MSG_SAY:
@@ -202,13 +217,18 @@ class ChatHandler extends EventEmitter {
         break;
         case ChatEnum.CHAT_MSG_WHISPER:
             message = new Message("whisper incoming", text, guid1.low, guid2.low);
-            this.sayMessages.push(message);
-            this.sayMessages.length > chatLimit && this.sayMessages.shift();
+            this.wispMessages.push(message);
+            this.wispMessages.length > chatLimit && this.wispMessages.shift();
+        break;
+        case ChatEnum.CHAT_MSG_WHISPER_INFORM:
+            message = new Message("whisper outgoing", text, guid1.low, guid2.low);
+            this.wispMessages.push(message);
+            this.wispMessages.length > chatLimit && this.wispMessages.shift();
         break;
         case ChatEnum.CHAT_MSG_WHISPER_FOREIGN:
             message = new Message("whisper incoming", text, senderName, recvGuid.low);
-            this.sayMessages.push(message);
-            this.sayMessages.length > chatLimit && this.sayMessages.shift();
+            this.wispMessages.push(message);
+            this.wispMessages.length > chatLimit && this.wispMessages.shift();
         break;
         default:
             message = new Message("info", text, guid1.low);
@@ -217,7 +237,7 @@ class ChatHandler extends EventEmitter {
         break;
     }
 
-    this.emit('message', message);
+    this.emit('message', message, type);
   }
 
 }
