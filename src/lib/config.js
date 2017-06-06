@@ -33,6 +33,8 @@ class Config {
     this.os = 'Win';
     this.platform = 'x86';
 
+    var CustomDef=require("../../conf/conf.js.dist");
+    Object.assign(this,CustomDef);
     var Custom=require("../../conf/conf.js");
     Object.assign(this,Custom);
 
