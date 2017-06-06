@@ -1,6 +1,7 @@
 var Conf = {
     "welcome" : "Welcome to wowser client",
-    "slogan" : "Browser Demo client"
+    "slogan" : "Browser JavaScript and WebGL Game Client",
+    "authport" : "3724"
 }
 
 module.exports = Conf;

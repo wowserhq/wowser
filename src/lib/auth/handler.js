@@ -6,15 +6,14 @@ import SRP from '../crypto/srp';
 
 class AuthHandler extends Socket {
 
-  // Default port for the auth-server
-  static PORT = 3724;
-
   // Creates a new authentication handler
   constructor(session) {
     super();
 
     // Holds session
     this.session = session;
+
+    this.defport = this.session.config.authport;
 
     // Holds credentials for this session (if any)
     this.account = null;
@@ -39,7 +38,7 @@ class AuthHandler extends Socket {
   // Connects to given host through given port
   connect(host, port = NaN) {
     if (!this.connected) {
-      super.connect(host, port || this.constructor.PORT);
+      super.connect(host, port || this.defport);
       console.info('connecting to auth-server @', this.host, ':', this.port);
     }
     return this;
