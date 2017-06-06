@@ -38,6 +38,7 @@ At present, Wowser is capable of:
 - Connecting to a realm.
 - Listing characters available on a realm.
 - Joining the game world with a character.
+- Chat in game on following channels: Guild, Say, Wispers, World (hardcoded custom channel)
 - Logging game world packets, such as when a creature moves in the vicinity.
 
 In addition, there's good progress on getting terrain and models rendered.
@@ -70,6 +71,9 @@ Wowser is written in [ES2015], developed with [webpack] and [Gulp], compiled by
    game files.
 
 ### Client
+
+Create a copy of /conf/conf.js.dist file and name it /conf/conf.js (don't delete the .dist file)
+then configure it.
 
 [Webpack]'s development server monitors source files and builds:
 
