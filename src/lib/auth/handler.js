@@ -14,6 +14,7 @@ class AuthHandler extends Socket {
     this.session = session;
 
     this.defport = this.session.config.authport;
+    this.defhost = this.session.config.serverhost;
 
     // Holds credentials for this session (if any)
     this.account = null;
@@ -38,7 +39,7 @@ class AuthHandler extends Socket {
   // Connects to given host through given port
   connect(host, port = NaN) {
     if (!this.connected) {
-      super.connect(host, port || this.defport);
+      super.connect(host || this.defhost, port || this.defport);
       console.info('connecting to auth-server @', this.host, ':', this.port);
     }
     return this;

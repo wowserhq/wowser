@@ -11,7 +11,7 @@ class AuthScreen extends React.Component {
     super();
 
     this.state = {
-      host: window.location.hostname,
+      host: session.auth.defhost,
       port: session.auth.defport,
       username: '',
       password: ''
