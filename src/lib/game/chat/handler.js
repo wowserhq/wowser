@@ -18,7 +18,7 @@ class ChatHandler extends EventEmitter {
 
     this.playerNames = this.session.game.playerNames;
 
-    var welcome = new Message('system', 'Welcome to Drassil WoW Web Client! [ Chat developed by Yehonal ]',0);
+    var welcome = new Message('system', this.session.config.title,0);
 
     // Holds messages
     this.sayMessages = [

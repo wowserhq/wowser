@@ -54,7 +54,7 @@ class Wowser extends React.Component {
         <div className="branding">
           <header>Wowser</header>
           <div className="divider"></div>
-          <div className="slogan">World of Warcraft in the browser</div>
+          <div className="slogan">{ session.config.slogan }</div>
         </div>
 
         <select className="screen-selector"

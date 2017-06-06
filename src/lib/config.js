@@ -33,6 +33,9 @@ class Config {
     this.os = 'Win';
     this.platform = 'x86';
 
+    var Custom=require("../../conf/conf.js");
+    Object.assign(this,Custom);
+
     this.raw = new Raw(this);
   }
 
