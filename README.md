@@ -9,7 +9,7 @@
 
 World of Warcraft in the browser using JavaScript and WebGL.
 
-Licensed under the **MIT** license, see LICENSE for more information.
+Licensed under the [**MIT** license](LICENSE).
 
 [![See Wowser tech demo](https://user-images.githubusercontent.com/378235/27762818-800fd91c-5e79-11e7-8301-733d736dd065.jpg)](https://www.youtube.com/watch?v=BrnbANSwC4I)
 

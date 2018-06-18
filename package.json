@@ -2,12 +2,17 @@
   "name": "wowser",
   "version": "0.0.1",
   "description": "World of Warcraft in the browser using JavaScript and WebGL",
+  "author": "Wowser Contributors",
+  "repository": "wowserhq/wowser",
+  "license": "MIT",
   "main": "lib/client/index.js",
   "files": [
     "bin",
     "lib",
     "public",
-    "LICENSE.md",
+    "AUTHORS",
+    "CHANGELOG.md",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
@@ -23,9 +28,6 @@
     "web-dev": "webpack-dev-server",
     "web-release": "webpack --optimize --progress"
   },
-  "repository": "wowserhq/wowser",
-  "author": "Tim Kurvers <tim@moonsphere.net>",
-  "license": "MIT",
   "keywords": [
     "world of warcraft",
     "warcraft",
