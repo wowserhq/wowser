@@ -13,6 +13,15 @@ Licensed under the [**MIT** license](LICENSE).
 
 [![See Wowser tech demo](https://user-images.githubusercontent.com/378235/27762818-800fd91c-5e79-11e7-8301-733d736dd065.jpg)](https://www.youtube.com/watch?v=BrnbANSwC4I)
 
+## Status
+
+Wowser is in the process of being split up into (at minimum) the following parts:
+
+- [Client](https://github.com/wowserhq/client/) (user interface loaded from XML/LUA)
+- [Pipeline](https://github.com/wowserhq/pipeline) server (serves up resources from the official client)
+
+This repository will in the future become an umbrella package.
+
 ## Background
 
 Wowser is a proof-of-concept of getting a triple-A game to run in a webbrowser,
