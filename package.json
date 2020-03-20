@@ -1,15 +1,12 @@
 {
   "name": "wowser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "World of Warcraft in the browser using JavaScript and WebGL",
   "author": "Wowser Contributors",
   "repository": "wowserhq/wowser",
   "license": "MIT",
   "main": "lib/client/index.js",
   "files": [
-    "bin",
-    "lib",
-    "public",
     "AUTHORS",
     "CHANGELOG.md",
     "LICENSE",
