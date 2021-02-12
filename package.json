@@ -48,7 +48,7 @@
     "normalize.css": "^3.0.3",
     "pngjs": "^2.3.0",
     "react": "^0.14.3",
-    "react-dom": "^0.14.3",
+    "react-dom": "^16.0.1",
     "three": "^0.77.0",
     "websockify": "^0.7.1"
   },
