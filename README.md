@@ -1,7 +1,7 @@
 # Wowser
 
 [![Version](https://img.shields.io/npm/v/wowser.svg?style=flat)](https://www.npmjs.org/package/wowser)
-[![Join chat](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat)](https://gitter.im/wowserhq/wowser)
+[![Join Community](https://img.shields.io/badge/discord-join_community-blue.svg?style=flat)](https://discord.gg/DeVVKVg)
 [![Build Status](https://img.shields.io/travis/wowserhq/wowser.svg?style=flat)](https://travis-ci.org/wowserhq/wowser)
 [![Known Vulnerabilities](https://snyk.io/test/github/wowserhq/wowser/badge.svg)](https://snyk.io/test/github/wowserhq/wowser)
 [![Maintainability](https://api.codeclimate.com/v1/badges/863393c7addcb1cd7be7/maintainability)](https://codeclimate.com/github/wowserhq/wowser/maintainability)
